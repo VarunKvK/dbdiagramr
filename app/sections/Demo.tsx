@@ -1,25 +1,77 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
+import type { Schema } from "@/lib/diagram";
+import SchemaDiagram from "@/components/SchemaDiagram";
 
-const TABLES = [
-  { id: "users", name: "users", x: 20, y: 20, w: 170, h: 138 },
-  { id: "posts", name: "posts", x: 280, y: 20, w: 170, h: 160 },
-  { id: "tags", name: "tags", x: 550, y: 20, w: 170, h: 94 },
-  { id: "comments", name: "comments", x: 110, y: 280, w: 170, h: 118 },
-  { id: "post_tags", name: "post_tags", x: 430, y: 280, w: 170, h: 94 },
-];
+const SAMPLE_SCHEMA: Schema = {
+  tables: [
+    {
+      name: "users",
+      columns: [
+        { name: "id", type: "uuid", nullable: "NO", default: "gen_random_uuid()", isPrimaryKey: true },
+        { name: "name", type: "varchar", nullable: "NO", default: null, isPrimaryKey: false },
+        { name: "email", type: "varchar", nullable: "NO", default: null, isPrimaryKey: false },
+        { name: "created_at", type: "timestamptz", nullable: "YES", default: "now()", isPrimaryKey: false },
+      ],
+      foreignKeys: [],
+    },
+    {
+      name: "posts",
+      columns: [
+        { name: "id", type: "uuid", nullable: "NO", default: "gen_random_uuid()", isPrimaryKey: true },
+        { name: "user_id", type: "uuid", nullable: "NO", default: null, isPrimaryKey: false },
+        { name: "title", type: "varchar", nullable: "NO", default: null, isPrimaryKey: false },
+        { name: "body", type: "text", nullable: "YES", default: null, isPrimaryKey: false },
+        { name: "created_at", type: "timestamptz", nullable: "YES", default: "now()", isPrimaryKey: false },
+      ],
+      foreignKeys: [{ column: "user_id", referencesTable: "users", referencesColumn: "id" }],
+    },
+    {
+      name: "tags",
+      columns: [
+        { name: "id", type: "uuid", nullable: "NO", default: "gen_random_uuid()", isPrimaryKey: true },
+        { name: "name", type: "varchar", nullable: "NO", default: null, isPrimaryKey: false },
+      ],
+      foreignKeys: [],
+    },
+    {
+      name: "comments",
+      columns: [
+        { name: "id", type: "uuid", nullable: "NO", default: "gen_random_uuid()", isPrimaryKey: true },
+        { name: "post_id", type: "uuid", nullable: "NO", default: null, isPrimaryKey: false },
+        { name: "user_id", type: "uuid", nullable: "NO", default: null, isPrimaryKey: false },
+        { name: "content", type: "text", nullable: "NO", default: null, isPrimaryKey: false },
+      ],
+      foreignKeys: [
+        { column: "post_id", referencesTable: "posts", referencesColumn: "id" },
+        { column: "user_id", referencesTable: "users", referencesColumn: "id" },
+      ],
+    },
+    {
+      name: "post_tags",
+      columns: [
+        { name: "post_id", type: "uuid", nullable: "NO", default: null, isPrimaryKey: false },
+        { name: "tag_id", type: "uuid", nullable: "NO", default: null, isPrimaryKey: false },
+      ],
+      foreignKeys: [
+        { column: "post_id", referencesTable: "posts", referencesColumn: "id" },
+        { column: "tag_id", referencesTable: "tags", referencesColumn: "id" },
+      ],
+    },
+  ],
+};
 
-const CONNECTIONS = [
-  { id: "c1", from: "users", to: "posts", d: "M 190 55 L 220 55 L 220 77 L 280 77", label1: "1", label2: "*", lx1: 198, ly1: 53, lx2: 275, ly2: 80 },
-  { id: "c2", from: "users", to: "comments", d: "M 105 158 L 105 210 L 195 210 L 195 280", label1: "1", label2: "*", lx1: 108, ly1: 200, lx2: 192, ly2: 208 },
-  { id: "c3", from: "posts", to: "comments", d: "M 365 180 L 365 220 L 195 220 L 195 280", label1: "1", label2: "*", lx1: 362, ly1: 218, lx2: 192, ly2: 218 },
-  { id: "c4", from: "posts", to: "post_tags", d: "M 450 170 L 450 220 L 515 220 L 515 280", label1: "*", label2: "*", lx1: 448, ly1: 218, lx2: 512, ly2: 218 },
-  { id: "c5", from: "tags", to: "post_tags", d: "M 635 114 L 635 200 L 600 200 L 600 280", label1: "*", label2: "*", lx1: 632, ly1: 198, lx2: 598, ly2: 198 },
-];
+/* ─── Main Demo Component ─── */
+type Phase = "form" | "loading" | "result" | "error";
+type Tab = "sample" | "connect";
 
 export default function Demo() {
-  const [hoveredTable, setHoveredTable] = useState<string | null>(null);
+  const [tab, setTab] = useState<Tab>("sample");
+  const [connectionString, setConnectionString] = useState("");
+  const [phase, setPhase] = useState<Phase>("form");
+  const [schema, setSchema] = useState<Schema | null>(null);
+  const [errorMsg, setErrorMsg] = useState("");
   const [visible, setVisible] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
@@ -31,262 +83,244 @@ export default function Demo() {
           observer.disconnect();
         }
       },
-      { threshold: 0.15 }
+      { threshold: 0.12 }
     );
     if (sectionRef.current) observer.observe(sectionRef.current);
     return () => observer.disconnect();
   }, []);
 
-  const isConnected = (tableId: string) => {
-    if (!hoveredTable) return true;
-    if (tableId === hoveredTable) return true;
-    return CONNECTIONS.some(
-      (c) =>
-        (c.from === hoveredTable && c.to === tableId) ||
-        (c.to === hoveredTable && c.from === tableId)
-    );
-  };
+  useEffect(() => {
+    if (tab === "sample") {
+      setSchema(SAMPLE_SCHEMA);
+      setPhase("result");
+    } else {
+      setSchema(null);
+      setPhase("form");
+    }
+  }, [tab]);
 
-  const isConnectionActive = (connId: string) => {
-    if (!hoveredTable) return false;
-    const conn = CONNECTIONS.find((c) => c.id === connId);
-    if (!conn) return false;
-    return conn.from === hoveredTable || conn.to === hoveredTable;
-  };
+  async function handleGenerate() {
+    if (!connectionString.trim()) return;
+    setPhase("loading");
+    setErrorMsg("");
+    const cs = connectionString.trim();
+    const isLocal = cs.includes("localhost") || cs.includes("127.0.0.1");
+    try {
+      const res = await fetch("/api/schema", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          connectionString: cs,
+          ...(isLocal ? { ssl: false } : {}),
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.details || data.error || "API error");
+      setSchema(data);
+      setPhase("result");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Something went wrong";
+      setErrorMsg(msg);
+      setPhase("error");
+    }
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent) {
+    if (e.key === "Enter" && phase === "form") handleGenerate();
+  }
+
+  function downloadSVG() {
+    const svg = document.querySelector("#diagram-svg svg");
+    if (!svg) return;
+    const blob = new Blob([svg.outerHTML], { type: "image/svg+xml" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "schema-diagram.svg";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  const tableCount = schema?.tables.length ?? 0;
+  const relCount =
+    schema?.tables.reduce((acc, t) => acc + t.foreignKeys.length, 0) ?? 0;
 
   return (
     <section id="demo" ref={sectionRef} className="bg-[#fafafa]">
       <div className="mx-auto max-w-5xl px-4 py-24">
-        <h2 className="mb-16 text-center text-3xl font-medium text-[#1a1a1a] md:text-4xl">
+        <div className="mb-4 text-center">
+          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+            Interactive Preview
+          </span>
+        </div>
+        <h2 className="mb-6 text-center text-3xl font-medium text-[#1a1a1a] md:text-4xl">
           See your database, visually
         </h2>
+        <p className="mx-auto mb-16 max-w-lg text-center text-[#737373]">
+          Hover tables to trace relationships. Switch to the{" "}
+          <strong>Your Database</strong> tab to connect your own PostgreSQL
+          instance.
+        </p>
 
         <div
-          className="mx-auto max-w-4xl overflow-hidden rounded-xl bg-[#1a1a1a] shadow-2xl ring-1 ring-black/5"
+          className="mx-auto max-w-4xl overflow-hidden rounded-2xl bg-[#1a1a1a] shadow-2xl ring-1 ring-black/5"
           style={{
             opacity: visible ? 1 : 0,
-            transform: visible ? "translateY(0)" : "translateY(20px)",
-            transition: "all 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+            transform: visible ? "translateY(0)" : "translateY(24px)",
+            transition: "all 0.7s cubic-bezier(0.4, 0, 0.2, 1)",
           }}
         >
           {/* Window chrome */}
-          <div className="flex h-9 items-center gap-2 bg-[#252525] px-4">
-            <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f57] ring-1 ring-black/10" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#febc2e] ring-1 ring-black/10" />
-            <span className="h-2.5 w-2.5 rounded-full bg-[#28c840] ring-1 ring-black/10" />
-            <span className="ml-4 select-none text-[11px] font-medium tracking-wide text-[#666]">
-              dbdiagramr — mydatabase
-            </span>
+          <div className="flex h-10 items-center justify-between bg-[#252525] px-4">
+            <div className="flex items-center gap-2">
+              <span className="h-3 w-3 rounded-full bg-[#ff5f57] ring-1 ring-black/10" />
+              <span className="h-3 w-3 rounded-full bg-[#febc2e] ring-1 ring-black/10" />
+              <span className="h-3 w-3 rounded-full bg-[#28c840] ring-1 ring-black/10" />
+            </div>
+            <div className="flex items-center gap-1 rounded-lg bg-[#1a1a1a] p-1">
+              <button
+                onClick={() => setTab("sample")}
+                className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                  tab === "sample"
+                    ? "bg-[#333] text-white"
+                    : "text-[#888] hover:text-[#ccc]"
+                }`}
+              >
+                Sample Schema
+              </button>
+              <button
+                onClick={() => setTab("connect")}
+                className={`rounded-md px-3 py-1 text-xs font-medium transition-colors ${
+                  tab === "connect"
+                    ? "bg-[#333] text-white"
+                    : "text-[#888] hover:text-[#ccc]"
+                }`}
+              >
+                Your Database
+              </button>
+            </div>
+            <div className="w-16" />
           </div>
 
-          <div className="relative overflow-x-auto p-6">
-            <div
-              className="pointer-events-none absolute inset-0 opacity-[0.03]"
-              style={{
-                backgroundImage:
-                  "radial-gradient(circle, #fff 1px, transparent 1px)",
-                backgroundSize: "20px 20px",
-              }}
-            />
+          {/* Content */}
+          <div className="relative min-h-[360px]">
+            {tab === "connect" && phase === "form" && (
+              <div className="flex flex-col items-center justify-center px-8 py-20">
+                <div className="mb-6 text-center">
+                  <h3 className="mb-2 text-lg font-medium text-white">
+                    Connect your PostgreSQL database
+                  </h3>
+                  <p className="text-sm text-[#888]">
+                    Paste your connection string below. We never store it.
+                  </p>
+                </div>
+                <div className="flex w-full max-w-lg gap-2">
+                  <input
+                    type="text"
+                    value={connectionString}
+                    onChange={(e) => setConnectionString(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="postgresql://user:pass@host:5432/dbname"
+                    className="flex-1 rounded-lg border border-[#333] bg-[#1a1a1a] px-4 py-2.5 text-sm text-white placeholder-[#555] outline-none ring-indigo-500/20 transition-all focus:border-indigo-500 focus:ring-2"
+                  />
+                  <button
+                    onClick={handleGenerate}
+                    disabled={!connectionString.trim()}
+                    className="rounded-lg bg-indigo-600 px-5 py-2.5 text-sm font-medium text-white transition-all hover:bg-indigo-500 disabled:cursor-not-allowed disabled:opacity-40"
+                  >
+                    Generate
+                  </button>
+                </div>
+                <p className="mt-4 text-xs text-[#555]">
+                  Example: postgresql://postgres:secret@localhost:5432/mydb
+                </p>
+              </div>
+            )}
 
-            <svg
-              viewBox="15 10 730 410"
-              className="mx-auto w-full max-w-4xl"
-              style={{ minWidth: 600 }}
-            >
-              <defs>
-                <filter id="glow" x="-30%" y="-30%" width="160%" height="160%">
-                  <feGaussianBlur stdDeviation="3" result="blur" />
-                  <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                </filter>
-              </defs>
+            {phase === "loading" && (
+              <div className="flex flex-col items-center justify-center py-32">
+                <div className="mb-4 h-8 w-8 animate-spin rounded-full border-2 border-[#333] border-t-indigo-500" />
+                <p className="text-sm text-[#888]">Analyzing schema...</p>
+              </div>
+            )}
 
-              {/* Connector lines */}
-              <g strokeWidth="1.5" fill="none">
-                {CONNECTIONS.map((conn, i) => {
-                  const active = isConnectionActive(conn.id);
-                  const dimmed = hoveredTable && !active;
-                  return (
-                    <g key={conn.id}>
+            {phase === "error" && (
+              <div className="flex flex-col items-center justify-center px-8 py-20">
+                <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
+                  <svg
+                    className="h-6 w-6 text-red-400"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    />
+                  </svg>
+                </div>
+                <h3 className="mb-2 text-lg font-medium text-white">
+                  Connection failed
+                </h3>
+                <p className="mb-6 max-w-md text-center text-sm text-[#888]">
+                  {errorMsg}
+                </p>
+                <button
+                  onClick={() => setPhase("form")}
+                  className="rounded-lg bg-[#333] px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-[#444]"
+                >
+                  Try Again
+                </button>
+              </div>
+            )}
+
+            {phase === "result" && schema && (
+              <>
+                <div
+                  id="diagram-svg"
+                  className="overflow-hidden"
+                >
+                  <SchemaDiagram schema={schema} />
+                </div>
+
+                {/* Footer bar */}
+                <div className="flex items-center justify-between border-t border-[#252525] bg-[#1a1a1a] px-6 py-3">
+                  <div className="flex items-center gap-4 text-xs text-[#888]">
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-indigo-500" />
+                      {tableCount} table{tableCount !== 1 ? "s" : ""}
+                    </span>
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-[#6366f1]" />
+                      {relCount} relation{relCount !== 1 ? "s" : ""}
+                    </span>
+                  </div>
+                  <button
+                    onClick={downloadSVG}
+                    className="flex items-center gap-2 rounded-lg bg-[#252525] px-3 py-1.5 text-xs font-medium text-[#ccc] transition-colors hover:bg-[#333] hover:text-white"
+                  >
+                    <svg
+                      className="h-3.5 w-3.5"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
                       <path
-                        d={conn.d}
-                        stroke={active ? "#6366f1" : "#333"}
-                        strokeWidth={active ? 2.5 : 1.5}
-                        style={{
-                          transition: "all 0.3s ease",
-                          opacity: dimmed ? 0.12 : active ? 1 : 0.5,
-                        }}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
                       />
-                      {/* Fast traveling pulse dot */}
-                      <circle r="3" fill="#818cf8" filter="url(#glow)">
-                        <animateMotion
-                          dur={`${3 + i * 0.4}s`}
-                          repeatCount="indefinite"
-                          path={conn.d}
-                        />
-                        <animate
-                          attributeName="opacity"
-                          values="0;1;0"
-                          dur={`${3 + i * 0.4}s`}
-                          repeatCount="indefinite"
-                        />
-                      </circle>
-                    </g>
-                  );
-                })}
-              </g>
-
-              {/* Relationship labels */}
-              <g fontSize="11" fontFamily="monospace">
-                {CONNECTIONS.map((conn) => {
-                  const active = isConnectionActive(conn.id);
-                  const dimmed = hoveredTable && !active;
-                  return (
-                    <g key={`label-${conn.id}`}>
-                      <text
-                        x={conn.lx1}
-                        y={conn.ly1}
-                        textAnchor="end"
-                        fill={active ? "#818cf8" : "#4f46e5"}
-                        style={{
-                          transition: "all 0.3s ease",
-                          opacity: dimmed ? 0.12 : active ? 1 : 0.6,
-                        }}
-                      >
-                        {conn.label1}
-                      </text>
-                      <text
-                        x={conn.lx2}
-                        y={conn.ly2}
-                        textAnchor="start"
-                        fill={active ? "#818cf8" : "#4f46e5"}
-                        style={{
-                          transition: "all 0.3s ease",
-                          opacity: dimmed ? 0.12 : active ? 1 : 0.6,
-                        }}
-                      >
-                        {conn.label2}
-                      </text>
-                    </g>
-                  );
-                })}
-              </g>
-
-              {/* Table: users */}
-              <g
-                className="cursor-pointer"
-                onMouseEnter={() => setHoveredTable("users")}
-                onMouseLeave={() => setHoveredTable(null)}
-                style={{
-                  opacity: visible ? (isConnected("users") ? 1 : 0.2) : 0,
-                  transition: "opacity 0.3s ease",
-                }}
-              >
-                <rect x="20" y="20" width="170" height="138" rx="6" fill="#1a1a1a" stroke={hoveredTable === "users" ? "#4f46e5" : "#333"} strokeWidth={hoveredTable === "users" ? 2 : 1.5} style={{ transition: "all 0.25s ease" }} />
-                <rect x="20" y="20" width="170" height="30" rx="6" fill={hoveredTable === "users" ? "#252540" : "#252525"} style={{ transition: "fill 0.25s ease" }} />
-                <rect x="20" y="44" width="170" height="6" fill={hoveredTable === "users" ? "#252540" : "#252525"} style={{ transition: "fill 0.25s ease" }} />
-                <text x="105" y="40" textAnchor="middle" fill={hoveredTable === "users" ? "#e0e7ff" : "#e5e5e5"} fontSize="13" fontWeight="bold" fontFamily="Inter, sans-serif" style={{ transition: "fill 0.25s ease" }}>users</text>
-                <text x="30" y="62" fill="#a0a0a0" fontSize="12" fontFamily="monospace">id <tspan fill="#6366f1" fontSize="10">PK</tspan></text>
-                <line x1="20" y1="68" x2="190" y2="68" stroke="#333" strokeWidth="1" />
-                <text x="30" y="84" fill="#a0a0a0" fontSize="12" fontFamily="monospace">name</text>
-                <line x1="20" y1="90" x2="190" y2="90" stroke="#333" strokeWidth="1" />
-                <text x="30" y="106" fill="#a0a0a0" fontSize="12" fontFamily="monospace">email</text>
-                <line x1="20" y1="112" x2="190" y2="112" stroke="#333" strokeWidth="1" />
-                <text x="30" y="128" fill="#a0a0a0" fontSize="12" fontFamily="monospace">created_at</text>
-              </g>
-
-              {/* Table: posts */}
-              <g
-                className="cursor-pointer"
-                onMouseEnter={() => setHoveredTable("posts")}
-                onMouseLeave={() => setHoveredTable(null)}
-                style={{
-                  opacity: visible ? (isConnected("posts") ? 1 : 0.2) : 0,
-                  transition: "opacity 0.3s ease",
-                }}
-              >
-                <rect x="280" y="20" width="170" height="160" rx="6" fill="#1a1a1a" stroke={hoveredTable === "posts" ? "#4f46e5" : "#333"} strokeWidth={hoveredTable === "posts" ? 2 : 1.5} style={{ transition: "all 0.25s ease" }} />
-                <rect x="280" y="20" width="170" height="30" rx="6" fill={hoveredTable === "posts" ? "#252540" : "#252525"} style={{ transition: "fill 0.25s ease" }} />
-                <rect x="280" y="44" width="170" height="6" fill={hoveredTable === "posts" ? "#252540" : "#252525"} style={{ transition: "fill 0.25s ease" }} />
-                <text x="365" y="40" textAnchor="middle" fill={hoveredTable === "posts" ? "#e0e7ff" : "#e5e5e5"} fontSize="13" fontWeight="bold" fontFamily="Inter, sans-serif" style={{ transition: "fill 0.25s ease" }}>posts</text>
-                <text x="290" y="62" fill="#a0a0a0" fontSize="12" fontFamily="monospace">id <tspan fill="#6366f1" fontSize="10">PK</tspan></text>
-                <line x1="280" y1="68" x2="450" y2="68" stroke="#333" strokeWidth="1" />
-                <text x="290" y="84" fill="#a0a0a0" fontSize="12" fontFamily="monospace">user_id <tspan fill="#6366f1" fontSize="10">FK</tspan></text>
-                <line x1="280" y1="90" x2="450" y2="90" stroke="#333" strokeWidth="1" />
-                <text x="290" y="106" fill="#a0a0a0" fontSize="12" fontFamily="monospace">title</text>
-                <line x1="280" y1="112" x2="450" y2="112" stroke="#333" strokeWidth="1" />
-                <text x="290" y="128" fill="#a0a0a0" fontSize="12" fontFamily="monospace">body</text>
-                <line x1="280" y1="134" x2="450" y2="134" stroke="#333" strokeWidth="1" />
-                <text x="290" y="150" fill="#a0a0a0" fontSize="12" fontFamily="monospace">created_at</text>
-              </g>
-
-              {/* Table: tags */}
-              <g
-                className="cursor-pointer"
-                onMouseEnter={() => setHoveredTable("tags")}
-                onMouseLeave={() => setHoveredTable(null)}
-                style={{
-                  opacity: visible ? (isConnected("tags") ? 1 : 0.2) : 0,
-                  transition: "opacity 0.3s ease",
-                }}
-              >
-                <rect x="550" y="20" width="170" height="94" rx="6" fill="#1a1a1a" stroke={hoveredTable === "tags" ? "#4f46e5" : "#333"} strokeWidth={hoveredTable === "tags" ? 2 : 1.5} style={{ transition: "all 0.25s ease" }} />
-                <rect x="550" y="20" width="170" height="30" rx="6" fill={hoveredTable === "tags" ? "#252540" : "#252525"} style={{ transition: "fill 0.25s ease" }} />
-                <rect x="550" y="44" width="170" height="6" fill={hoveredTable === "tags" ? "#252540" : "#252525"} style={{ transition: "fill 0.25s ease" }} />
-                <text x="635" y="40" textAnchor="middle" fill={hoveredTable === "tags" ? "#e0e7ff" : "#e5e5e5"} fontSize="13" fontWeight="bold" fontFamily="Inter, sans-serif" style={{ transition: "fill 0.25s ease" }}>tags</text>
-                <text x="560" y="62" fill="#a0a0a0" fontSize="12" fontFamily="monospace">id <tspan fill="#6366f1" fontSize="10">PK</tspan></text>
-                <line x1="550" y1="68" x2="720" y2="68" stroke="#333" strokeWidth="1" />
-                <text x="560" y="84" fill="#a0a0a0" fontSize="12" fontFamily="monospace">name</text>
-              </g>
-
-              {/* Table: comments */}
-              <g
-                className="cursor-pointer"
-                onMouseEnter={() => setHoveredTable("comments")}
-                onMouseLeave={() => setHoveredTable(null)}
-                style={{
-                  opacity: visible ? (isConnected("comments") ? 1 : 0.2) : 0,
-                  transition: "opacity 0.3s ease",
-                }}
-              >
-                <rect x="110" y="280" width="170" height="118" rx="6" fill="#1a1a1a" stroke={hoveredTable === "comments" ? "#4f46e5" : "#333"} strokeWidth={hoveredTable === "comments" ? 2 : 1.5} style={{ transition: "all 0.25s ease" }} />
-                <rect x="110" y="280" width="170" height="30" rx="6" fill={hoveredTable === "comments" ? "#252540" : "#252525"} style={{ transition: "fill 0.25s ease" }} />
-                <rect x="110" y="304" width="170" height="6" fill={hoveredTable === "comments" ? "#252540" : "#252525"} style={{ transition: "fill 0.25s ease" }} />
-                <text x="195" y="300" textAnchor="middle" fill={hoveredTable === "comments" ? "#e0e7ff" : "#e5e5e5"} fontSize="13" fontWeight="bold" fontFamily="Inter, sans-serif" style={{ transition: "fill 0.25s ease" }}>comments</text>
-                <text x="120" y="322" fill="#a0a0a0" fontSize="12" fontFamily="monospace">id <tspan fill="#6366f1" fontSize="10">PK</tspan></text>
-                <line x1="110" y1="328" x2="280" y2="328" stroke="#333" strokeWidth="1" />
-                <text x="120" y="344" fill="#a0a0a0" fontSize="12" fontFamily="monospace">post_id <tspan fill="#6366f1" fontSize="10">FK</tspan></text>
-                <line x1="110" y1="350" x2="280" y2="350" stroke="#333" strokeWidth="1" />
-                <text x="120" y="366" fill="#a0a0a0" fontSize="12" fontFamily="monospace">user_id <tspan fill="#6366f1" fontSize="10">FK</tspan></text>
-                <line x1="110" y1="372" x2="280" y2="372" stroke="#333" strokeWidth="1" />
-                <text x="120" y="388" fill="#a0a0a0" fontSize="12" fontFamily="monospace">content</text>
-              </g>
-
-              {/* Table: post_tags */}
-              <g
-                className="cursor-pointer"
-                onMouseEnter={() => setHoveredTable("post_tags")}
-                onMouseLeave={() => setHoveredTable(null)}
-                style={{
-                  opacity: visible ? (isConnected("post_tags") ? 1 : 0.2) : 0,
-                  transition: "opacity 0.3s ease",
-                }}
-              >
-                <rect x="430" y="280" width="170" height="94" rx="6" fill="#1a1a1a" stroke={hoveredTable === "post_tags" ? "#4f46e5" : "#333"} strokeWidth={hoveredTable === "post_tags" ? 2 : 1.5} style={{ transition: "all 0.25s ease" }} />
-                <rect x="430" y="280" width="170" height="30" rx="6" fill={hoveredTable === "post_tags" ? "#252540" : "#252525"} style={{ transition: "fill 0.25s ease" }} />
-                <rect x="430" y="304" width="170" height="6" fill={hoveredTable === "post_tags" ? "#252540" : "#252525"} style={{ transition: "fill 0.25s ease" }} />
-                <text x="515" y="300" textAnchor="middle" fill={hoveredTable === "post_tags" ? "#e0e7ff" : "#e5e5e5"} fontSize="13" fontWeight="bold" fontFamily="Inter, sans-serif" style={{ transition: "fill 0.25s ease" }}>post_tags</text>
-                <text x="440" y="322" fill="#a0a0a0" fontSize="12" fontFamily="monospace">post_id <tspan fill="#6366f1" fontSize="10">FK</tspan></text>
-                <line x1="430" y1="328" x2="600" y2="328" stroke="#333" strokeWidth="1" />
-                <text x="440" y="344" fill="#a0a0a0" fontSize="12" fontFamily="monospace">tag_id <tspan fill="#6366f1" fontSize="10">FK</tspan></text>
-              </g>
-            </svg>
+                    </svg>
+                    Download SVG
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
-
-        <p className="mt-6 text-center text-sm text-[#a3a3a3]">
-          Hover over any table to trace its relationships
-        </p>
       </div>
     </section>
   );

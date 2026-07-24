@@ -22,7 +22,7 @@ Visit [dbdiagramr.space](https://dbdiagramr.space) and paste your connection str
 ### Self-hosted
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/dbdiagramr.git
+git clone https://github.com/VarunKvK/dbdiagramr
 cd dbdiagramr
 npm install
 npm run dev

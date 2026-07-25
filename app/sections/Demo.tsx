@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/ui/custom-toast"; // ← changed from "sonner"
 import type { Schema } from "@/lib/diagram";
 import SchemaDiagram from "@/components/SchemaDiagram";
 
@@ -63,7 +63,6 @@ const SAMPLE_SCHEMA: Schema = {
   ],
 };
 
-/* ─── Main Demo Component ─── */
 type Phase = "form" | "loading" | "result" | "error";
 type Tab = "sample" | "connect";
 
@@ -132,21 +131,25 @@ export default function Demo() {
       const data = await res.json();
       if (!res.ok) {
         if (data.localhost) {
-          toast.error("Localhost won't work here", {
-            description:
-              "You're on the hosted version of dbdiagramr, so \"localhost\" points to this server, not your computer.\n\nTo visualize your local database, run dbdiagramr locally (git clone + npm run dev) or use a cloud database like Supabase, Neon, or Railway.",
-          });
+          toast.localhost();
+          throw new Error(data.details || "Cannot connect to localhost");
         }
         if (data.dnsError) {
-          toast.error("Database not found", {
-            description:
-              "We couldn't find that database — the hostname doesn't seem to exist.\n\nThis often happens when:\n• The database is paused (Supabase free tier pauses after 7 days of inactivity)\n• The hostname has a typo\n• The server uses IPv6 and your hosting platform needs the connection pooler (port 6543)\n\nCheck your connection string and try again.",
-          });
+          toast.dnsError();
+          throw new Error(data.details || "Database not found");
         }
+        toast.connectionError(data.details || data.error || "API error");
         throw new Error(data.details || data.error || "API error");
       }
-      setSchema(data);
+      const schemaData: Schema = data;
+      setSchema(schemaData);
       setPhase("result");
+
+      const relCount = schemaData.tables.reduce(
+        (acc, t) => acc + t.foreignKeys.length,
+        0
+      );
+      toast.success(schemaData.tables.length, relCount);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
       setErrorMsg(msg);
@@ -281,18 +284,18 @@ export default function Demo() {
                           Local database detected
                         </p>
                         <p className="mt-0.5 text-[11px] text-amber-300/70">
-                          Local databases only work when running dbdiagramr locally.
-                          For the hosted version, use a cloud database like Supabase,
-                          Neon, or Railway.
+                          Local databases only work when running dbdiagramr
+                          locally. For the hosted version, use a cloud database
+                          like Supabase, Neon, or Railway.
                         </p>
                       </div>
                     </div>
                   )}
                   {isLiveSite && !showLocalhostWarning && (
                     <p className="text-[10px] text-[#666]">
-                      Tip: If connecting from Vercel, Netlify, or other serverless
-                      platforms, use your database&apos;s connection pooler (port 6543)
-                      instead of the direct connection.
+                      Tip: If connecting from Vercel, Netlify, or other
+                      serverless platforms, use your database&apos;s connection
+                      pooler (port 6543) instead of the direct connection.
                     </p>
                   )}
                 </div>
@@ -343,10 +346,7 @@ export default function Demo() {
 
             {phase === "result" && schema && (
               <>
-                <div
-                  id="diagram-svg"
-                  className="overflow-hidden"
-                >
+                <div id="diagram-svg" className="overflow-hidden">
                   <SchemaDiagram schema={schema} />
                 </div>
 

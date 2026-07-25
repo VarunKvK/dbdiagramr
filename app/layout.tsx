@@ -51,13 +51,11 @@ gtag('config', 'G-MK1QVPVPSJ');`}
         </Script>
         <Toaster
           position="bottom-left"
+          richColors
+          closeButton
           toastOptions={{
-            style: {
-              background: "#1a1a1a",
-              border: "1px solid #333",
-              color: "#ccc",
-              fontSize: "13px",
-            },
+            duration: 8000,
+            style: { fontSize: "13px" },
           }}
         />
         {children}

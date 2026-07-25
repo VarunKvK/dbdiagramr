@@ -116,12 +116,12 @@ export const toast = {
   localhost: () => {
     sonnerToast.custom((id) => (
       <ToastCard
-        title="Localhost won't work here"
+        title="Localhost won&apos;t work here"
         variant="warning"
         onDismiss={() => sonnerToast.dismiss(id)}
       >
         <p className="mb-3">
-          You're on the hosted version of dbdiagramr, so{" "}
+          You&apos;re on the hosted version of dbdiagramr, so{" "}
           <code className="rounded bg-muted px-1 py-0.5 font-mono text-[11px] text-foreground">
             localhost
           </code>{" "}
@@ -159,7 +159,7 @@ export const toast = {
         onDismiss={() => sonnerToast.dismiss(id)}
       >
         <p className="mb-3">
-          We couldn't find that database — the hostname doesn't seem to exist.
+          We couldn&apos;t find that database — the hostname doesn&apos;t seem to exist.
         </p>
         <div className="rounded-md bg-muted/50 p-3">
           <p className="mb-2 text-xs font-medium text-foreground">

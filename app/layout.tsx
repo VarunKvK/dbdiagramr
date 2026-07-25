@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import { Toaster } from "sonner";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -48,6 +49,17 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-MK1QVPVPSJ');`}
         </Script>
+        <Toaster
+          position="bottom-left"
+          toastOptions={{
+            style: {
+              background: "#1a1a1a",
+              border: "1px solid #333",
+              color: "#ccc",
+              fontSize: "13px",
+            },
+          }}
+        />
         {children}
       </body>
     </html>

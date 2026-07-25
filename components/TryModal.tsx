@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "sonner";
 import type { Schema } from "@/lib/diagram";
 
 type Phase = "form" | "loading" | "result" | "error";
@@ -33,7 +34,16 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModa
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.details || data.error || "API error");
+      if (!res.ok) {
+        if (data.localhost) {
+          toast.error("Localhost detected", {
+            description:
+              "This app is running on a remote server, so localhost refers to the server itself, not your machine.\n\nTo visualize your local database, deploy this app locally (clone + npm run dev), use a cloud database like Supabase or Neon, or expose your local DB via ngrok / Cloudflare Tunnel.",
+            duration: 8000,
+          });
+        }
+        throw new Error(data.details || data.error || "API error");
+      }
       const schema = data as Schema;
       setTableCount(schema.tables.length);
       setRelCount(schema.tables.reduce((acc, t) => acc + t.foreignKeys.length, 0));

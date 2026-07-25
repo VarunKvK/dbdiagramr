@@ -22,6 +22,17 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  const dbIsLocal =
+    connectionString.includes("localhost") ||
+    connectionString.includes("127.0.0.1") ||
+    connectionString.includes("::1");
+
+  const host = request.headers.get("host") || "";
+  const requestIsLocal =
+    host.startsWith("localhost") ||
+    host.startsWith("127.0.0.1") ||
+    host.startsWith("[::1]");
+
   if (
     connectionString.startsWith("http://") ||
     connectionString.startsWith("https://")
@@ -36,15 +47,24 @@ export async function POST(request: NextRequest) {
     );
   }
 
-const isLocal =
-  connectionString.includes("localhost") ||
-  connectionString.includes("127.0.0.1") ||
-  connectionString.includes("::1");
-const useSSL = ssl !== false && !isLocal;
+  if (dbIsLocal && !requestIsLocal) {
+    return NextResponse.json(
+      {
+        error: "Cannot connect to localhost",
+        localhost: true,
+        details:
+          "This app is running on a remote server, so localhost refers to the server itself, not your machine.\n\nTo visualize your local database:\n  1. Deploy this app locally: git clone + npm run dev\n  2. Use a cloud database (Supabase, Neon, etc.) and paste its public connection string\n  3. Expose your local database with a tool like ngrok or Cloudflare Tunnel",
+      },
+      { status: 400 }
+    );
+  }
+
+const useSSL = ssl !== false && !dbIsLocal;
   const client = new Client({
     connectionString,
     ...(useSSL ? { ssl: { rejectUnauthorized: false } } : {}),
-  });
+    family: 4,
+  } as import("pg").ClientConfig & { family: number }); 
 
   try {
     await client.connect();

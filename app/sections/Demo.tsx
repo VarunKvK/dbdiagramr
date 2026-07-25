@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { toast } from "sonner";
 import type { Schema } from "@/lib/diagram";
 import SchemaDiagram from "@/components/SchemaDiagram";
 
@@ -129,7 +130,23 @@ export default function Demo() {
         }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.details || data.error || "API error");
+      if (!res.ok) {
+        if (data.localhost) {
+          toast.error("Localhost detected", {
+            description:
+              "This app is running on a remote server, so localhost refers to the server itself, not your machine.\n\nTo visualize your local database, deploy this app locally (clone + npm run dev), use a cloud database like Supabase or Neon, or expose your local DB via ngrok / Cloudflare Tunnel.",
+            duration: 8000,
+          });
+        }
+        if (data.dnsError) {
+          toast.error("DNS resolution failed", {
+            description:
+              "The database hostname could not be resolved. This can happen with IPv6 addresses on some serverless platforms.\n\nTry using your database's connection pooler (port 6543) instead of the direct connection, or check that the hostname is correct.",
+            duration: 10000,
+          });
+        }
+        throw new Error(data.details || data.error || "API error");
+      }
       setSchema(data);
       setPhase("result");
     } catch (err: unknown) {

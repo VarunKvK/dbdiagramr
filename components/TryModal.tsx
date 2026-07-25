@@ -56,6 +56,13 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModa
             duration: 8000,
           });
         }
+        if (data.dnsError) {
+          toast.error("DNS resolution failed", {
+            description:
+              "The database hostname could not be resolved. This can happen with IPv6 addresses on some serverless platforms.\n\nTry using your database's connection pooler (port 6543) instead of the direct connection, or check that the hostname is correct.",
+            duration: 10000,
+          });
+        }
         throw new Error(data.details || data.error || "API error");
       }
       const schema = data as Schema;

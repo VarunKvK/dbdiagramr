@@ -70,8 +70,16 @@ const useSSL = ssl !== false && !dbIsLocal;
     await client.connect();
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : "Unknown error";
+    const isDnsError =
+      message.includes("ENOTFOUND") ||
+      message.includes("EAI_AGAIN") ||
+      message.includes("ENETUNREACH");
     return NextResponse.json(
-      { error: "Could not connect to database", details: message },
+      {
+        error: "Could not connect to database",
+        details: message,
+        ...(isDnsError ? { dnsError: true } : {}),
+      },
       { status: 500 }
     );
   }

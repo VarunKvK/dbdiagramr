@@ -12,29 +12,57 @@ function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
-function serializeSvg(el: SVGSVGElement): string {
+function serializeSvg(el: SVGSVGElement, positions: Record<string, Rect>): string {
   const clone = el.cloneNode(true) as SVGSVGElement;
   clone.removeAttribute("style");
+
+  // Calculate tight viewBox from current positions
+  const all = Object.values(positions);
+  const minX = Math.min(...all.map((p) => p.x)) - 40;
+  const minY = Math.min(...all.map((p) => p.y)) - 40;
+  const maxX = Math.max(...all.map((p) => p.x + p.w)) + 40;
+  const maxY = Math.max(...all.map((p) => p.y + p.h)) + 40;
+  clone.setAttribute("viewBox", `${minX} ${minY} ${maxX - minX} ${maxY - minY}`);
+  clone.setAttribute("width", `${maxX - minX}`);
+  clone.setAttribute("height", `${maxY - minY}`);
+
+  // Remove pan/zoom transform so tables sit at absolute coords
+  const contentGroup = clone.querySelector('g[data-content="true"]');
+  if (contentGroup) {
+    contentGroup.removeAttribute("transform");
+  }
+
+  // Inline global styles so the exported file looks correct standalone
   const sheet = document.querySelector("style");
   if (sheet) {
-    const defs = clone.querySelector("defs") || clone.insertBefore(document.createElementNS("http://www.w3.org/2000/svg", "defs"), clone.firstChild);
+    const defs =
+      clone.querySelector("defs") ||
+      clone.insertBefore(
+        document.createElementNS("http://www.w3.org/2000/svg", "defs"),
+        clone.firstChild
+      );
     const globalStyle = document.createElementNS("http://www.w3.org/2000/svg", "style");
     globalStyle.textContent = sheet.textContent;
     defs.appendChild(globalStyle);
   }
+
   const serializer = new XMLSerializer();
   return serializer.serializeToString(clone);
 }
 
-async function exportPNG(svgEl: SVGSVGElement, filename: string) {
-  const svgString = serializeSvg(svgEl);
+async function exportPNG(el: SVGSVGElement, positions: Record<string, Rect>, filename: string) {
+  const svgString = serializeSvg(el, positions);
   const svgBlob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
   const url = URL.createObjectURL(svgBlob);
 
   const img = new Image();
-  const rect = svgEl.getBoundingClientRect();
-  const w = rect.width || 1200;
-  const h = rect.height || 800;
+  const all = Object.values(positions);
+  const minX = Math.min(...all.map((p) => p.x)) - 40;
+  const minY = Math.min(...all.map((p) => p.y)) - 40;
+  const maxX = Math.max(...all.map((p) => p.x + p.w)) + 40;
+  const maxY = Math.max(...all.map((p) => p.y + p.h)) + 40;
+  const w = maxX - minX;
+  const h = maxY - minY;
 
   return new Promise<void>((resolve, reject) => {
     img.onload = () => {
@@ -42,6 +70,8 @@ async function exportPNG(svgEl: SVGSVGElement, filename: string) {
       canvas.width = w * 2;
       canvas.height = h * 2;
       const ctx = canvas.getContext("2d")!;
+      ctx.fillStyle = "#0f0f0f";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.scale(2, 2);
       ctx.drawImage(img, 0, 0, w, h);
       URL.revokeObjectURL(url);
@@ -95,12 +125,7 @@ function getRowY(tableName: string, columnName: string, schema: Schema, layout: 
   return pos.y + 42 + idx * 26 + 4;
 }
 
-function routePath(
-  x1: number,
-  y1: number,
-  x2: number,
-  y2: number
-): string {
+function routePath(x1: number, y1: number, x2: number, y2: number): string {
   const pad = 28;
   const x1Out = x1 + pad;
   const x2In = x2 - pad;
@@ -127,19 +152,32 @@ export default function SchemaDiagram({ schema, className = "" }: SchemaDiagramP
   const [hovered, setHovered] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
 
+  /* ── Draggable table positions ── */
+  const [positions, setPositions] = useState<Record<string, Rect>>(() => computeLayout(schema));
+
+  /* ── Pan / Zoom state ── */
   const [scale, setScale] = useState(1);
   const [pan, setPan] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const dragStart = useRef({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
   const panStart = useRef({ x: 0, y: 0 });
+  const panOrigin = useRef({ x: 0, y: 0 });
   const svgRef = useRef<SVGSVGElement>(null);
+
+  /* ── Table drag state ── */
+  const [draggingTable, setDraggingTable] = useState<string | null>(null);
+  const dragOffset = useRef({ x: 0, y: 0 });
 
   useEffect(() => {
     const t = setTimeout(() => setMounted(true), 50);
     return () => clearTimeout(t);
   }, []);
 
-  const layout = useMemo(() => computeLayout(schema), [schema]);
+  /* ── Re-initialize layout when schema changes ── */
+  useEffect(() => {
+    setPositions(computeLayout(schema));
+    setScale(1);
+    setPan({ x: 0, y: 0 });
+  }, [schema]);
 
   const connections = useMemo(() => {
     const out: {
@@ -157,12 +195,12 @@ export default function SchemaDiagram({ schema, className = "" }: SchemaDiagramP
 
     schema.tables.forEach((table) => {
       table.foreignKeys.forEach((fk) => {
-        const fromPos = layout[table.name];
-        const toPos = layout[fk.referencesTable];
+        const fromPos = positions[table.name];
+        const toPos = positions[fk.referencesTable];
         if (!fromPos || !toPos) return;
 
-        const sy = getRowY(table.name, fk.column, schema, layout);
-        const ey = getRowY(fk.referencesTable, fk.referencesColumn, schema, layout);
+        const sy = getRowY(table.name, fk.column, schema, positions);
+        const ey = getRowY(fk.referencesTable, fk.referencesColumn, schema, positions);
 
         const sx = fromPos.x + fromPos.w;
         const ex = toPos.x;
@@ -184,7 +222,7 @@ export default function SchemaDiagram({ schema, className = "" }: SchemaDiagramP
     });
 
     return out;
-  }, [schema, layout]);
+  }, [schema, positions]);
 
   const activeTables = useMemo(() => {
     if (!hovered) return new Set<string>();
@@ -207,25 +245,56 @@ export default function SchemaDiagram({ schema, className = "" }: SchemaDiagramP
     return c.from === hovered || c.to === hovered;
   };
 
-  const onMouseDown = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+  /* ── Coordinate helper: screen → SVG user space ── */
+  const toSvgPoint = useCallback((clientX: number, clientY: number) => {
+    const svg = svgRef.current;
+    if (!svg) return { x: 0, y: 0 };
+    const pt = svg.createSVGPoint();
+    pt.x = clientX;
+    pt.y = clientY;
+    const ctm = svg.getScreenCTM();
+    if (!ctm) return { x: 0, y: 0 };
+    return pt.matrixTransform(ctm.inverse());
+  }, []);
+
+  /* ── Pan handlers (background only) ── */
+  const onSvgMouseDown = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
     if (e.button !== 0) return;
-    setIsDragging(true);
-    dragStart.current = { x: e.clientX, y: e.clientY };
-    panStart.current = { ...pan };
+    // Only pan if clicking background (not a table)
+    const target = e.target as Element;
+    if (target.closest("[data-table]")) return;
+
+    setIsPanning(true);
+    panStart.current = { x: e.clientX, y: e.clientY };
+    panOrigin.current = { ...pan };
   }, [pan]);
 
-  const onMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
-    if (!isDragging) return;
-    const dx = (e.clientX - dragStart.current.x) / scale;
-    const dy = (e.clientY - dragStart.current.y) / scale;
-    setPan({
-      x: panStart.current.x + dx,
-      y: panStart.current.y + dy,
-    });
-  }, [isDragging, scale]);
+  const onSvgMouseMove = useCallback((e: React.MouseEvent<SVGSVGElement>) => {
+    if (draggingTable) {
+      const svgP = toSvgPoint(e.clientX, e.clientY);
+      setPositions((prev) => ({
+        ...prev,
+        [draggingTable]: {
+          ...prev[draggingTable],
+          x: svgP.x - dragOffset.current.x,
+          y: svgP.y - dragOffset.current.y,
+        },
+      }));
+      return;
+    }
 
-  const onMouseUp = useCallback(() => {
-    setIsDragging(false);
+    if (!isPanning) return;
+    const dx = (e.clientX - panStart.current.x) / scale;
+    const dy = (e.clientY - panStart.current.y) / scale;
+    setPan({
+      x: panOrigin.current.x + dx,
+      y: panOrigin.current.y + dy,
+    });
+  }, [draggingTable, isPanning, scale, toSvgPoint]);
+
+  const onSvgMouseUp = useCallback(() => {
+    setIsPanning(false);
+    setDraggingTable(null);
   }, []);
 
   const onWheel = useCallback((e: React.WheelEvent<SVGSVGElement>) => {
@@ -248,6 +317,37 @@ export default function SchemaDiagram({ schema, className = "" }: SchemaDiagramP
     setPan({ x: newPanX, y: newPanY });
   }, [scale, pan]);
 
+  /* ── Table drag handlers ── */
+  const onTableMouseDown = useCallback(
+    (e: React.MouseEvent, tableName: string) => {
+      e.stopPropagation();
+      if (e.button !== 0) return;
+      const pos = positions[tableName];
+      const svgP = toSvgPoint(e.clientX, e.clientY);
+      dragOffset.current = {
+        x: svgP.x - pos.x,
+        y: svgP.y - pos.y,
+      };
+      setDraggingTable(tableName);
+    },
+    [positions, toSvgPoint]
+  );
+
+  /* ── Zoom controls ── */
+  const resetView = useCallback(() => {
+    setScale(1);
+    setPan({ x: 0, y: 0 });
+  }, []);
+
+  const zoomIn = useCallback(() => {
+    setScale((s) => Math.min(s * 1.2, 3));
+  }, []);
+
+  const zoomOut = useCallback(() => {
+    setScale((s) => Math.max(s / 1.2, 0.3));
+  }, []);
+
+  /* ── Download dropdown ── */
   const [downloadOpen, setDownloadOpen] = useState(false);
   const downloadRef = useRef<HTMLDivElement>(null);
 
@@ -263,39 +363,40 @@ export default function SchemaDiagram({ schema, className = "" }: SchemaDiagramP
     }
   }, [downloadOpen]);
 
-  const resetView = useCallback(() => {
-    setScale(1);
-    setPan({ x: 0, y: 0 });
-  }, []);
-
-  const zoomIn = useCallback(() => {
-    setScale((s) => Math.min(s * 1.2, 3));
-  }, []);
-
-  const zoomOut = useCallback(() => {
-    setScale((s) => Math.max(s / 1.2, 0.3));
-  }, []);
-
   const handleExportSVG = useCallback(() => {
     if (!svgRef.current) return;
-    const svgString = serializeSvg(svgRef.current);
+    const svgString = serializeSvg(svgRef.current, positions);
     const blob = new Blob([svgString], { type: "image/svg+xml;charset=utf-8" });
     downloadBlob(blob, "schema-diagram.svg");
     setDownloadOpen(false);
-  }, []);
+  }, [positions]);
 
   const handleExportPNG = useCallback(() => {
     if (!svgRef.current) return;
-    exportPNG(svgRef.current, "schema-diagram.png").catch(console.error);
+    exportPNG(svgRef.current, positions, "schema-diagram.png").catch(console.error);
     setDownloadOpen(false);
-  }, []);
+  }, [positions]);
+
+  /* ── ViewBox: large enough to never clip during interaction ── */
+  const initialLayout = useMemo(() => computeLayout(schema), [schema]);
+  const viewBox = useMemo(() => {
+    const all = Object.values(initialLayout);
+    const maxX = Math.max(...all.map((p) => p.x + p.w));
+    const maxY = Math.max(...all.map((p) => p.y + p.h));
+    const w = Math.max(780, maxX + 600);
+    const h = Math.max(460, maxY + 600);
+    return { x: -300, y: -300, w, h };
+  }, [initialLayout]);
 
   const transformStr = `translate(${pan.x}, ${pan.y}) scale(${scale})`;
 
+  /* ── Cursor ── */
+  const cursor = draggingTable ? "grabbing" : isPanning ? "grabbing" : "grab";
+
   return (
     <div className={`relative ${className}`}>
+      {/* Controls */}
       <div className="absolute top-3 right-3 z-10 flex flex-col gap-1.5">
-        {/* Download dropdown */}
         <div ref={downloadRef} className="relative">
           <button
             onClick={() => setDownloadOpen((v) => !v)}
@@ -359,13 +460,13 @@ export default function SchemaDiagram({ schema, className = "" }: SchemaDiagramP
 
       <svg
         ref={svgRef}
-        viewBox="0 0 780 460"
+        viewBox={`${viewBox.x} ${viewBox.y} ${viewBox.w} ${viewBox.h}`}
         className="h-full w-full select-none"
-        style={{ minWidth: 640, cursor: isDragging ? "grabbing" : "grab" }}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMove}
-        onMouseUp={onMouseUp}
-        onMouseLeave={onMouseUp}
+        style={{ minWidth: 640, cursor }}
+        onMouseDown={onSvgMouseDown}
+        onMouseMove={onSvgMouseMove}
+        onMouseUp={onSvgMouseUp}
+        onMouseLeave={onSvgMouseUp}
         onWheel={onWheel}
       >
         <defs>
@@ -402,9 +503,10 @@ export default function SchemaDiagram({ schema, className = "" }: SchemaDiagramP
         <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
           <path d="M 40 0 L 0 0 0 40" fill="none" stroke="#222" strokeWidth="0.5" />
         </pattern>
-        <rect width="780" height="460" fill="url(#grid)" />
+        <rect x={viewBox.x} y={viewBox.y} width={viewBox.w} height={viewBox.h} fill="url(#grid)" />
 
-        <g transform={transformStr}>
+        <g data-content="true" transform={transformStr}>
+          {/* Connections */}
           <g fill="none" strokeLinecap="round" strokeLinejoin="round">
             {connections.map((c, i) => {
               const active = isConnActive(c.id);
@@ -448,19 +550,23 @@ export default function SchemaDiagram({ schema, className = "" }: SchemaDiagramP
             })}
           </g>
 
+          {/* Tables */}
           {schema.tables.map((table) => {
-            const pos = layout[table.name];
+            const pos = positions[table.name];
             if (!pos) return null;
             const active = isTableActive(table.name);
             const isHover = hovered === table.name;
+            const isDrag = draggingTable === table.name;
 
             return (
               <g
                 key={table.name}
+                data-table={table.name}
                 onMouseEnter={() => setHovered(table.name)}
                 onMouseLeave={() => setHovered(null)}
+                onMouseDown={(e) => onTableMouseDown(e, table.name)}
                 style={{
-                  cursor: "pointer",
+                  cursor: isDrag ? "grabbing" : "grab",
                   opacity: active ? 1 : 0.15,
                   transition: "opacity 0.3s ease",
                 }}

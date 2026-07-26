@@ -3,6 +3,7 @@ import Hero from "@/app/sections/Hero";
 import Demo from "@/app/sections/Demo";
 import HowToGuide from "@/app/sections/HowToGuide";
 import Features from "@/app/sections/Features";
+import Comparison from "@/app/sections/Comparison";
 import Pricing from "@/app/sections/Pricing";
 import Footer from "@/app/sections/Footer";
 
@@ -21,6 +22,9 @@ export default function Home() {
       </div>
       <div id="features" className="scroll-mt-16">
         <Features />
+      </div>
+      <div id="comparison" className="scroll-mt-16">
+        <Comparison />
       </div>
       <div id="pricing" className="scroll-mt-16">
         <Pricing />

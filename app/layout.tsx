@@ -7,6 +7,7 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://dbdiagramr.space"),
   title: "dbdiagramr - Visualize Your PostgreSQL Database",
   description:
     "Paste your PostgreSQL connection string and generate a beautiful ER diagram in seconds. No signup required.",
@@ -14,18 +15,18 @@ export const metadata: Metadata = {
     "postgresql, er diagram, database schema, schema visualization, db diagram",
   authors: [{ name: "dbdiagramr" }],
   openGraph: {
-    title: "dbdiagramr - Visualize Your PostgreSQL Database",
+    title: "dbdiagramr - See your database, visually",
     description:
-      "Paste your PostgreSQL connection string and generate a beautiful ER diagram in seconds. No signup required.",
+      "Generate interactive ER diagrams from any PostgreSQL database. Hover to trace relationships, export as SVG or PNG.",
     type: "website",
     url: "https://dbdiagramr.space",
     images: [{ url: "/DbDiagramr-OG.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "dbdiagramr - Visualize Your PostgreSQL Database",
+    title: "dbdiagramr - ER diagrams from PostgreSQL",
     description:
-      "Paste your PostgreSQL connection string and generate a beautiful ER diagram in seconds. No signup required.",
+      "No signup, no setup. Paste a connection string and get a beautiful schema diagram in under 10 seconds.",
     images: ["/DbDiagramr-OG.png"],
   },
   icons: {
@@ -50,6 +51,71 @@ export default function RootLayout({
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-MK1QVPVPSJ');`}
+        </Script>
+        <Script id="structured-data" type="application/ld+json" strategy="beforeInteractive">
+          {`{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "name": "dbdiagramr",
+      "url": "https://dbdiagramr.space",
+      "description": "Generate interactive ER diagrams from any PostgreSQL connection string. No signup required."
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "dbdiagramr",
+      "applicationCategory": "WebApplication",
+      "operatingSystem": "Any",
+      "description": "Paste your PostgreSQL connection string and generate a beautiful ER diagram in seconds.",
+      "url": "https://dbdiagramr.space",
+      "offers": [
+        {
+          "@type": "Offer",
+          "name": "Free",
+          "price": "0",
+          "priceCurrency": "USD"
+        },
+        {
+          "@type": "Offer",
+          "name": "Pro",
+          "price": "8",
+          "priceCurrency": "USD",
+          "priceInterval": "month"
+        }
+      ]
+    },
+    {
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "How do I get my PostgreSQL connection string?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "In your database provider's dashboard, click Connect to retrieve your connection string. It typically looks like: postgresql://user:password@host:5432/dbname."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Which connection method should I use?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Select the Transaction pooler option. This ensures compatibility with stateless applications and allows dbdiagramr to detect connections properly."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "What if I forgot my database password?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Regenerate your password in the Shared pooler section of your database provider's dashboard and copy-paste the new credentials into your connection string."
+          }
+        }
+      ]
+    }
+  ]
+}`}
         </Script>
         <Toaster position="top-center" />
         {children}

@@ -1,0 +1,20 @@
+# dbdiagramr
+
+dbdiagramr is a web-based tool that generates interactive ER diagrams from any PostgreSQL connection string. No signup, no setup — paste your connection string and visualize your database schema in under 10 seconds.
+
+## Key pages
+
+- Home: https://dbdiagramr.space
+- Visualize your database: https://dbdiagramr.space/visualize
+- Features: https://dbdiagramr.space#features
+- Pricing: https://dbdiagramr.space#pricing
+
+## About
+
+- Generates interactive SVG entity-relationship diagrams from live PostgreSQL schemas
+- Supports pan, zoom, and hover-to-trace table relationships
+- Exports diagrams as SVG or PNG
+- Works with cloud databases: Supabase, Neon, Railway
+- Uses Transaction pooler (port 6543) for serverless platform compatibility
+- Connection strings are never stored — introspected and discarded immediately
+- Built with Next.js, PostgreSQL, and Tailwind CSS

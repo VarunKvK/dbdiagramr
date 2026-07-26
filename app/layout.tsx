@@ -7,24 +7,26 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "dbdiagramr — Visualize Your PostgreSQL Database",
+  title: "dbdiagramr - Visualize Your PostgreSQL Database",
   description:
     "Paste your PostgreSQL connection string and generate a beautiful ER diagram in seconds. No signup required.",
   keywords:
     "postgresql, er diagram, database schema, schema visualization, db diagram",
   authors: [{ name: "dbdiagramr" }],
   openGraph: {
-    title: "dbdiagramr — Visualize Your PostgreSQL Database",
+    title: "dbdiagramr - Visualize Your PostgreSQL Database",
     description:
       "Paste your PostgreSQL connection string and generate a beautiful ER diagram in seconds. No signup required.",
     type: "website",
     url: "https://dbdiagramr.space",
+    images: [{ url: "/DbDiagramr-OG.png", width: 1200, height: 630 }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "dbdiagramr — Visualize Your PostgreSQL Database",
+    title: "dbdiagramr - Visualize Your PostgreSQL Database",
     description:
       "Paste your PostgreSQL connection string and generate a beautiful ER diagram in seconds. No signup required.",
+    images: ["/DbDiagramr-OG.png"],
   },
   icons: {
     icon: [{ url: "/favicon.svg", type: "image/svg+xml" }],

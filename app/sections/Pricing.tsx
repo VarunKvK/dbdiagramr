@@ -36,7 +36,7 @@ const plans = [
     badge: "text-indigo-700 bg-indigo-50",
     border: "border-2 border-indigo-600",
     bg: "bg-cream",
-    ctaStyle: "bg-ink text-white hover:bg-[#333] rounded-lg py-3 font-medium",
+    ctaStyle: "bg-ink text-white hover:bg-indigo-600 rounded-lg py-3 font-medium",
     checkColor: "text-indigo-600",
     popular: true,
   },

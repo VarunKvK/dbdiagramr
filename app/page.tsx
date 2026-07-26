@@ -1,6 +1,7 @@
 import Navbar from "@/app/sections/Navbar";
 import Hero from "@/app/sections/Hero";
 import Demo from "@/app/sections/Demo";
+import HowToGuide from "@/app/sections/HowToGuide";
 import Features from "@/app/sections/Features";
 import Pricing from "@/app/sections/Pricing";
 import Footer from "@/app/sections/Footer";
@@ -14,6 +15,9 @@ export default function Home() {
       </div>
       <div className="scroll-mt-16">
         <Demo />
+      </div>
+      <div id="guide-section" className="scroll-mt-16">
+        <HowToGuide />
       </div>
       <div id="features" className="scroll-mt-16">
         <Features />

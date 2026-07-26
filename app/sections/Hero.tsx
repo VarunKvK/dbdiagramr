@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useCallback, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 const PALETTE = [
   "99, 102, 241",
@@ -16,6 +17,7 @@ interface CellData {
 }
 
 export default function Hero() {
+  const router = useRouter();
   const [activeCells, setActiveCells] = useState<Record<number, string>>({});
   const timeoutsRef = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
   const gridRef = useRef<HTMLDivElement>(null);
@@ -102,10 +104,7 @@ export default function Hero() {
         </p>
         <button
           type="button"
-          onClick={() => {
-            const el = document.getElementById("demo");
-            if (el) el.scrollIntoView({ behavior: "smooth" });
-          }}
+          onClick={() => router.push("/visualize")}
           className="mt-10 rounded-lg bg-ink px-8 py-3 font-medium text-white transition-colors hover:bg-[#333]"
         >
           Try it free

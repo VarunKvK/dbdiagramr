@@ -50,15 +50,15 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModa
       const data = await res.json();
       if (!res.ok) {
         if (data.localhost) {
-          toast.error("Localhost won't work here", {
+          toast.error("Localhost detected", {
             description:
-              "You're on the hosted version of dbdiagramr, so \"localhost\" points to this server, not your computer.\n\nTo visualize your local database, run dbdiagramr locally (git clone + npm run dev) or use a cloud database like Supabase, Neon, or Railway.",
+              "Run dbdiagramr locally or use a cloud database (Supabase, Neon, Railway).",
           });
         }
         if (data.dnsError) {
           toast.error("Database not found", {
             description:
-              "We couldn't find that database — the hostname doesn't seem to exist.\n\nThis often happens when:\n• The database is paused (Supabase free tier pauses after 7 days of inactivity)\n• The hostname has a typo\n• The server uses IPv6 and your hosting platform needs the connection pooler (port 6543)\n\nCheck your connection string and try again.",
+              "Check for typos, unpause your database, or use the connection pooler (port 6543).",
           });
         }
         throw new Error(data.details || data.error || "API error");

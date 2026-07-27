@@ -105,7 +105,7 @@ export default function Hero() {
         <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted/70">
           dbdiagramr is a free tool that converts PostgreSQL connection strings
           into interactive entity-relationship diagrams. It introspects your live
-          database schema — tables, columns, foreign keys, and constraints — and
+          database schema, tables, columns, foreign keys, and constraints and
           renders them as a navigable SVG diagram you can pan, zoom, and export.
         </p>
         <button

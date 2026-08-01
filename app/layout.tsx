@@ -8,12 +8,23 @@ const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://dbdiagramr.space"),
-  title: "dbdiagramr - Visualize Your PostgreSQL Database",
+  title: {
+    default:
+      "PostgreSQL ER Diagram Tool — Generate Schema Diagrams Instantly | dbdiagramr",
+    template: "%s | dbdiagramr",
+  },
   description:
-    "Paste your PostgreSQL connection string and generate a beautiful ER diagram in seconds. No signup required.",
+    "Paste your PostgreSQL connection string and generate an interactive ER diagram in seconds. No signup required. Free schema visualization tool for Supabase, Neon, Railway, and more.",
   keywords:
-    "postgresql, er diagram, database schema, schema visualization, db diagram",
+    "postgresql er diagram, postgresql schema diagram, er diagram generator, database schema visualization, postgresql schema visualization, db diagram, supabase schema, er diagram tool",
   authors: [{ name: "dbdiagramr" }],
+  alternates: {
+    canonical: "https://dbdiagramr.space",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
   openGraph: {
     title: "dbdiagramr - See your database, visually",
     description:

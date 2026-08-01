@@ -2,11 +2,14 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 const steps = [
   {
     number: "1",
     image: "/guide/Step-1.png",
+    width: 2020,
+    height: 1110,
     title: "Get your connection string",
     description:
       "In the production dashboard, click Connect to retrieve the connection string.",
@@ -14,6 +17,8 @@ const steps = [
   {
     number: "2",
     image: "/guide/Step-2.png",
+    width: 2020,
+    height: 1416,
     title: "Select the Transaction pooler",
     description:
       "Under Connection method, select the Transaction pooler option - this ensures compatibility with stateless applications and allows dbdiagramr to detect connections properly.",
@@ -21,6 +26,8 @@ const steps = [
   {
     number: "3",
     image: "/guide/Step-3.png",
+    width: 2020,
+    height: 1210,
     title: "Copy the credentials",
     description:
       "If you don't remember your database password, regenerate it in the Shared pooler section and copy-paste the new credentials into your configuration.",
@@ -87,10 +94,14 @@ export default function HowToGuide() {
                 {/* Content card */}
                 <div className="min-w-0 flex-1 overflow-hidden rounded-xl border border-[#e5e5e5] bg-white shadow-sm">
                   <div className="bg-[#fafafa]">
-                    <img
+                    <Image
                       src={step.image}
                       alt={step.title}
-                      className="w-full"
+                      width={step.width}
+                      height={step.height}
+                      sizes="(max-width: 768px) 100vw, 672px"
+                      loading="lazy"
+                      className="h-auto w-full"
                     />
                   </div>
                   <div className="p-5 md:p-6">

@@ -24,6 +24,9 @@ export default function Footer() {
           <div>
             <h4 className="mb-4 text-sm font-medium text-ink">Resources</h4>
             <ul className="space-y-3 text-sm text-muted">
+              <li>
+                <a href="/schema" className="transition-colors hover:text-ink">Schema Library</a>
+              </li>
               <li><span className="cursor-default">Documentation</span></li>
               <li>
                 <a

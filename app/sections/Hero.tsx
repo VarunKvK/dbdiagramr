@@ -115,6 +115,14 @@ export default function Hero() {
         >
           Try it free
         </button>
+        <p className="mt-4 text-sm text-muted">
+          <a
+            href="/schema"
+            className="font-medium text-indigo-600 transition-colors hover:text-indigo-500"
+          >
+            Browse popular database schemas →
+          </a>
+        </p>
       </div>
 
       <div className="w-full px-4 pb-16">

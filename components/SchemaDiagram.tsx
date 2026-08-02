@@ -2,6 +2,8 @@
 
 import { useState, useRef, useEffect, useMemo, useCallback } from "react";
 import type { Schema } from "@/lib/diagram";
+import { computeLayout, getRowY, routePath } from "@/lib/diagramLayout";
+import type { Rect } from "@/lib/diagramLayout";
 
 function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
@@ -87,60 +89,6 @@ async function exportPNG(el: SVGSVGElement, positions: Record<string, Rect>, fil
     img.onerror = reject;
     img.src = url;
   });
-}
-
-interface Rect {
-  x: number;
-  y: number;
-  w: number;
-  h: number;
-}
-
-function computeLayout(schema: Schema): Record<string, Rect> {
-  const positions: Record<string, Rect> = {};
-  const colW = 184;
-  const gapX = 140;
-  const gapY = 120;
-  const cols = Math.min(3, Math.ceil(Math.sqrt(schema.tables.length)));
-
-  schema.tables.forEach((t, i) => {
-    const col = i % cols;
-    const row = Math.floor(i / cols);
-    const h = 42 + t.columns.length * 26 + 8;
-    positions[t.name] = {
-      x: 24 + col * (colW + gapX),
-      y: 24 + row * (160 + gapY),
-      w: colW,
-      h,
-    };
-  });
-
-  return positions;
-}
-
-function getRowY(tableName: string, columnName: string, schema: Schema, layout: Record<string, Rect>): number {
-  const pos = layout[tableName];
-  const table = schema.tables.find((t) => t.name === tableName)!;
-  const idx = table.columns.findIndex((c) => c.name === columnName);
-  return pos.y + 42 + idx * 26 + 4;
-}
-
-function routePath(x1: number, y1: number, x2: number, y2: number): string {
-  const pad = 28;
-  const x1Out = x1 + pad;
-  const x2In = x2 - pad;
-
-  if (Math.abs(y1 - y2) < 8 && x2 > x1) {
-    return `M ${x1} ${y1} L ${x2} ${y2}`;
-  }
-
-  if (x2 > x1) {
-    const midX = x1Out + (x2In - x1Out) / 2;
-    return `M ${x1} ${y1} L ${midX} ${y1} L ${midX} ${y2} L ${x2} ${y2}`;
-  }
-
-  const drop = Math.max(y1, y2) + 50;
-  return `M ${x1} ${y1} L ${x1Out} ${y1} L ${x1Out} ${drop} L ${x2In} ${drop} L ${x2In} ${y2} L ${x2} ${y2}`;
 }
 
 interface SchemaDiagramProps {

@@ -1,5 +1,7 @@
 "use client";
 
+import { useRouter } from "next/navigation";
+
 function scrollTo(id: string) {
   const el = document.getElementById(id);
   if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -8,10 +10,12 @@ function scrollTo(id: string) {
 const links = [
   { label: "Product", target: "demo" },
   { label: "Features", target: "features" },
+  { label: "Schemas", target: "/schema" },
   { label: "Pricing", target: "pricing" },
 ];
 
 export default function Navbar() {
+  const router = useRouter();
   return (
     <nav className="fixed left-0 right-0 top-0 z-50 h-16 border-b border-border backdrop-blur-lg">
       <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-4">
@@ -25,16 +29,27 @@ export default function Navbar() {
         </button>
 
         <div className="flex items-center gap-6">
-          {links.map((link) => (
-            <button
-              key={link.target}
-              type="button"
-              onClick={() => scrollTo(link.target)}
-              className="text-sm font-medium text-ink transition-colors hover:underline"
-            >
-              {link.label}
-            </button>
-          ))}
+          {links.map((link) =>
+            link.target.startsWith("/") ? (
+              <button
+                key={link.target}
+                type="button"
+                onClick={() => router.push(link.target)}
+                className="text-sm font-medium text-ink transition-colors hover:underline"
+              >
+                {link.label}
+              </button>
+            ) : (
+              <button
+                key={link.target}
+                type="button"
+                onClick={() => scrollTo(link.target)}
+                className="text-sm font-medium text-ink transition-colors hover:underline"
+              >
+                {link.label}
+              </button>
+            )
+          )}
           <button
             type="button"
             onClick={() => scrollTo("demo")}

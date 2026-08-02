@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import { getAllSchemaEntries, getSchemaEntry } from "@/data/schemas/registry";
-import { generateDiagramSVG } from "@/lib/diagram";
+import SchemaDiagram from "@/components/SchemaDiagram";
 
 export function generateStaticParams() {
   return getAllSchemaEntries().map((entry) => ({ slug: entry.slug }));
@@ -9,8 +9,6 @@ export function generateStaticParams() {
 export default function SchemaPage({ params }: { params: { slug: string } }) {
   const entry = getSchemaEntry(params.slug);
   if (!entry) notFound();
-
-  const svg = generateDiagramSVG(entry.schema);
 
   return (
     <main className="min-h-screen bg-cream">
@@ -58,11 +56,8 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
             <span className="h-3 w-3 rounded-full bg-[#febc2e] ring-1 ring-black/10" />
             <span className="h-3 w-3 rounded-full bg-[#28c840] ring-1 ring-black/10" />
           </div>
-          <div className="overflow-auto">
-            <div
-              className="min-w-[780px]"
-              dangerouslySetInnerHTML={{ __html: svg }}
-            />
+          <div className="h-[540px] overflow-hidden">
+            <SchemaDiagram schema={entry.schema} className="h-full w-full" />
           </div>
         </div>
 

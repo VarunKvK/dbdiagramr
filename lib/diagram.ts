@@ -1,4 +1,4 @@
-import { computeLayout, getRowY, routePath } from "@/lib/diagramLayout";
+import { layoutSchema, getRowY, routePath } from "@/lib/diagramLayout";
 import type { Rect } from "@/lib/diagramLayout";
 
 export type Column = {
@@ -52,7 +52,12 @@ export function generateDiagramSVG(schema: Schema): string {
 </svg>`;
   }
 
-  const layout = computeLayout(schema);
+  const layout = layoutSchema(schema);
+  return renderDiagramSVG(schema, layout);
+}
+
+export function renderDiagramSVG(schema: Schema, layout: Record<string, Rect>): string {
+  const { tables } = schema;
   const all = Object.values(layout) as Rect[];
   const minX = Math.min(...all.map((p) => p.x)) - 40;
   const minY = Math.min(...all.map((p) => p.y)) - 40;

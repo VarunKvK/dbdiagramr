@@ -14,6 +14,7 @@ export type SchemaEntry = {
   intro: string;
   facts: { label: string; value: string }[];
   faqs: { q: string; a: string }[];
+  lastUpdated: string;
   schema: Schema;
 };
 
@@ -50,6 +51,7 @@ export const schemaEntries: SchemaEntry[] = [
         a: "Every auth.users row can have multiple auth.identities rows linked by user_id. Each identity represents a sign-in method (email/password, Google, GitHub, etc.) for that user.",
       },
     ],
+    lastUpdated: "2026-08-03",
     schema: supabaseSchema,
   },
   {
@@ -84,6 +86,7 @@ export const schemaEntries: SchemaEntry[] = [
         a: "It's a one-to-many relationship. A single user can have multiple accounts — one for each OAuth provider they sign in with (Google, GitHub, etc.). Each account row has a userId foreign key referencing users.id.",
       },
     ],
+    lastUpdated: "2026-08-03",
     schema: nextauthSchema,
   },
   {
@@ -118,6 +121,7 @@ export const schemaEntries: SchemaEntry[] = [
         a: "Yes. The sessions table has a user_id foreign key column that references users.id, so you can look up which user owns each authenticated session.",
       },
     ],
+    lastUpdated: "2026-08-03",
     schema: laravelSchema,
   },
   {
@@ -152,6 +156,7 @@ export const schemaEntries: SchemaEntry[] = [
         a: "Users relate to groups through the auth_user_groups join table and to permissions through auth_user_user_permissions. Groups relate to permissions through auth_group_permissions. All three are many-to-many relationships.",
       },
     ],
+    lastUpdated: "2026-08-03",
     schema: djangoSchema,
   },
 ];

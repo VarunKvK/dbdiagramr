@@ -32,6 +32,9 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
           <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted">
             {entry.intro}
           </p>
+          <p className="mt-3 text-sm text-muted/70">
+            Last updated: {entry.lastUpdated}
+          </p>
           <div className="mt-6 flex flex-wrap gap-4">
             {entry.facts.map((fact) => (
               <div

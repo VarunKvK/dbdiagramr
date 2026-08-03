@@ -15,8 +15,52 @@ export const metadata: Metadata = {
 export default function SchemaHubPage() {
   const entries = getAllSchemaEntries();
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "CollectionPage",
+        "@id": "https://dbdiagramr.space/schema",
+        name: "Popular Database Schema Diagrams",
+        description:
+          "Free interactive ER diagrams of popular PostgreSQL database schemas: Supabase auth, NextAuth.js, Laravel, and Django.",
+        url: "https://dbdiagramr.space/schema",
+        mainEntity: {
+          "@type": "ItemList",
+          itemListElement: entries.map((entry, i) => ({
+            "@type": "ListItem",
+            position: i + 1,
+            name: entry.name,
+            url: `https://dbdiagramr.space/schema/${entry.slug}`,
+          })),
+        },
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://dbdiagramr.space",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Database Schema Diagrams",
+            item: "https://dbdiagramr.space/schema",
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen bg-cream">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-6xl px-4 py-16">
         <div className="mb-12 text-center">
           <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">

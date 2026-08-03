@@ -1,20 +1,37 @@
 # dbdiagramr
 
-dbdiagramr is a web-based tool that generates interactive ER diagrams from any PostgreSQL connection string. No signup, no setup — paste your connection string and visualize your database schema in under 10 seconds.
+dbdiagramr is a free, open-source web tool that generates interactive entity-relationship (ER) diagrams from any PostgreSQL connection string. No signup, no setup — paste your connection string and visualize your database schema in under 10 seconds.
 
 ## Key pages
 
 - Home: https://dbdiagramr.space
 - Visualize your database: https://dbdiagramr.space/visualize
+- Schema diagram library: https://dbdiagramr.space/schema
+- Pricing: https://dbdiagramr.space/pricing.md
 - Features: https://dbdiagramr.space#features
-- Pricing: https://dbdiagramr.space#pricing
+- How it works: https://dbdiagramr.space#guide
+
+## Schema diagram library
+
+Reference ER diagrams of popular PostgreSQL schemas, each showing every table, column, primary key, and foreign key relationship:
+
+- Supabase auth schema (7 tables): https://dbdiagramr.space/schema/supabase
+- NextAuth.js / Auth.js schema (4 tables): https://dbdiagramr.space/schema/nextauth
+- Laravel 11 default schema (7 tables): https://dbdiagramr.space/schema/laravel
+- Django auth schema (9 tables): https://dbdiagramr.space/schema/django
+
+## Pricing
+
+- Free: $0/month — 5 diagrams per month, static PNG export, single database connection
+- Pro: $8/month — unlimited diagrams, interactive shareable links, version history, team access (up to 5 members), priority support
 
 ## About
 
-- Generates interactive SVG entity-relationship diagrams from live PostgreSQL schemas
-- Supports pan, zoom, and hover-to-trace table relationships
+- Generates interactive entity-relationship diagrams from live PostgreSQL schemas
+- Renders on an interactive canvas with pan, zoom, and hover-to-trace table relationships
 - Exports diagrams as SVG or PNG
 - Works with cloud databases: Supabase, Neon, Railway
-- Uses Transaction pooler (port 6543) for serverless platform compatibility
+- Uses the Transaction pooler (port 6543) for serverless platform compatibility
 - Connection strings are never stored — introspected and discarded immediately
 - Built with Next.js, PostgreSQL, and Tailwind CSS
+- Last updated: 2026-08-03

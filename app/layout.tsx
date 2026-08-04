@@ -63,6 +63,12 @@ function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
 gtag('config', 'G-MK1QVPVPSJ');`}
         </Script>
+        <Script
+          src="https://analytics.ahrefs.com/analytics.js"
+          data-key="fegBS/j8h5OGggFqrvUt8A"
+          strategy="afterInteractive"
+        />
+
         <Script id="structured-data" type="application/ld+json" strategy="beforeInteractive">
           {`{
   "@context": "https://schema.org",

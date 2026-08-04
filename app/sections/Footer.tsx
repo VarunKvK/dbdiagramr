@@ -27,6 +27,9 @@ export default function Footer() {
               <li>
                 <a href="/schema" className="transition-colors hover:text-ink">Schema Library</a>
               </li>
+              <li>
+                <a href="/alternatives" className="transition-colors hover:text-ink">Alternatives</a>
+              </li>
               <li><span className="cursor-default">Documentation</span></li>
               <li>
                 <a

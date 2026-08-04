@@ -31,6 +31,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.8,
     },
+    {
+      url: `${base}/alternatives`,
+      lastModified: today,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${base}/dbdiagram-io-vs-dbdiagramr`,
+      lastModified: today,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${base}/drawsql-vs-dbdiagramr`,
+      lastModified: today,
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
     ...schemaUrls,
   ];
 }

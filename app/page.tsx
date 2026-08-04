@@ -1,4 +1,3 @@
-import Navbar from "@/app/sections/Navbar";
 import Hero from "@/app/sections/Hero";
 import Demo from "@/app/sections/Demo";
 import HowToGuide from "@/app/sections/HowToGuide";
@@ -45,7 +44,6 @@ export default function Home() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
       />
-      <Navbar />
       <div id="hero" className="scroll-mt-16">
         <Hero />
       </div>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
+import Navbar from "@/app/sections/Navbar";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -155,6 +156,7 @@ gtag('config', 'G-MK1QVPVPSJ');`}
   ]
 }`}
         </Script>
+        <Navbar />
         <Toaster position="top-center" />
         {children}
       </body>

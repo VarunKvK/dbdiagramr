@@ -164,7 +164,7 @@ export default function DrawSqlVsPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto max-w-5xl px-4 py-16">
+      <div className="mx-auto max-w-5xl px-4 pb-16 pt-24">
         <a
           href="/alternatives"
           className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500"

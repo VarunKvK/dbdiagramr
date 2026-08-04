@@ -19,7 +19,7 @@ export default function TryPage() {
   return (
     <div className="relative h-screen w-full overflow-hidden bg-[#1a1a1a]">
       {/* Floating modal */}
-      <div className="absolute top-4 left-4 z-20">
+      <div className="absolute top-20 left-4 z-20">
         <TryModal
           onSchemaGenerated={handleSchemaGenerated}
           onSchemaCleared={handleSchemaCleared}

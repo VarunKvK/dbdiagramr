@@ -14,7 +14,7 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
 
   return (
     <main className="min-h-screen bg-cream">
-      <div className="mx-auto max-w-6xl px-4 py-16">
+      <div className="mx-auto max-w-6xl px-4 pb-16 pt-24">
         <a
           href="/schema"
           className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500"

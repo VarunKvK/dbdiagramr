@@ -69,9 +69,30 @@ gtag('config', 'G-MK1QVPVPSJ');`}
   "@graph": [
     {
       "@type": "WebSite",
+      "@id": "https://dbdiagramr.space#website",
       "name": "dbdiagramr",
       "url": "https://dbdiagramr.space",
-      "description": "Generate interactive ER diagrams from any PostgreSQL connection string. No signup required."
+      "description": "Generate interactive ER diagrams from any PostgreSQL connection string. No signup required.",
+      "publisher": { "@id": "https://dbdiagramr.space#organization" },
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://dbdiagramr.space/schema?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    },
+    {
+      "@type": "Organization",
+      "@id": "https://dbdiagramr.space#organization",
+      "name": "dbdiagramr",
+      "url": "https://dbdiagramr.space",
+      "logo": {
+        "@type": "ImageObject",
+        "url": "https://dbdiagramr.space/favicon.svg"
+      },
+      "description": "Free, open-source web tool for generating interactive entity-relationship diagrams from PostgreSQL databases.",
+      "sameAs": [
+        "https://github.com/VarunKvK/dbdiagramr"
+      ]
     },
     {
       "@type": "SoftwareApplication",

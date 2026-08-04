@@ -40,6 +40,11 @@ function jsonLdForEntry(entry: NonNullable<ReturnType<typeof getSchemaEntry>>) {
         datePublished: entry.lastUpdated,
         dateModified: entry.lastUpdated,
         mainEntityOfPage: url,
+        author: {
+          "@type": "Person",
+          name: "Varun Krishnan",
+          url: "https://github.com/VarunKvK",
+        },
         publisher: {
           "@type": "Organization",
           name: "dbdiagramr",

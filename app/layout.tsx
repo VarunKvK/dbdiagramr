@@ -8,19 +8,18 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://dbdiagramr.space"),
+  metadataBase: new URL("https://www.dbdiagramr.space"),
   title: {
-    default:
-      "PostgreSQL ER Diagram Tool — Generate Schema Diagrams Instantly | dbdiagramr",
+    default: "PostgreSQL ER Diagram Generator | dbdiagramr",
     template: "%s | dbdiagramr",
   },
   description:
-    "Paste your PostgreSQL connection string and generate an interactive ER diagram in seconds. No signup required. Free schema visualization tool for Supabase, Neon, Railway, and more.",
+    "Paste a PostgreSQL connection string and generate an interactive ER diagram in seconds. No signup required.",
   keywords:
     "postgresql er diagram, postgresql schema diagram, er diagram generator, database schema visualization, postgresql schema visualization, db diagram, supabase schema, er diagram tool",
   authors: [{ name: "dbdiagramr" }],
   alternates: {
-    canonical: "https://dbdiagramr.space",
+    canonical: "https://www.dbdiagramr.space",
   },
   robots: {
     index: true,
@@ -31,7 +30,7 @@ export const metadata: Metadata = {
     description:
       "Generate interactive ER diagrams from any PostgreSQL database. Hover to trace relationships, export as SVG or PNG.",
     type: "website",
-    url: "https://dbdiagramr.space",
+    url: "https://www.dbdiagramr.space",
     images: [{ url: "/DbDiagramr-OG.png", width: 1200, height: 630 }],
   },
   twitter: {
@@ -76,25 +75,25 @@ gtag('config', 'G-MK1QVPVPSJ');`}
   "@graph": [
     {
       "@type": "WebSite",
-      "@id": "https://dbdiagramr.space#website",
+      "@id": "https://www.dbdiagramr.space#website",
       "name": "dbdiagramr",
-      "url": "https://dbdiagramr.space",
+      "url": "https://www.dbdiagramr.space",
       "description": "Generate interactive ER diagrams from any PostgreSQL connection string. No signup required.",
-      "publisher": { "@id": "https://dbdiagramr.space#organization" },
+      "publisher": { "@id": "https://www.dbdiagramr.space#organization" },
       "potentialAction": {
         "@type": "SearchAction",
-        "target": "https://dbdiagramr.space/schema?q={search_term_string}",
+        "target": "https://www.dbdiagramr.space/schema?q={search_term_string}",
         "query-input": "required name=search_term_string"
       }
     },
     {
       "@type": "Organization",
-      "@id": "https://dbdiagramr.space#organization",
+      "@id": "https://www.dbdiagramr.space#organization",
       "name": "dbdiagramr",
-      "url": "https://dbdiagramr.space",
+      "url": "https://www.dbdiagramr.space",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://dbdiagramr.space/favicon.svg"
+        "url": "https://www.dbdiagramr.space/favicon.svg"
       },
       "description": "Free, open-source web tool for generating interactive entity-relationship diagrams from PostgreSQL databases.",
       "sameAs": [
@@ -107,7 +106,7 @@ gtag('config', 'G-MK1QVPVPSJ');`}
       "applicationCategory": "WebApplication",
       "operatingSystem": "Any",
       "description": "Paste your PostgreSQL connection string and generate a beautiful ER diagram in seconds.",
-      "url": "https://dbdiagramr.space",
+      "url": "https://www.dbdiagramr.space",
       "offers": [
         {
           "@type": "Offer",

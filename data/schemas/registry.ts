@@ -25,7 +25,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Supabase Database Schema Diagram",
     h1: "Supabase Database Schema Diagram",
     description:
-      "Visualize the Supabase auth database schema — every table, column, primary key, and foreign key relationship, including auth.users, auth.identities, and auth.sessions. Interactive ER diagram, free.",
+      "Visualize the Supabase auth database schema — every table, column, and foreign key, including auth.users, auth.identities, and auth.sessions.",
     keywords: [
       "supabase schema",
       "supabase database schema",
@@ -60,7 +60,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "NextAuth.js Database Schema (Auth.js)",
     h1: "NextAuth.js Database Schema",
     description:
-      "The complete NextAuth.js / Auth.js database schema diagram — users, accounts, sessions, and verification_tokens tables with all columns and foreign keys. Free interactive ER diagram.",
+      "The complete NextAuth.js / Auth.js schema diagram — users, accounts, sessions, and verification_tokens with all columns and foreign keys.",
     keywords: [
       "nextauth schema",
       "nextauth database schema",
@@ -95,7 +95,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Laravel Database Schema Diagram",
     h1: "Laravel Database Schema Diagram",
     description:
-      "The default Laravel 11 database schema diagram — users, password_reset_tokens, sessions, jobs, and cache tables with all columns and relationships. Free interactive ER diagram.",
+      "The default Laravel 11 database schema diagram — users, password_reset_tokens, sessions, jobs, and cache tables with all columns.",
     keywords: [
       "laravel schema",
       "laravel database schema",
@@ -130,7 +130,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Django Auth Database Schema Diagram",
     h1: "Django Auth Database Schema Diagram",
     description:
-      "The Django authentication database schema diagram — auth_user, auth_group, auth_permission, and the many-to-many join tables with all foreign keys. Free interactive ER diagram.",
+      "The Django auth database schema diagram — auth_user, auth_group, auth_permission, and the many-to-many join tables with all foreign keys.",
     keywords: [
       "django auth schema",
       "django database schema",

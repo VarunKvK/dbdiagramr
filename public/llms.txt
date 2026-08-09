@@ -4,21 +4,21 @@ dbdiagramr is a free, open-source web tool that generates interactive entity-rel
 
 ## Key pages
 
-- Home: https://dbdiagramr.space
-- Visualize your database: https://dbdiagramr.space/visualize
-- Schema diagram library: https://dbdiagramr.space/schema
-- Pricing: https://dbdiagramr.space/pricing.md
-- Features: https://dbdiagramr.space#features
-- How it works: https://dbdiagramr.space#guide
+- Home: https://www.dbdiagramr.space
+- Visualize your database: https://www.dbdiagramr.space/visualize
+- Schema diagram library: https://www.dbdiagramr.space/schema
+- Pricing: https://www.dbdiagramr.space/pricing.md
+- Features: https://www.dbdiagramr.space#features
+- How it works: https://www.dbdiagramr.space#guide
 
 ## Schema diagram library
 
 Reference ER diagrams of popular PostgreSQL schemas, each showing every table, column, primary key, and foreign key relationship:
 
-- Supabase auth schema (7 tables): https://dbdiagramr.space/schema/supabase
-- NextAuth.js / Auth.js schema (4 tables): https://dbdiagramr.space/schema/nextauth
-- Laravel 11 default schema (7 tables): https://dbdiagramr.space/schema/laravel
-- Django auth schema (9 tables): https://dbdiagramr.space/schema/django
+- Supabase auth schema (7 tables): https://www.dbdiagramr.space/schema/supabase
+- NextAuth.js / Auth.js schema (4 tables): https://www.dbdiagramr.space/schema/nextauth
+- Laravel 11 default schema (7 tables): https://www.dbdiagramr.space/schema/laravel
+- Django auth schema (9 tables): https://www.dbdiagramr.space/schema/django
 
 ## Pricing
 

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { getAllSchemaEntries, getSchemaEntry } from "@/data/schemas/registry";
 import { generateDiagramSVG } from "@/lib/diagram";
+import Footer from "@/app/sections/Footer";
 
 export function generateStaticParams() {
   return getAllSchemaEntries().map((entry) => ({ slug: entry.slug }));
@@ -126,6 +127,7 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
           </a>
         </section>
       </div>
+      <Footer />
     </main>
   );
 }

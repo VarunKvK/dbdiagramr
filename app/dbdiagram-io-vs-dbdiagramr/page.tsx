@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
   title: "dbdiagram.io vs dbdiagramr — Which ER Diagram Tool?",
   description:
-    "dbdiagram.io vs dbdiagramr compared: DBML code-first diagram design vs instant visualization from a live PostgreSQL connection string. No signup required with dbdiagramr.",
+    "dbdiagram.io vs dbdiagramr: DBML code-first diagram design vs instant visualization from a live PostgreSQL connection string. No signup required.",
   alternates: {
-    canonical: "https://dbdiagramr.space/dbdiagram-io-vs-dbdiagramr",
+    canonical: "https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr",
   },
 };
 
@@ -86,13 +87,13 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Article",
-      "@id": "https://dbdiagramr.space/dbdiagram-io-vs-dbdiagramr#article",
+      "@id": "https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr#article",
       headline: "dbdiagram.io vs dbdiagramr — Which ER Diagram Tool?",
       description:
         "dbdiagram.io vs dbdiagramr compared: DBML code-first diagram design vs instant visualization from a live PostgreSQL connection string.",
       datePublished: "2026-08-04",
       dateModified: "2026-08-04",
-      mainEntityOfPage: "https://dbdiagramr.space/dbdiagram-io-vs-dbdiagramr",
+      mainEntityOfPage: "https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr",
       author: {
         "@type": "Person",
         name: "Varun Krishnan",
@@ -101,12 +102,12 @@ const jsonLd = {
       publisher: {
         "@type": "Organization",
         name: "dbdiagramr",
-        url: "https://dbdiagramr.space",
+        url: "https://www.dbdiagramr.space",
       },
     },
     {
       "@type": "FAQPage",
-      "@id": "https://dbdiagramr.space/dbdiagram-io-vs-dbdiagramr#faq",
+      "@id": "https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr#faq",
       mainEntity: faqs.map((faq) => ({
         "@type": "Question",
         name: faq.q,
@@ -123,19 +124,19 @@ const jsonLd = {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://dbdiagramr.space",
+          item: "https://www.dbdiagramr.space",
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Alternatives",
-          item: "https://dbdiagramr.space/alternatives",
+          item: "https://www.dbdiagramr.space/alternatives",
         },
         {
           "@type": "ListItem",
           position: 3,
           name: "dbdiagram.io vs dbdiagramr",
-          item: "https://dbdiagramr.space/dbdiagram-io-vs-dbdiagramr",
+          item: "https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr",
         },
       ],
     },
@@ -286,6 +287,7 @@ export default function DbDiagramIoVsPage() {
           </a>
         </section>
       </div>
+      <Footer />
     </main>
   );
 }

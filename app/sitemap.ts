@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { getAllSchemaEntries } from "@/data/schemas/registry";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const base = "https://dbdiagramr.space";
+  const base = "https://www.dbdiagramr.space";
   const today = new Date().toISOString().split("T")[0];
 
   const schemaUrls = getAllSchemaEntries().map((entry) => ({

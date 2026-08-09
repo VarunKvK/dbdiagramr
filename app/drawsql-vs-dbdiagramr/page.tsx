@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
+import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
   title: "DrawSQL vs dbdiagramr — Which ER Diagram Tool?",
   description:
-    "DrawSQL vs dbdiagramr compared: team collaboration and visual schema editing vs instant ER diagrams from a live PostgreSQL connection string, no signup required.",
+    "DrawSQL vs dbdiagramr: team collaboration and visual schema editing vs instant ER diagrams from a live PostgreSQL connection string.",
   alternates: {
-    canonical: "https://dbdiagramr.space/drawsql-vs-dbdiagramr",
+    canonical: "https://www.dbdiagramr.space/drawsql-vs-dbdiagramr",
   },
 };
 
@@ -91,13 +92,13 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "Article",
-      "@id": "https://dbdiagramr.space/drawsql-vs-dbdiagramr#article",
+      "@id": "https://www.dbdiagramr.space/drawsql-vs-dbdiagramr#article",
       headline: "DrawSQL vs dbdiagramr — Which ER Diagram Tool?",
       description:
         "DrawSQL vs dbdiagramr compared: team collaboration and visual schema editing vs instant ER diagrams from a live PostgreSQL connection string.",
       datePublished: "2026-08-04",
       dateModified: "2026-08-04",
-      mainEntityOfPage: "https://dbdiagramr.space/drawsql-vs-dbdiagramr",
+      mainEntityOfPage: "https://www.dbdiagramr.space/drawsql-vs-dbdiagramr",
       author: {
         "@type": "Person",
         name: "Varun Krishnan",
@@ -106,12 +107,12 @@ const jsonLd = {
       publisher: {
         "@type": "Organization",
         name: "dbdiagramr",
-        url: "https://dbdiagramr.space",
+        url: "https://www.dbdiagramr.space",
       },
     },
     {
       "@type": "FAQPage",
-      "@id": "https://dbdiagramr.space/drawsql-vs-dbdiagramr#faq",
+      "@id": "https://www.dbdiagramr.space/drawsql-vs-dbdiagramr#faq",
       mainEntity: faqs.map((faq) => ({
         "@type": "Question",
         name: faq.q,
@@ -128,19 +129,19 @@ const jsonLd = {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://dbdiagramr.space",
+          item: "https://www.dbdiagramr.space",
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Alternatives",
-          item: "https://dbdiagramr.space/alternatives",
+          item: "https://www.dbdiagramr.space/alternatives",
         },
         {
           "@type": "ListItem",
           position: 3,
           name: "DrawSQL vs dbdiagramr",
-          item: "https://dbdiagramr.space/drawsql-vs-dbdiagramr",
+          item: "https://www.dbdiagramr.space/drawsql-vs-dbdiagramr",
         },
       ],
     },
@@ -292,6 +293,7 @@ export default function DrawSqlVsPage() {
           </a>
         </section>
       </div>
+      <Footer />
     </main>
   );
 }

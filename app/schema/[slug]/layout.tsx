@@ -14,20 +14,20 @@ export function generateMetadata({
     description: entry.description,
     keywords: entry.keywords,
     alternates: {
-      canonical: `https://dbdiagramr.space/schema/${entry.slug}`,
+      canonical: `https://www.dbdiagramr.space/schema/${entry.slug}`,
     },
     openGraph: {
       title: entry.title,
       description: entry.description,
       type: "website",
-      url: `https://dbdiagramr.space/schema/${entry.slug}`,
+      url: `https://www.dbdiagramr.space/schema/${entry.slug}`,
       images: [{ url: "/DbDiagramr-OG.png", width: 1200, height: 630 }],
     },
   };
 }
 
 function jsonLdForEntry(entry: NonNullable<ReturnType<typeof getSchemaEntry>>) {
-  const url = `https://dbdiagramr.space/schema/${entry.slug}`;
+  const url = `https://www.dbdiagramr.space/schema/${entry.slug}`;
 
   return {
     "@context": "https://schema.org",
@@ -48,7 +48,7 @@ function jsonLdForEntry(entry: NonNullable<ReturnType<typeof getSchemaEntry>>) {
         publisher: {
           "@type": "Organization",
           name: "dbdiagramr",
-          url: "https://dbdiagramr.space",
+          url: "https://www.dbdiagramr.space",
         },
       },
       {
@@ -70,13 +70,13 @@ function jsonLdForEntry(entry: NonNullable<ReturnType<typeof getSchemaEntry>>) {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: "https://dbdiagramr.space",
+            item: "https://www.dbdiagramr.space",
           },
           {
             "@type": "ListItem",
             position: 2,
             name: "Database Schema Diagrams",
-            item: "https://dbdiagramr.space/schema",
+            item: "https://www.dbdiagramr.space/schema",
           },
           {
             "@type": "ListItem",

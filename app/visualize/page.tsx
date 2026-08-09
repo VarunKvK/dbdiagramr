@@ -18,6 +18,9 @@ export default function TryPage() {
 
   return (
     <div className="relative h-screen w-full overflow-hidden bg-[#1a1a1a]">
+      <h1 className="sr-only">
+        Visualize Your PostgreSQL Schema — ER Diagram Generator
+      </h1>
       {/* Floating modal */}
       <div className="absolute top-20 left-4 z-20">
         <TryModal

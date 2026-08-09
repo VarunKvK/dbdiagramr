@@ -2,13 +2,14 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { getAllSchemaEntries } from "@/data/schemas/registry";
 import { generateDiagramSVG } from "@/lib/diagram";
+import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
   title: "Popular Database Schema Diagrams — Free ER Diagrams",
   description:
-    "Browse free interactive ER diagrams of popular PostgreSQL database schemas: Supabase auth, NextAuth.js, Laravel, and Django. See every table, column, and foreign key relationship.",
+    "Browse free interactive ER diagrams of popular PostgreSQL schemas: Supabase, NextAuth.js, Laravel, Django. Every table, column, and foreign key.",
   alternates: {
-    canonical: "https://dbdiagramr.space/schema",
+    canonical: "https://www.dbdiagramr.space/schema",
   },
 };
 
@@ -20,18 +21,18 @@ export default function SchemaHubPage() {
     "@graph": [
       {
         "@type": "CollectionPage",
-        "@id": "https://dbdiagramr.space/schema",
+        "@id": "https://www.dbdiagramr.space/schema",
         name: "Popular Database Schema Diagrams",
         description:
           "Free interactive ER diagrams of popular PostgreSQL database schemas: Supabase auth, NextAuth.js, Laravel, and Django.",
-        url: "https://dbdiagramr.space/schema",
+        url: "https://www.dbdiagramr.space/schema",
         mainEntity: {
           "@type": "ItemList",
           itemListElement: entries.map((entry, i) => ({
             "@type": "ListItem",
             position: i + 1,
             name: entry.name,
-            url: `https://dbdiagramr.space/schema/${entry.slug}`,
+            url: `https://www.dbdiagramr.space/schema/${entry.slug}`,
           })),
         },
       },
@@ -42,13 +43,13 @@ export default function SchemaHubPage() {
             "@type": "ListItem",
             position: 1,
             name: "Home",
-            item: "https://dbdiagramr.space",
+            item: "https://www.dbdiagramr.space",
           },
           {
             "@type": "ListItem",
             position: 2,
             name: "Database Schema Diagrams",
-            item: "https://dbdiagramr.space/schema",
+            item: "https://www.dbdiagramr.space/schema",
           },
         ],
       },
@@ -108,6 +109,7 @@ export default function SchemaHubPage() {
           })}
         </div>
       </div>
+      <Footer />
     </main>
   );
 }

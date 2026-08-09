@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
   title: "dbdiagramr Alternatives — Compare ER Diagram Tools",
   description:
-    "See how dbdiagramr compares to dbdiagram.io, DrawSQL, and other database diagram tools. Paste a PostgreSQL connection string and get an interactive ER diagram in under 10 seconds — no signup required.",
+    "Compare dbdiagramr to dbdiagram.io and DrawSQL. Paste a PostgreSQL connection string and get an interactive ER diagram in under 10 seconds — no signup.",
   alternates: {
-    canonical: "https://dbdiagramr.space/alternatives",
+    canonical: "https://www.dbdiagramr.space/alternatives",
   },
 };
 
@@ -34,18 +35,18 @@ const jsonLd = {
   "@graph": [
     {
       "@type": "CollectionPage",
-      "@id": "https://dbdiagramr.space/alternatives",
+      "@id": "https://www.dbdiagramr.space/alternatives",
       name: "dbdiagramr Alternatives",
       description:
         "Compare dbdiagramr to dbdiagram.io and DrawSQL for generating database diagrams from PostgreSQL.",
-      url: "https://dbdiagramr.space/alternatives",
+      url: "https://www.dbdiagramr.space/alternatives",
       mainEntity: {
         "@type": "ItemList",
         itemListElement: alternatives.map((a, i) => ({
           "@type": "ListItem",
           position: i + 1,
           name: a.headline,
-          url: `https://dbdiagramr.space/${a.slug}`,
+          url: `https://www.dbdiagramr.space/${a.slug}`,
         })),
       },
     },
@@ -56,13 +57,13 @@ const jsonLd = {
           "@type": "ListItem",
           position: 1,
           name: "Home",
-          item: "https://dbdiagramr.space",
+          item: "https://www.dbdiagramr.space",
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Alternatives",
-          item: "https://dbdiagramr.space/alternatives",
+          item: "https://www.dbdiagramr.space/alternatives",
         },
       ],
     },
@@ -135,6 +136,7 @@ export default function AlternativesPage() {
           </a>
         </section>
       </div>
+      <Footer />
     </main>
   );
 }

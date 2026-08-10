@@ -1,10 +1,49 @@
 import { notFound } from "next/navigation";
+import type { Metadata } from "next";
 import { getAllSchemaEntries, getSchemaEntry } from "@/data/schemas/registry";
 import { generateDiagramSVG } from "@/lib/diagram";
 import Footer from "@/app/sections/Footer";
 
 export function generateStaticParams() {
   return getAllSchemaEntries().map((entry) => ({ slug: entry.slug }));
+}
+
+const ogImages: Record<string, string> = {
+  supabase: "/Supabase-DbDiagramr-OG.png",
+  nextauth: "/NextAuthJS-DbDiagramr-OG.png",
+  laravel: "/Laravel-DbDiagramr-OG.png",
+  django: "/Django-DbDiagramr-OG.png",
+};
+
+export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
+  const entry = getSchemaEntry(params.slug);
+  if (!entry) return {};
+
+  const url = `https://www.dbdiagramr.space/schema/${entry.slug}`;
+  const image = ogImages[entry.slug];
+  const ogImage = image
+    ? [{ url: image, width: 1800, height: 945, alt: entry.title }]
+    : undefined;
+
+  return {
+    title: entry.title,
+    description: entry.description,
+    keywords: entry.keywords.join(", "),
+    alternates: { canonical: url },
+    openGraph: {
+      title: entry.title,
+      description: entry.description,
+      type: "website",
+      url,
+      images: ogImage,
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: entry.title,
+      description: entry.description,
+      images: image ? [image] : undefined,
+    },
+  };
 }
 
 export default function SchemaPage({ params }: { params: { slug: string } }) {

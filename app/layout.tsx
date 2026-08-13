@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import Script from "next/script";
 import Navbar from "@/app/sections/Navbar";
+import Popup from "@/components/Popup";
 import { Toaster } from "sonner";
 import "./globals.css";
 
@@ -158,6 +159,15 @@ gtag('config', 'G-MK1QVPVPSJ');`}
         <Navbar />
         <Toaster position="top-center" />
         {children}
+        <Popup
+          id="exit-visualize"
+          trigger="exit"
+          title="See your database this clearly"
+          body="Paste a PostgreSQL connection string and get an interactive ER diagram in under 10 seconds. No signup."
+          ctaLabel="Visualize my database"
+          ctaHref="/visualize"
+          declineLabel="No thanks — I'm just browsing"
+        />
       </body>
     </html>
   );

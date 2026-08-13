@@ -3,7 +3,7 @@ import Link from "next/link";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "dbdiagramr Alternatives — Compare ER Diagram Tools",
+  title: "dbdiagramr Alternatives — ER Diagram Tools",
   description:
     "Compare dbdiagramr to dbdiagram.io and DrawSQL. Paste a PostgreSQL connection string and get an interactive ER diagram in under 10 seconds — no signup.",
   alternates: {

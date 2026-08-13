@@ -5,7 +5,7 @@ import { generateDiagramSVG } from "@/lib/diagram";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "Popular Database Schema Diagrams — Free ER Diagrams",
+  title: "Popular Database Schema Diagrams & ERDs",
   description:
     "Browse free interactive ER diagrams of popular PostgreSQL schemas: Supabase, NextAuth.js, Laravel, Django. Every table, column, and foreign key.",
   alternates: {

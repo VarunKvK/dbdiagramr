@@ -49,6 +49,10 @@ function jsonLdForEntry(entry: NonNullable<ReturnType<typeof getSchemaEntry>>) {
           "@type": "Organization",
           name: "dbdiagramr",
           url: "https://www.dbdiagramr.space",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://www.dbdiagramr.space/favicon.svg",
+          },
         },
       },
       {

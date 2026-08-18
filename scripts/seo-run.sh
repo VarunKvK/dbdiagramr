@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 # seo-run.sh — dbdiagramr SEO / content pipeline orchestrator.
 #
-#   npm run seo:run                 -> all  (gsc -> underperformers -> audit -> devto notify -> report)
+#   npm run seo:run                 -> all  (gsc -> underperformers -> audit -> jsonld -> devto notify -> report)
 #   npm run seo:run audit           -> A1 only
 #   npm run seo:run gsc             -> GSC fetch only
 #   npm run seo:run underperformers -> A2 only
+#   npm run seo:run jsonld          -> A5 structured-data validation only
 #   npm run seo:run devto           -> A3 notify only
 #   npm run seo:run devto-schedule  -> A3 schedule (sync local drafts to dev.to + assign slots)
 #   npm run seo:run report          -> aggregate weekly report only
@@ -25,7 +26,7 @@ SCRIPTS_ENV="/home/varunkrishnan/NothingImp/Dev/Scripts/.env"
 
 LOG() { echo "[seo-run] $*"; }
 FAIL=0
-GSC_ST=ok; UP_ST=ok; AUDIT_ST=ok; DEVTO_ST=ok
+GSC_ST=ok; UP_ST=ok; AUDIT_ST=ok; DEVTO_ST=ok; JSONLD_ST=ok
 
 # --- env ---
 if [ -f "$GSC_ENV" ]; then
@@ -57,6 +58,11 @@ step_audit() {
   if node "$ROOT/scripts/seo-audit.mjs"; then AUDIT_ST=ok; else LOG "audit failed (see report)"; AUDIT_ST=FAIL; FAIL=1; fi
 }
 
+step_jsonld() {
+  LOG "A5 validate-jsonld"
+  if node "$ROOT/scripts/validate-jsonld.mjs"; then JSONLD_ST=ok; else LOG "jsonld validation failed (see report)"; JSONLD_ST=FAIL; FAIL=1; fi
+}
+
 step_devto_notify() {
   LOG "A3 devto notify"
   if python3 "$DEVTO_DIR/devto_schedule.py" notify; then DEVTO_ST=ok; else LOG "devto notify failed"; DEVTO_ST=FAIL; FAIL=1; fi
@@ -75,7 +81,7 @@ step_report() {
   {
     echo "# SEO weekly report — $(date '+%Y-%m-%d %H:%M')"
     echo
-    echo "Status: gsc=$GSC_ST | audit=$AUDIT_ST | underperformers=$UP_ST | devto=$DEVTO_ST"
+    echo "Status: gsc=$GSC_ST | audit=$AUDIT_ST | jsonld=$JSONLD_ST | underperformers=$UP_ST | devto=$DEVTO_ST"
     echo
     echo "## dev.to queue"
     python3 "$DEVTO_DIR/devto_schedule.py" status 2>/dev/null || echo "(devto status unavailable)"
@@ -89,12 +95,14 @@ case "$cmd" in
     step_gsc
     step_underperformers
     step_audit
+    step_jsonld
     step_devto_notify
     step_report
     ;;
   audit) step_audit ;;
   gsc) step_gsc ;;
   underperformers) step_underperformers ;;
+  jsonld) step_jsonld ;;
   devto) step_devto_notify ;;
   devto-schedule|schedule) step_devto_schedule ;;
   report) step_report ;;

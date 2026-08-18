@@ -46,7 +46,7 @@ const jsonLd = {
           "@type": "ListItem",
           position: i + 1,
           name: a.headline,
-          url: `https://www.dbdiagramr.space/${a.slug}`,
+          item: `https://www.dbdiagramr.space/${a.slug}`,
         })),
       },
     },

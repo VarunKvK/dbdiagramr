@@ -108,6 +108,10 @@ const jsonLd = {
         "@type": "Organization",
         name: "dbdiagramr",
         url: "https://www.dbdiagramr.space",
+        logo: {
+          "@type": "ImageObject",
+          url: "https://www.dbdiagramr.space/favicon.svg",
+        },
       },
     },
     {

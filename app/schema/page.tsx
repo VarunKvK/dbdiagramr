@@ -32,7 +32,7 @@ export default function SchemaHubPage() {
             "@type": "ListItem",
             position: i + 1,
             name: entry.name,
-            url: `https://www.dbdiagramr.space/schema/${entry.slug}`,
+            item: `https://www.dbdiagramr.space/schema/${entry.slug}`,
           })),
         },
       },

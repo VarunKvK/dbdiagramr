@@ -70,8 +70,10 @@ gtag('config', 'G-MK1QVPVPSJ');`}
           strategy="afterInteractive"
         />
 
-        <Script id="structured-data" type="application/ld+json" strategy="beforeInteractive">
-          {`{
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: `{
   "@context": "https://schema.org",
   "@graph": [
     {
@@ -154,8 +156,8 @@ gtag('config', 'G-MK1QVPVPSJ');`}
       ]
     }
   ]
-}`}
-        </Script>
+}`}}
+        />
         <Navbar />
         <Toaster position="top-center" />
         {children}

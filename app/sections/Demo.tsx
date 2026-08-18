@@ -114,9 +114,9 @@ export default function Demo() {
           </div>
 
           {/* Content */}
-          <div className="relative min-h-[360px]">
-            <div className="overflow-hidden">
-              <SchemaDiagram schema={SAMPLE_SCHEMA} />
+          <div className="relative h-[420px]">
+            <div className="h-full overflow-hidden">
+              <SchemaDiagram schema={SAMPLE_SCHEMA} className="h-full w-full" />
             </div>
           </div>
         </div>

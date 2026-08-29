@@ -38,19 +38,19 @@ export default function TryPage() {
   }, [schema]);
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-[#1a1a1a] pt-16 lg:flex-row">
+    <div className="flex h-screen w-full flex-col overflow-hidden bg-cream pt-16 lg:flex-row">
       <h1 className="sr-only">Visualize Your PostgreSQL Schema - ER Diagram Generator</h1>
 
-      <div className="flex h-[52vh] shrink-0 flex-col overflow-hidden border-b border-white/5 bg-[#0a0a0a] lg:h-auto lg:w-[440px] lg:shrink-0 lg:border-b-0 lg:border-r lg:border-white/5">
-        <div className="flex-1 overflow-auto p-4">
+      <div className="flex h-[52vh] shrink-0 flex-col overflow-hidden border-b border-black/5 bg-cream lg:h-auto lg:w-[440px] lg:shrink-0 lg:border-b-0 lg:border-r lg:border-black/5">
+        <div className="flex-1 overflow-auto p-6">
           <TryModal
             onSchemaGenerated={handleSchemaGenerated}
             onSchemaCleared={handleSchemaCleared}
           />
         </div>
-        <div className="hidden border-t border-white/5 bg-[#0f0f0f] px-4 py-2.5 lg:block">
-          <p className="font-mono text-[11px] leading-relaxed text-[#555]">
-            Paste <span className="text-[#888]">CREATE TABLE</span> SQL, or connect live. Files stay local, nothing stored.
+        <div className="hidden border-t border-black/5 bg-white px-6 py-3 lg:block">
+          <p className="font-mono text-[11px] leading-relaxed text-muted">
+            Files stay local. Nothing stored, diagram updates live.
           </p>
         </div>
       </div>

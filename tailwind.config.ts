@@ -8,19 +8,12 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      fontFamily: {
-        sans: ["var(--font-sans)", "system-ui", "sans-serif"],
-        display: ["var(--font-display)", "serif"],
-        mono: ["var(--font-mono)", "ui-monospace", "monospace"],
-      },
       colors: {
         cream: "#faf9f7",
         surface: "#f5f4f2",
         ink: "#1a1a1a",
         muted: "#6b6b6b",
         border: "#e5e5e5",
-        editor: "#0f0f0f",
-        editorBorder: "#2a2a2a",
         background: "var(--background)",
         foreground: "var(--foreground)",
         card: "var(--card)",

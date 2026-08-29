@@ -1,14 +1,12 @@
 import type { Metadata } from "next";
-import { Instrument_Serif, JetBrains_Mono, DM_Sans } from "next/font/google";
+import { Inter } from "next/font/google";
 import Script from "next/script";
 import Navbar from "@/app/sections/Navbar";
 import Popup from "@/components/Popup";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const instrumentSerif = Instrument_Serif({ subsets: ["latin"], weight: "400", variable: "--font-display" });
-const geistMono = JetBrains_Mono({ subsets: ["latin"], variable: "--font-mono" });
-const dmSans = DM_Sans({ subsets: ["latin"], variable: "--font-sans" });
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.dbdiagramr.space"),
@@ -54,8 +52,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${dmSans.variable} ${instrumentSerif.variable} ${geistMono.variable} scroll-smooth`}>
-      <body className="font-sans antialiased">
+    <html lang="en" className={`${inter.className} scroll-smooth`}>
+      <body className="antialiased">
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-MK1QVPVPSJ"
           strategy="afterInteractive"

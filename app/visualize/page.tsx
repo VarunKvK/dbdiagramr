@@ -41,8 +41,8 @@ export default function TryPage() {
     <div className="flex h-screen w-full flex-col gap-4 overflow-hidden bg-[#0a0a0a] p-4 pt-[72px] lg:flex-row">
       <h1 className="sr-only">Visualize Your PostgreSQL Schema - ER Diagram Generator</h1>
 
-      <div className="flex h-[52vh] shrink-0 flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#141414] lg:h-auto lg:w-[380px] lg:shrink-0">
-        <div className="flex-1 overflow-auto p-4">
+      <div className="flex h-[52vh] shrink-0 flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#141414] lg:h-[calc(100vh-88px)] lg:w-[380px] lg:shrink-0">
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-4">
           <TryModal
             onSchemaGenerated={handleSchemaGenerated}
             onSchemaCleared={handleSchemaCleared}
@@ -50,7 +50,7 @@ export default function TryPage() {
         </div>
       </div>
 
-      <div className="relative flex flex-1 flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#0e0e0e]">
+      <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#0e0e0e] lg:h-[calc(100vh-88px)]">
         <button
           type="button"
           aria-label="Close"

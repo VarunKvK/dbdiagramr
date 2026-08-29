@@ -190,8 +190,8 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModa
   const hasError = !!sqlError;
 
   return (
-    <div className="flex w-full flex-col gap-4">
-      <div className="flex rounded-xl bg-[#1e1e1e] p-1">
+    <div className="flex h-full min-h-0 w-full flex-col gap-4">
+      <div className="flex shrink-0 rounded-xl bg-[#1e1e1e] p-1">
         <button
           onClick={() => setMode("sql")}
           aria-pressed={mode === "sql"}
@@ -209,12 +209,12 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModa
       </div>
 
       {mode === "sql" ? (
-        <>
+        <div className="flex min-h-0 flex-1 flex-col gap-4">
           <div
             onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
-            className={`relative overflow-hidden rounded-xl border bg-[#0e0e0e] ${isDragging ? "border-indigo-500/50 ring-2 ring-indigo-500/20" : "border-white/5"}`}
+            className={`relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border bg-[#0e0e0e] ${isDragging ? "border-indigo-500/50 ring-2 ring-indigo-500/20" : "border-white/5"}`}
           >
             <textarea
               ref={textareaRef}
@@ -225,7 +225,6 @@ CREATE TABLE users (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   email varchar(255) NOT NULL
 );`}
-              rows={14}
               spellCheck={false}
               autoComplete="off"
               autoCorrect="off"
@@ -233,7 +232,7 @@ CREATE TABLE users (
               aria-label="SQL editor"
               aria-describedby={hasError ? "sql-error" : undefined}
               aria-invalid={hasError}
-              className="min-h-[280px] w-full resize-none bg-transparent p-4 font-mono text-xs leading-5 text-[#8a8a8a] placeholder:text-[#555] outline-none"
+              className="h-full min-h-0 w-full flex-1 resize-none bg-transparent p-4 font-mono text-xs leading-5 text-[#8a8a8a] placeholder:text-[#555] outline-none"
             />
             {isDragging && (
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
@@ -243,13 +242,13 @@ CREATE TABLE users (
           </div>
 
           {hasError && (
-            <div id="sql-error" role="alert" className="rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2">
+            <div id="sql-error" role="alert" className="shrink-0 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2">
               <p className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-amber-300">{sqlError}</p>
               <button onClick={handleClearSql} className="mt-2 font-mono text-xs text-amber-300 underline-offset-4 hover:underline">Clear</button>
             </div>
           )}
 
-          <div className="flex flex-wrap gap-2">
+          <div className="flex shrink-0 flex-wrap gap-2">
             <button onClick={() => loadSample("schema")} className="rounded-full bg-[#e9e9e9] px-3 py-1.5 font-mono text-xs font-medium text-black hover:bg-white">schema.sql</button>
             <button onClick={() => loadSample("ecommerce")} className="rounded-full bg-[#e9e9e9] px-3 py-1.5 font-mono text-xs font-medium text-black hover:bg-white">ecommerce.sql</button>
             <button onClick={() => loadSample("sample")} className="rounded-full bg-[#e9e9e9] px-3 py-1.5 font-mono text-xs font-medium text-black hover:bg-white">sample.sql</button>
@@ -260,7 +259,7 @@ CREATE TABLE users (
             onDragLeave={() => setIsDragging(false)}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`flex cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed bg-[#0e0e0e] px-4 py-10 text-center transition-colors hover:bg-[#141414] ${isDragging ? "border-indigo-500/50 bg-[#141414]" : "border-[#2a3950]/60"}`}
+            className={`flex shrink-0 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed bg-[#0e0e0e] px-4 py-8 text-center transition-colors hover:bg-[#141414] ${isDragging ? "border-indigo-500/50 bg-[#141414]" : "border-[#2a3950]/60"}`}
           >
             <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 ring-1 ring-white/5">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></svg>
@@ -269,7 +268,7 @@ CREATE TABLE users (
             <span className="mt-1 font-mono text-xs text-[#666]">Drop a file or paste above.</span>
           </div>
           <input ref={fileInputRef} type="file" accept=".sql,.txt" onChange={handleFileUpload} className="hidden" aria-hidden />
-        </>
+        </div>
       ) : (
         <>
           {(phase === "form" || phase === "loading") && (

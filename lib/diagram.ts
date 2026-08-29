@@ -1,5 +1,6 @@
 import { layoutSchema, getRowY, routePath } from "@/lib/diagramLayout";
 import type { Rect } from "@/lib/diagramLayout";
+import { formatType } from "@/lib/formatType";
 
 export type Column = {
   name: string;
@@ -100,12 +101,17 @@ ${badge(ex - 10, ey - 14, "1", false)}
       const cy = y + 42 + i * 26;
       const isPk = col.isPrimaryKey;
       const isFkCol = isFk && fkColumns.has(col.name);
+      const typeShort = esc(formatType(col.type));
 
       colLines.push(
         `      <line x1="${x + 1}" y1="${cy + 10}" x2="${x + w - 1}" y2="${cy + 10}" stroke="#2a2a2a" strokeWidth="1" />`
       );
       colLines.push(
-        `      <text x="${x + 14}" y="${cy}" fill="#a0a0a0" fontSize="12" fontFamily="monospace">${esc(col.name)}</text>`
+        `      <text x="${x + 14}" y="${cy}" fill="#a0a0a0" fontSize="11" fontFamily="monospace">${esc(col.name)}</text>`
+      );
+      // type muted in middle-right
+      colLines.push(
+        `      <text x="${x + w - 48}" y="${cy}" textAnchor="end" fill="#666" fontSize="9" fontFamily="monospace">${typeShort}</text>`
       );
       if (isPk) {
         colLines.push(

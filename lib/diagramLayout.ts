@@ -12,9 +12,10 @@ export const LAYOUT = {
   header: 42,
   rowH: 26,
   rowPad: 8,
-  minW: 184,
+  minW: 220,
   hPad: 16,
   colCharW: 7.5,
+  typeCharW: 6.5,
   headCharW: 8,
   badgeW: 40,
   nodesep: 60,
@@ -22,11 +23,27 @@ export const LAYOUT = {
   margin: 40,
 } as const;
 
+function shortTypeForWidth(raw: string): string {
+  const t = raw.toLowerCase();
+  const map: Record<string, string> = {
+    "character varying": "varchar",
+    "timestamp without time zone": "timestamp",
+    "timestamp with time zone": "timestamptz",
+    "time without time zone": "time",
+    "time with time zone": "timetz",
+    "double precision": "float8",
+  };
+  if (map[t]) return map[t];
+  return raw;
+}
+
 export function tableSize(table: Table): { width: number; height: number } {
-  const colW = table.columns.reduce(
-    (max, c) => Math.max(max, c.name.length * LAYOUT.colCharW + LAYOUT.badgeW),
-    0
-  );
+  const colW = table.columns.reduce((max, c) => {
+    const typeShort = shortTypeForWidth(c.type);
+    // name + type + badge + PK/FK + spacing
+    const w = c.name.length * LAYOUT.colCharW + typeShort.length * LAYOUT.typeCharW + LAYOUT.badgeW + 24;
+    return Math.max(max, w);
+  }, 0);
   const headerW = table.name.length * LAYOUT.headCharW + 24;
   const width = Math.max(LAYOUT.minW, colW, headerW);
   const height = LAYOUT.header + table.columns.length * LAYOUT.rowH + LAYOUT.rowPad;

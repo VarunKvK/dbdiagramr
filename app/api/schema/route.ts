@@ -74,11 +74,17 @@ const useSSL = ssl !== false && !dbIsLocal;
       message.includes("ENOTFOUND") ||
       message.includes("EAI_AGAIN") ||
       message.includes("ENETUNREACH");
+    const isPoolerHint =
+      isDnsError && connectionString.includes(":5432") && !connectionString.includes(":6543");
+    const hintDetails = isPoolerHint
+      ? `${message}\n\nHint: Your connection string uses port 5432 (direct). From serverless (Vercel/Netlify), switch to your database's Transaction pooler (port 6543) — in Supabase: Project Settings → Database → Connection string → Transaction pooler. Or use the "Paste query result" tab (no credentials needed).`
+      : message;
     return NextResponse.json(
       {
         error: "Could not connect to database",
-        details: message,
+        details: hintDetails,
         ...(isDnsError ? { dnsError: true } : {}),
+        ...(isPoolerHint ? { hint: "pooler" } : {}),
       },
       { status: 500 }
     );

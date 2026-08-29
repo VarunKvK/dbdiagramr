@@ -25,6 +25,7 @@ import type { Schema } from "@/lib/diagram";
 import { renderDiagramSVG } from "@/lib/diagram";
 import { LAYOUT, layoutSchema, tableSize } from "@/lib/diagramLayout";
 import type { Rect } from "@/lib/diagramLayout";
+import { formatType } from "@/lib/formatType";
 
 function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
@@ -40,6 +41,9 @@ function downloadBlob(blob: Blob, filename: string) {
 type TableNodeData = {
   table: Schema["tables"][number];
   targetCols: Set<string>;
+  highlightCols?: Set<string>;
+  highlightTable?: boolean;
+  searchActive?: boolean;
 };
 
 type TableFlowNode = RFNode<TableNodeData, "table">;
@@ -53,10 +57,10 @@ function TableNode({ data }: NodeProps<TableFlowNode>) {
 
   return (
     <div
-      className="overflow-hidden rounded-lg border border-[#2a2a2a] bg-[#1a1a1a] shadow-[0_4px_20px_rgba(0,0,0,0.45)]"
+      className={`overflow-hidden rounded-lg border shadow-[0_4px_20px_rgba(0,0,0,0.45)] ${data.searchActive && data.highlightTable ? "border-indigo-500/50" : "border-[#2a2a2a]"} bg-[#1a1a1a]`}
       style={{ width: size.width, height: size.height }}
     >
-      <div className="flex h-[38px] items-center justify-center bg-[#252525] text-[13px] font-semibold text-[#e5e5e5]">
+      <div className={`flex h-[38px] items-center justify-center text-[13px] font-semibold ${data.searchActive && data.highlightTable ? "bg-indigo-600/20 text-indigo-200" : "bg-[#252525] text-[#e5e5e5]"}`}>
         {table.name}
       </div>
       <div className="relative">
@@ -64,17 +68,23 @@ function TableNode({ data }: NodeProps<TableFlowNode>) {
           const isPk = col.isPrimaryKey;
           const isFkCol = fkColumns.has(col.name);
           const isTarget = targetCols.has(col.name);
+          const isColMatch = data.highlightCols?.has(col.name) ?? false;
+          const isSearchActive = data.searchActive ?? false;
           return (
             <div
               key={col.name}
-              className="relative flex h-[26px] items-center justify-between border-b border-[#2a2a2a] px-[14px] last:border-b-0"
+              className={`relative flex h-[26px] items-center justify-between border-b px-[14px] last:border-b-0 ${isColMatch ? "bg-indigo-600/20" : ""} ${isSearchActive && data.highlightTable === false && !isColMatch ? "opacity-60" : ""} border-[#2a2a2a]`}
+              title={`${col.name} ${formatType(col.type)}${col.nullable === "YES" ? " nullable" : " not null"}${col.default ? ` default ${col.default}` : ""}`}
             >
-              <span className="truncate font-mono text-[12px] text-[#a0a0a0]">{col.name}</span>
-              {(isPk || isFkCol) && (
-                <span className="ml-2 shrink-0 font-mono text-[10px] font-bold text-[#6366f1]">
-                  {isPk ? "PK" : "FK"}
-                </span>
-              )}
+              <span className={`truncate font-mono text-[12px] ${isColMatch ? "font-semibold text-indigo-300" : "text-[#a0a0a0]"}`}>{col.name}</span>
+              <span className="ml-2 flex shrink-0 items-center gap-1.5">
+                <span className={`font-mono text-[10px] ${isColMatch ? "text-indigo-400" : "text-[#666]"}`}>{formatType(col.type)}</span>
+                {(isPk || isFkCol) && (
+                  <span className="font-mono text-[10px] font-bold text-[#6366f1]">
+                    {isPk ? "PK" : "FK"}
+                  </span>
+                )}
+              </span>
               {isFkCol && (
                 <Handle
                   type="source"
@@ -200,7 +210,7 @@ function buildElements(schema: Schema) {
   return { nodes, edges };
 }
 
-function Canvas({ schema, className = "" }: SchemaDiagramProps) {
+function Canvas({ schema, className = "", searchQuery = "" }: SchemaDiagramProps) {
   const { fitView } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState<TableFlowNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<ErdFlowEdge>([]);
@@ -228,6 +238,26 @@ function Canvas({ schema, className = "" }: SchemaDiagramProps) {
     }
   }, [downloadOpen]);
 
+  const normalizedSearch = searchQuery.trim().toLowerCase();
+  const searchActive = normalizedSearch.length > 0;
+
+  const searchMatches = useMemo(() => {
+    if (!searchActive) return null;
+    const tableMatches = new Set<string>();
+    const colMatches = new Map<string, Set<string>>();
+    for (const table of schema.tables) {
+      const tableHit = table.name.toLowerCase().includes(normalizedSearch);
+      const hitCols = table.columns.filter((c) => c.name.toLowerCase().includes(normalizedSearch) || formatType(c.type).toLowerCase().includes(normalizedSearch)).map((c) => c.name);
+      if (tableHit || hitCols.length > 0) {
+        tableMatches.add(table.name);
+        if (hitCols.length > 0) colMatches.set(table.name, new Set(hitCols));
+        // If table name matched, highlight all cols? No, just table. Keep colMatches empty unless col matched.
+        if (tableHit && hitCols.length === 0) colMatches.set(table.name, new Set());
+      }
+    }
+    return { tableMatches, colMatches };
+  }, [schema, normalizedSearch, searchActive]);
+
   const activeSet = useMemo(() => {
     if (!hovered) return null;
     const s = new Set<string>([hovered]);
@@ -238,39 +268,83 @@ function Canvas({ schema, className = "" }: SchemaDiagramProps) {
     return s;
   }, [hovered, edges]);
 
-  const renderedNodes = useMemo(
-    () =>
-      hovered && activeSet
-        ? nodes.map((n) => ({
-            ...n,
-            style: {
-              ...n.style,
-              opacity: activeSet.has(n.id) ? 1 : 0.15,
-              transition: "opacity 0.3s ease",
-            },
-          }))
-        : nodes,
-    [nodes, hovered, activeSet]
-  );
+  const renderedNodes = useMemo(() => {
+    let out = nodes;
+    // Apply search highlighting data first
+    if (searchActive && searchMatches) {
+      out = out.map((n) => {
+        const isMatch = searchMatches.tableMatches.has(n.id);
+        const matchedCols = searchMatches.colMatches.get(n.id);
+        return {
+          ...n,
+          data: {
+            ...n.data,
+            highlightCols: matchedCols,
+            highlightTable: isMatch,
+            searchActive: true,
+          },
+        };
+      });
+    }
+    // Apply hover dimming or search dimming (search takes precedence over hover when active)
+    if (searchActive && searchMatches) {
+      out = out.map((n) => {
+        const isMatch = searchMatches.tableMatches.has(n.id);
+        return {
+          ...n,
+          style: {
+            ...n.style,
+            opacity: isMatch ? 1 : 0.18,
+            transition: "opacity 0.3s ease",
+          },
+        };
+      });
+      return out;
+    }
+    if (hovered && activeSet) {
+      return out.map((n) => ({
+        ...n,
+        style: {
+          ...n.style,
+          opacity: activeSet.has(n.id) ? 1 : 0.15,
+          transition: "opacity 0.3s ease",
+        },
+      }));
+    }
+    return out;
+  }, [nodes, hovered, activeSet, searchActive, searchMatches]);
 
-  const renderedEdges = useMemo(
-    () =>
-      hovered && activeSet
-        ? edges.map((e) => {
-            const active = activeSet.has(e.source) || activeSet.has(e.target);
-            return {
-              ...e,
-              animated: active,
-              style: {
-                ...e.style,
-                stroke: active ? "#4f46e5" : "#333",
-                opacity: active ? 1 : 0.08,
-              },
-            };
-          })
-        : edges,
-    [edges, hovered, activeSet]
-  );
+  const renderedEdges = useMemo(() => {
+    if (searchActive && searchMatches) {
+      return edges.map((e) => {
+        // Dim edges where neither end matched
+        const isRelated = searchMatches.tableMatches.has(e.source) || searchMatches.tableMatches.has(e.target);
+        return {
+          ...e,
+          style: {
+            ...e.style,
+            stroke: isRelated ? "#4f46e5" : "#333",
+            opacity: isRelated ? 0.9 : 0.06,
+          },
+        };
+      });
+    }
+    if (hovered && activeSet) {
+      return edges.map((e) => {
+        const active = activeSet.has(e.source) || activeSet.has(e.target);
+        return {
+          ...e,
+          animated: active,
+          style: {
+            ...e.style,
+            stroke: active ? "#4f46e5" : "#333",
+            opacity: active ? 1 : 0.08,
+          },
+        };
+      });
+    }
+    return edges;
+  }, [edges, hovered, activeSet, searchActive, searchMatches]);
 
   const positionsForExport = useMemo(() => {
     const layout: Record<string, Rect> = {};
@@ -388,12 +462,13 @@ function Canvas({ schema, className = "" }: SchemaDiagramProps) {
 interface SchemaDiagramProps {
   schema: Schema;
   className?: string;
+  searchQuery?: string;
 }
 
-export default function SchemaDiagram({ schema, className = "" }: SchemaDiagramProps) {
+export default function SchemaDiagram({ schema, className = "", searchQuery = "" }: SchemaDiagramProps) {
   return (
     <ReactFlowProvider>
-      <Canvas schema={schema} className={className} />
+      <Canvas schema={schema} className={className} searchQuery={searchQuery} />
     </ReactFlowProvider>
   );
 }

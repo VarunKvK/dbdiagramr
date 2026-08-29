@@ -73,7 +73,7 @@ export default function SchemaHubPage() {
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
             Explore the real database schemas behind popular projects. Every
             diagram shows tables, columns, primary keys, and foreign key
-            relationships — rendered from official migrations and docs.
+            relationships - rendered from official migrations and docs.
           </p>
         </div>
 

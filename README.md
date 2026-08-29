@@ -8,10 +8,10 @@ Paste your PostgreSQL connection string. Get a beautiful, interactive ER diagram
 
 ## Features
 
-- **Instant** — Connects to your PostgreSQL database and generates a diagram in under 10 seconds
-- **Interactive** — Pan, zoom, and hover over tables to trace relationships
-- **Secure** — Your connection string is never stored. We introspect your schema and discard everything else.
-- **Self-hostable** — Open source. Run it yourself or use our hosted version.
+- **Instant** - Connects to your PostgreSQL database and generates a diagram in under 10 seconds
+- **Interactive** - Pan, zoom, and hover over tables to trace relationships
+- **Secure** - Your connection string is never stored. We introspect your schema and discard everything else.
+- **Self-hostable** - Open source. Run it yourself or use our hosted version.
 
 ## Quick Start
 
@@ -35,7 +35,7 @@ Then open [http://localhost:3000](http://localhost:3000) and try it with your da
 - **Next.js 14** + TypeScript
 - **Tailwind CSS** for styling
 - **PostgreSQL** (via `pg`) for schema introspection
-- **SVG** diagram rendering — no Canvas, no proprietary dependencies
+- **SVG** diagram rendering - no Canvas, no proprietary dependencies
 
 ## License
 

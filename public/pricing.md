@@ -1,4 +1,4 @@
-# Pricing — dbdiagramr
+# Pricing - dbdiagramr
 
 ## Free
 - Price: $0/month

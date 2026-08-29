@@ -1,6 +1,6 @@
 # dbdiagramr
 
-dbdiagramr is a free, open-source web tool that generates interactive entity-relationship (ER) diagrams from any PostgreSQL connection string. No signup, no setup — paste your connection string and visualize your database schema in under 10 seconds.
+dbdiagramr is a free, open-source web tool that generates interactive entity-relationship (ER) diagrams from any PostgreSQL connection string. No signup, no setup - paste your connection string and visualize your database schema in under 10 seconds.
 
 ## Key pages
 
@@ -22,8 +22,8 @@ Reference ER diagrams of popular PostgreSQL schemas, each showing every table, c
 
 ## Pricing
 
-- Free: $0/month — 5 diagrams per month, static PNG export, single database connection
-- Pro: $8/month — unlimited diagrams, interactive shareable links, version history, team access (up to 5 members), priority support
+- Free: $0/month - 5 diagrams per month, static PNG export, single database connection
+- Pro: $8/month - unlimited diagrams, interactive shareable links, version history, team access (up to 5 members), priority support
 
 ## About
 
@@ -32,6 +32,6 @@ Reference ER diagrams of popular PostgreSQL schemas, each showing every table, c
 - Exports diagrams as SVG or PNG
 - Works with cloud databases: Supabase, Neon, Railway
 - Uses the Transaction pooler (port 6543) for serverless platform compatibility
-- Connection strings are never stored — introspected and discarded immediately
+- Connection strings are never stored - introspected and discarded immediately
 - Built with Next.js, PostgreSQL, and Tailwind CSS
 - Last updated: 2026-08-03

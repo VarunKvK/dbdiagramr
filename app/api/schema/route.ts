@@ -41,7 +41,7 @@ export async function POST(request: NextRequest) {
       {
         error: "Invalid connection string",
         details:
-          "That looks like a web URL. You need your database connection string — it starts with postgresql://. In Supabase, find it at Project Settings \u2192 Database \u2192 Connection string \u2192 URI.",
+          "That looks like a web URL. You need your database connection string - it starts with postgresql://. In Supabase, find it at Project Settings \u2192 Database \u2192 Connection string \u2192 URI.",
       },
       { status: 400 }
     );
@@ -77,7 +77,7 @@ const useSSL = ssl !== false && !dbIsLocal;
     const isPoolerHint =
       isDnsError && connectionString.includes(":5432") && !connectionString.includes(":6543");
     const hintDetails = isPoolerHint
-      ? `${message}\n\nHint: Your connection string uses port 5432 (direct). From serverless (Vercel/Netlify), switch to your database's Transaction pooler (port 6543) — in Supabase: Project Settings → Database → Connection string → Transaction pooler. Or use the "Paste query result" tab (no credentials needed).`
+      ? `${message}\n\nHint: Your connection string uses port 5432 (direct). From serverless (Vercel/Netlify), switch to your database's Transaction pooler (port 6543) - in Supabase: Project Settings → Database → Connection string → Transaction pooler. Or use the "Paste query result" tab (no credentials needed).`
       : message;
     return NextResponse.json(
       {

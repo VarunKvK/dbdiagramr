@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * A5 — Structured data (JSON-LD) validation.
+ * A5 - Structured data (JSON-LD) validation.
  *
  * Crawls the production sitemap, extracts every static
  * `<script type="application/ld+json">` block and validates it:
@@ -197,7 +197,7 @@ async function validatePage(url) {
       const type = nodeType(n);
       if (type) seenTypes.add(type);
       validateNode(n, issues);
-      // URL host check — only for fields that must resolve to this site
+      // URL host check - only for fields that must resolve to this site
       // (breadcrumb items, mainEntityOfPage). Author/sameAs URLs are
       // legitimately external.
       for (const [k, v] of Object.entries(n)) {
@@ -280,7 +280,7 @@ async function main() {
     const today = new Date().toISOString().slice(0, 10);
     const stamp = `${today} ${new Date().toTimeString().slice(0, 5)}`;
     const lines = [];
-    lines.push(`# Structured data validation — ${stamp}`);
+    lines.push(`# Structured data validation - ${stamp}`);
     lines.push("");
     lines.push(`Site: \`${SITE_URL}\` · ${urls.length} sitemap URLs · **${pass.length} pass / ${fail.length} fail** · ${Date.now() - started}ms`);
     lines.push("");
@@ -291,7 +291,7 @@ async function main() {
       lines.push("- none 🎉");
     } else {
       for (const r of fail) {
-        lines.push(`- [${mdEscape(r.url)}](${esc(r.url)}) — ${r.issues.join("; ")}`);
+        lines.push(`- [${mdEscape(r.url)}](${esc(r.url)}) - ${r.issues.join("; ")}`);
       }
     }
     lines.push("");
@@ -299,7 +299,7 @@ async function main() {
     for (const r of [...results].sort((a, b) => a.url.localeCompare(b.url))) {
       const mark = r.ok ? "✅" : "❌";
       const extra = r.crossCheck ? ` · schema.org: ${r.crossCheck}` : "";
-      lines.push(`- ${mark} ${mdEscape(r.url)} — ${r.ok ? r.notes.join(", ") : r.issues.join("; ")}${extra}`);
+      lines.push(`- ${mark} ${mdEscape(r.url)} - ${r.ok ? r.notes.join(", ") : r.issues.join("; ")}${extra}`);
     }
     lines.push("");
 

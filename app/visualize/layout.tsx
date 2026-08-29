@@ -12,7 +12,7 @@ title: "Visualize Your PostgreSQL Schema",
     canonical: "https://www.dbdiagramr.space/visualize",
   },
   openGraph: {
-    title: "Visualize Your PostgreSQL Schema — ER Diagram Generator",
+    title: "Visualize Your PostgreSQL Schema - ER Diagram Generator",
     description:
       "Paste a PostgreSQL connection string and get an interactive ER diagram in under 10 seconds. No signup, no setup.",
     type: "website",

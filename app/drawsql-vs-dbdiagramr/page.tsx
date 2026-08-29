@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "DrawSQL vs dbdiagramr — Which ER Diagram Tool?",
+  title: "DrawSQL vs dbdiagramr - Which ER Diagram Tool?",
   description:
     "DrawSQL vs dbdiagramr: team collaboration and visual schema editing vs instant ER diagrams from a live PostgreSQL connection string.",
   alternates: {
@@ -23,8 +23,8 @@ const comparisonRows = [
   },
   {
     feature: "Shows your actual database",
-    dbdiagramr: "Yes — reads live tables, columns, and foreign keys",
-    drawsql: "Partial — visualizes what you import or draw, not the live DB",
+    dbdiagramr: "Yes - reads live tables, columns, and foreign keys",
+    drawsql: "Partial - visualizes what you import or draw, not the live DB",
   },
   {
     feature: "Databases supported",
@@ -34,7 +34,7 @@ const comparisonRows = [
   {
     feature: "Signup required",
     dbdiagramr: "No",
-    drawsql: "No — free canvas works without an account",
+    drawsql: "No - free canvas works without an account",
   },
   {
     feature: "Free plan",
@@ -43,13 +43,13 @@ const comparisonRows = [
   },
   {
     feature: "Private diagrams on free plan",
-    dbdiagramr: "Yes — nothing is stored or published",
-    drawsql: "No — free diagrams are public unless paid",
+    dbdiagramr: "Yes - nothing is stored or published",
+    drawsql: "No - free diagrams are public unless paid",
   },
   {
     feature: "Interactive hover-to-trace relationships",
     dbdiagramr: "Yes",
-    drawsql: "No — visual editor, not a relationship tracer",
+    drawsql: "No - visual editor, not a relationship tracer",
   },
   {
     feature: "Export options",
@@ -71,11 +71,11 @@ const comparisonRows = [
 const faqs = [
   {
     q: "Is dbdiagramr a good DrawSQL alternative?",
-    a: "If your goal is to understand a PostgreSQL database that already exists, dbdiagramr is a strong alternative — paste a connection string and get an interactive ER diagram in under 10 seconds, with no signup and nothing published. DrawSQL is a better fit if you need team collaboration, real-time multiplayer, or support for MySQL, SQL Server, and MariaDB.",
+    a: "If your goal is to understand a PostgreSQL database that already exists, dbdiagramr is a strong alternative - paste a connection string and get an interactive ER diagram in under 10 seconds, with no signup and nothing published. DrawSQL is a better fit if you need team collaboration, real-time multiplayer, or support for MySQL, SQL Server, and MariaDB.",
   },
   {
     q: "What is the main difference between DrawSQL and dbdiagramr?",
-    a: "DrawSQL is a visual schema editor built for teams to design databases together. dbdiagramr is a fast introspection tool — it connects to your live PostgreSQL database and renders the real schema, so the diagram always matches production.",
+    a: "DrawSQL is a visual schema editor built for teams to design databases together. dbdiagramr is a fast introspection tool - it connects to your live PostgreSQL database and renders the real schema, so the diagram always matches production.",
   },
   {
     q: "Does dbdiagramr support MySQL or SQL Server?",
@@ -93,7 +93,7 @@ const jsonLd = {
     {
       "@type": "Article",
       "@id": "https://www.dbdiagramr.space/drawsql-vs-dbdiagramr#article",
-      headline: "DrawSQL vs dbdiagramr — Which ER Diagram Tool?",
+      headline: "DrawSQL vs dbdiagramr - Which ER Diagram Tool?",
       description:
         "DrawSQL vs dbdiagramr compared: team collaboration and visual schema editing vs instant ER diagrams from a live PostgreSQL connection string.",
       datePublished: "2026-08-04",
@@ -189,7 +189,7 @@ export default function DrawSqlVsPage() {
             schemas, but they serve different moments. DrawSQL is a visual
             editor for designing and reviewing schemas with a team. dbdiagramr
             is a fast way to visualize a PostgreSQL database that already exists
-            — paste a connection string and see the real schema in under 10
+            - paste a connection string and see the real schema in under 10
             seconds.
           </p>
           <p className="mt-3 text-sm text-muted/70">
@@ -228,7 +228,7 @@ export default function DrawSqlVsPage() {
             <ul className="list-disc space-y-2 pl-5 leading-relaxed text-muted">
               <li>
                 You need to quickly understand a PostgreSQL database that
-                already exists — for onboarding, debugging, or documentation.
+                already exists - for onboarding, debugging, or documentation.
               </li>
               <li>
                 You want the diagram to match production exactly, read straight

@@ -196,7 +196,7 @@ function TableRows({
                 PK
               </span>
             ) : (
-              <span className="text-xs text-muted">—</span>
+              <span className="text-xs text-muted">-</span>
             )}
           </td>
         </tr>

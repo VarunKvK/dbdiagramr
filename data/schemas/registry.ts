@@ -25,7 +25,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Supabase Database Schema Diagram",
     h1: "Supabase Database Schema Diagram",
     description:
-      "Visualize the Supabase auth database schema — every table, column, and foreign key, including auth.users, auth.identities, and auth.sessions.",
+      "Visualize the Supabase auth database schema - every table, column, and foreign key, including auth.users, auth.identities, and auth.sessions.",
     keywords: [
       "supabase schema",
       "supabase database schema",
@@ -35,7 +35,7 @@ export const schemaEntries: SchemaEntry[] = [
       "supabase database diagram",
     ],
     intro:
-      "Every Supabase project ships with an auth schema that powers authentication, sessions, and user management. This is the full database schema diagram of the Supabase auth tables — auth.users, auth.identities, auth.sessions, and friends — showing the primary keys and foreign key relationships between them. Use it to understand how Supabase stores users before you build your own profiles table.",
+      "Every Supabase project ships with an auth schema that powers authentication, sessions, and user management. This is the full database schema diagram of the Supabase auth tables - auth.users, auth.identities, auth.sessions, and friends - showing the primary keys and foreign key relationships between them. Use it to understand how Supabase stores users before you build your own profiles table.",
     facts: [
       { label: "Tables", value: "7" },
       { label: "Schema", value: "auth" },
@@ -60,7 +60,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "NextAuth.js Database Schema (Auth.js)",
     h1: "NextAuth.js Database Schema",
     description:
-      "The complete NextAuth.js / Auth.js schema diagram — users, accounts, sessions, and verification_tokens with all columns and foreign keys.",
+      "The complete NextAuth.js / Auth.js schema diagram - users, accounts, sessions, and verification_tokens with all columns and foreign keys.",
     keywords: [
       "nextauth schema",
       "nextauth database schema",
@@ -70,7 +70,7 @@ export const schemaEntries: SchemaEntry[] = [
       "nextauth er diagram",
     ],
     intro:
-      "NextAuth.js (now Auth.js) persists users, OAuth accounts, sessions, and email verification tokens in four tables: users, accounts, sessions, and verification_tokens. This diagram shows the exact columns and relationships the default Postgres adapter expects — the same shape you get from the Prisma adapter schema. A single user can have many accounts (one per OAuth provider) and many sessions.",
+      "NextAuth.js (now Auth.js) persists users, OAuth accounts, sessions, and email verification tokens in four tables: users, accounts, sessions, and verification_tokens. This diagram shows the exact columns and relationships the default Postgres adapter expects - the same shape you get from the Prisma adapter schema. A single user can have many accounts (one per OAuth provider) and many sessions.",
     facts: [
       { label: "Tables", value: "4" },
       { label: "Core table", value: "users" },
@@ -83,7 +83,7 @@ export const schemaEntries: SchemaEntry[] = [
       },
       {
         q: "What is the relationship between users and accounts in NextAuth?",
-        a: "It's a one-to-many relationship. A single user can have multiple accounts — one for each OAuth provider they sign in with (Google, GitHub, etc.). Each account row has a userId foreign key referencing users.id.",
+        a: "It's a one-to-many relationship. A single user can have multiple accounts - one for each OAuth provider they sign in with (Google, GitHub, etc.). Each account row has a userId foreign key referencing users.id.",
       },
     ],
     lastUpdated: "2026-08-03",
@@ -95,7 +95,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Laravel Database Schema Diagram",
     h1: "Laravel Database Schema Diagram",
     description:
-      "The default Laravel 11 database schema diagram — users, password_reset_tokens, sessions, jobs, and cache tables with all columns.",
+      "The default Laravel 11 database schema diagram - users, password_reset_tokens, sessions, jobs, and cache tables with all columns.",
     keywords: [
       "laravel schema",
       "laravel database schema",
@@ -105,7 +105,7 @@ export const schemaEntries: SchemaEntry[] = [
       "laravel database diagram",
     ],
     intro:
-      "A fresh Laravel 11 application ships with a handful of framework tables created by the default migrations: users, password_reset_tokens, sessions, jobs, failed_jobs, cache, and cache_locks. This diagram shows the full default schema — the users table with password and remember_token columns, plus the sessions table that references users via a user_id foreign key.",
+      "A fresh Laravel 11 application ships with a handful of framework tables created by the default migrations: users, password_reset_tokens, sessions, jobs, failed_jobs, cache, and cache_locks. This diagram shows the full default schema - the users table with password and remember_token columns, plus the sessions table that references users via a user_id foreign key.",
     facts: [
       { label: "Tables", value: "7" },
       { label: "Core table", value: "users" },
@@ -130,7 +130,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Django Auth Database Schema Diagram",
     h1: "Django Auth Database Schema Diagram",
     description:
-      "The Django auth database schema diagram — auth_user, auth_group, auth_permission, and the many-to-many join tables with all foreign keys.",
+      "The Django auth database schema diagram - auth_user, auth_group, auth_permission, and the many-to-many join tables with all foreign keys.",
     keywords: [
       "django auth schema",
       "django database schema",
@@ -140,7 +140,7 @@ export const schemaEntries: SchemaEntry[] = [
       "django auth erd",
     ],
     intro:
-      "Django's built-in auth app creates a set of authentication tables when you run migrate: auth_user, auth_group, auth_permission, plus the many-to-many join tables auth_user_groups, auth_user_user_permissions, and auth_group_permissions. This diagram maps the full schema — including how permissions link to content types through django_content_type, and how admin actions are logged in django_admin_log.",
+      "Django's built-in auth app creates a set of authentication tables when you run migrate: auth_user, auth_group, auth_permission, plus the many-to-many join tables auth_user_groups, auth_user_user_permissions, and auth_group_permissions. This diagram maps the full schema - including how permissions link to content types through django_content_type, and how admin actions are logged in django_admin_log.",
     facts: [
       { label: "Tables", value: "9" },
       { label: "Core table", value: "auth_user" },

@@ -302,7 +302,7 @@ function handleTableConstraint(def: string, columns: Column[], foreignKeys: Fore
 
 export function parseSqlToSchema(sql: string): { schema: Schema; warnings: string[] } {
   const warnings: string[] = [];
-  if (!sql || !sql.trim()) throw new Error("Paste your CREATE TABLE SQL — empty input.");
+  if (!sql || !sql.trim()) throw new Error("Paste your CREATE TABLE SQL - empty input.");
   const trimmedUpper = sql.trim().toUpperCase();
   if (trimmedUpper.startsWith("SELECT")) {
     throw new Error("You pasted a SELECT query. Paste your CREATE TABLE statements instead (from pg_dump or Supabase export). Or use the Connection string tab for live introspection.");
@@ -378,7 +378,7 @@ export function parseSqlToSchema(sql: string): { schema: Schema; warnings: strin
       // ALTER TABLE [ONLY] [schema.]table ADD ...
       const am = stmt.match(/ALTER\s+TABLE\s+(?:ONLY\s+)?(?:"([^"]+)"|([A-Za-z0-9_."]+))\s+ADD\s+(?:CONSTRAINT\s+(?:"[^"]+"\s+|\S+\s+)?)?([\s\S]*)$/i);
       if (!am) {
-        // Could be ADD COLUMN etc — we can handle ADD COLUMN
+        // Could be ADD COLUMN etc - we can handle ADD COLUMN
         const addColMatch = stmt.match(/ALTER\s+TABLE\s+(?:ONLY\s+)?(?:"([^"]+)"|([A-Za-z0-9_."]+))\s+ADD\s+COLUMN\s+([\s\S]*)$/i);
         if (addColMatch) {
           const rawTable = addColMatch[1] ?? addColMatch[2];
@@ -402,7 +402,7 @@ export function parseSqlToSchema(sql: string): { schema: Schema; warnings: strin
       const tName = tParts[tParts.length - 1];
       const tbl = tableMap.get(tName);
       if (!tbl) {
-        warnings.push(`ALTER TABLE for unknown table ${tName} — create it before altering`);
+        warnings.push(`ALTER TABLE for unknown table ${tName} - create it before altering`);
         continue;
       }
       // Handle ADD COLUMN prefix
@@ -433,7 +433,7 @@ export function parseSqlToSchema(sql: string): { schema: Schema; warnings: strin
     } else if (upper.startsWith("INSERT INTO") || upper.startsWith("COPY") || upper.startsWith("CREATE EXTENSION") || upper.startsWith("CREATE SCHEMA")) {
       continue;
     } else {
-      // Unknown statement — warn but don't fail
+      // Unknown statement - warn but don't fail
       if (stmt.trim().length > 0 && !stmt.trim().startsWith("--")) {
         warnings.push(`Ignored statement: ${stmt.slice(0, 50)}...`);
       }

@@ -12,7 +12,7 @@ export function formatType(raw: string): string {
     "integer": "int",
   };
   if (map[t]) return map[t];
-  // For types with params like character varying(255) — not expected since data_type omits length, but handle
+  // For types with params like character varying(255) - not expected since data_type omits length, but handle
   for (const [k, v] of Object.entries(map)) {
     if (t.startsWith(k + "(")) return t.replace(k, v);
   }

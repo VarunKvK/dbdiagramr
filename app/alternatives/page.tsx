@@ -3,9 +3,9 @@ import Link from "next/link";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "dbdiagramr Alternatives — ER Diagram Tools",
+  title: "dbdiagramr Alternatives - ER Diagram Tools",
   description:
-    "Compare dbdiagramr to dbdiagram.io and DrawSQL. Paste a PostgreSQL connection string and get an interactive ER diagram in under 10 seconds — no signup.",
+    "Compare dbdiagramr to dbdiagram.io and DrawSQL. Paste a PostgreSQL connection string and get an interactive ER diagram in under 10 seconds - no signup.",
   alternates: {
     canonical: "https://www.dbdiagramr.space/alternatives",
   },
@@ -17,7 +17,7 @@ const alternatives = [
     name: "dbdiagram.io",
     headline: "dbdiagram.io vs dbdiagramr",
     summary:
-      "dbdiagram.io is a code-first diagramming tool for designing new schemas in DBML. dbdiagramr skips the schema code entirely — paste a live connection string and see your actual database.",
+      "dbdiagram.io is a code-first diagramming tool for designing new schemas in DBML. dbdiagramr skips the schema code entirely - paste a live connection string and see your actual database.",
     tags: ["DBML code", "Design-first", "10 free diagrams"],
   },
   {

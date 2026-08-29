@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "dbdiagram.io vs dbdiagramr — Compared",
+  title: "dbdiagram.io vs dbdiagramr - Compared",
   description:
     "dbdiagram.io vs dbdiagramr: DBML code-first diagram design vs instant visualization from a live PostgreSQL connection string. No signup required.",
   alternates: {
@@ -19,12 +19,12 @@ const comparisonRows = [
   {
     feature: "Time to first diagram",
     dbdiagramr: "Under 10 seconds",
-    dbdiagram: "Minutes — write and debug DBML first",
+    dbdiagram: "Minutes - write and debug DBML first",
   },
   {
     feature: "Shows your actual database",
-    dbdiagramr: "Yes — reads live tables, columns, and foreign keys",
-    dbdiagram: "No — diagram reflects the DBML you wrote",
+    dbdiagramr: "Yes - reads live tables, columns, and foreign keys",
+    dbdiagram: "No - diagram reflects the DBML you wrote",
   },
   {
     feature: "Signup required",
@@ -38,13 +38,13 @@ const comparisonRows = [
   },
   {
     feature: "Private diagrams on free plan",
-    dbdiagramr: "Yes — nothing is stored or published",
-    dbdiagram: "No — free diagrams are public unless upgraded",
+    dbdiagramr: "Yes - nothing is stored or published",
+    dbdiagram: "No - free diagrams are public unless upgraded",
   },
   {
     feature: "Interactive hover-to-trace relationships",
     dbdiagramr: "Yes",
-    dbdiagram: "No — static visualizations",
+    dbdiagram: "No - static visualizations",
   },
   {
     feature: "Export options",
@@ -66,11 +66,11 @@ const comparisonRows = [
 const faqs = [
   {
     q: "Is dbdiagramr a good dbdiagram.io alternative?",
-    a: "It depends on your goal. If you need to understand or document a PostgreSQL database that already exists, dbdiagramr is faster — paste a connection string and see every table, column, and foreign key in under 10 seconds, with no schema code to write. If you are designing a brand-new schema by hand in DBML, dbdiagram.io is built for that.",
+    a: "It depends on your goal. If you need to understand or document a PostgreSQL database that already exists, dbdiagramr is faster - paste a connection string and see every table, column, and foreign key in under 10 seconds, with no schema code to write. If you are designing a brand-new schema by hand in DBML, dbdiagram.io is built for that.",
   },
   {
     q: "What is the main difference between dbdiagram.io and dbdiagramr?",
-    a: "dbdiagram.io is a code-first tool where you describe your schema in DBML. dbdiagramr reads your live database directly — it introspects tables, columns, and foreign keys from a PostgreSQL connection string, so the diagram always matches reality.",
+    a: "dbdiagram.io is a code-first tool where you describe your schema in DBML. dbdiagramr reads your live database directly - it introspects tables, columns, and foreign keys from a PostgreSQL connection string, so the diagram always matches reality.",
   },
   {
     q: "Is dbdiagramr free?",
@@ -78,7 +78,7 @@ const faqs = [
   },
   {
     q: "Are my diagrams private on dbdiagramr?",
-    a: "Yes. dbdiagramr never stores connection strings or publishes diagrams. Your schema is introspected and discarded immediately, so nothing you visualize is made public — unlike free plans that make diagrams public by default.",
+    a: "Yes. dbdiagramr never stores connection strings or publishes diagrams. Your schema is introspected and discarded immediately, so nothing you visualize is made public - unlike free plans that make diagrams public by default.",
   },
 ];
 
@@ -88,7 +88,7 @@ const jsonLd = {
     {
       "@type": "Article",
       "@id": "https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr#article",
-      headline: "dbdiagram.io vs dbdiagramr — Which ER Diagram Tool?",
+      headline: "dbdiagram.io vs dbdiagramr - Which ER Diagram Tool?",
       description:
         "dbdiagram.io vs dbdiagramr compared: DBML code-first diagram design vs instant visualization from a live PostgreSQL connection string.",
       datePublished: "2026-08-04",
@@ -183,7 +183,7 @@ export default function DbDiagramIoVsPage() {
             Both tools turn database schemas into ER diagrams, but they work in
             fundamentally different ways. dbdiagram.io is a code-first editor
             where you design schemas in DBML. dbdiagramr visualizes a PostgreSQL
-            database that already exists — paste a connection string and see
+            database that already exists - paste a connection string and see
             your real schema in under 10 seconds.
           </p>
           <p className="mt-3 text-sm text-muted/70">
@@ -225,7 +225,7 @@ export default function DbDiagramIoVsPage() {
                 and want to understand its schema quickly.
               </li>
               <li>
-                You want the diagram to reflect your actual database — not a
+                You want the diagram to reflect your actual database - not a
                 hand-written model that can drift out of date.
               </li>
               <li>

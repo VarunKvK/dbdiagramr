@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 /**
- * A1 — SEO health audit.
+ * A1 - SEO health audit.
  *
  * Crawls the production sitemap, fetches every URL and asserts the rules
  * we enforced during the Ahrefs cleanup:
@@ -230,7 +230,7 @@ async function main() {
     const today = new Date().toISOString().slice(0, 10);
     const stamp = `${today} ${new Date().toTimeString().slice(0, 5)}`;
     const lines = [];
-    lines.push(`# SEO audit — ${stamp}`);
+    lines.push(`# SEO audit - ${stamp}`);
     lines.push("");
     lines.push(`Site: \`${SITE_URL}\` · ${urls.length} sitemap URLs · **${pass.length} pass / ${fail.length} fail** · ${Date.now() - started}ms`);
     lines.push("");
@@ -253,14 +253,14 @@ async function main() {
       lines.push("- none 🎉");
     } else {
       for (const r of fail) {
-        lines.push(`- [${mdEscape(r.url)}](${esc(r.url)}) — ${r.issues.join("; ")}`);
+        lines.push(`- [${mdEscape(r.url)}](${esc(r.url)}) - ${r.issues.join("; ")}`);
       }
     }
     lines.push("");
     lines.push(`## All URLs`);
     for (const r of [...results].sort((a, b) => a.url.localeCompare(b.url))) {
       const mark = r.ok ? "✅" : "❌";
-      lines.push(`- ${mark} ${mdEscape(r.url)} — ${r.ok ? r.notes.join(", ") : r.issues.join("; ")}`);
+      lines.push(`- ${mark} ${mdEscape(r.url)} - ${r.ok ? r.notes.join(", ") : r.issues.join("; ")}`);
     }
     lines.push("");
 

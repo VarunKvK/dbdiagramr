@@ -212,14 +212,10 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
       className={`relative flex w-full flex-col gap-4 rounded-2xl p-1 ${isSql && isDragging ? "ring-2 ring-indigo-500/30" : ""} ${isSql ? "h-full min-h-0 flex-1" : "h-auto"}`}
     >
       {isSql && isDragging && (
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-2xl border-2 border-dashed border-indigo-500 bg-black/60 backdrop-blur-sm">
-          <div className="flex flex-col items-center gap-2 rounded-xl bg-white px-6 py-4 shadow-xl">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink text-white">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></svg>
-            </div>
-            <span className="font-mono text-sm font-medium text-ink">Drop here</span>
-            <span className="font-mono text-xs text-muted">Drop your .sql file to load</span>
-          </div>
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-2xl border-2 border-dashed border-indigo-500/60 bg-black/30 backdrop-blur-sm">
+          <span className="rounded-full bg-white/10 px-6 py-3 font-mono text-sm font-medium text-white backdrop-blur-md ring-1 ring-white/10">
+            Drop here
+          </span>
         </div>
       )}
       <div className="flex shrink-0 rounded-xl bg-[#1e1e1e] p-1">

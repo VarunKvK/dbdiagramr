@@ -12,10 +12,14 @@ type Mode = "connection" | "sql";
 interface TryModalProps {
   onSchemaGenerated: (schema: Schema) => void;
   onSchemaCleared: () => void;
+  mode?: Mode;
+  onModeChange?: (mode: Mode) => void;
 }
 
-export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModalProps) {
-  const [mode, setMode] = useState<Mode>("sql");
+export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: controlledMode, onModeChange }: TryModalProps) {
+  const [internalMode, setInternalMode] = useState<Mode>("sql");
+  const mode = controlledMode ?? internalMode;
+  const setMode = onModeChange ?? setInternalMode;
   const [connectionString, setConnectionString] = useState("");
   const [sqlText, setSqlText] = useState("");
   const [sqlError, setSqlError] = useState<string | null>(null);
@@ -199,8 +203,9 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModa
 
   const hasError = !!sqlError;
 
+  const isSql = mode === "sql";
   return (
-    <div className="flex h-full min-h-0 w-full flex-col gap-4">
+    <div className={`flex w-full flex-col gap-4 ${isSql ? "h-full min-h-0 flex-1" : "h-auto"}`}>
       <div className="flex shrink-0 rounded-xl bg-[#1e1e1e] p-1">
         <button
           onClick={() => setMode("sql")}

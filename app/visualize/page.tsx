@@ -8,6 +8,7 @@ import TryModal from "@/components/TryModal";
 export default function TryPage() {
   const [schema, setSchema] = useState<Schema | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
+  const [mode, setMode] = useState<"sql" | "connection">("sql");
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   const handleSchemaGenerated = useCallback((s: Schema) => {
@@ -38,19 +39,21 @@ export default function TryPage() {
   }, [schema]);
 
   return (
-    <div className="flex h-screen w-full flex-col gap-4 overflow-hidden bg-[#0a0a0a] p-4 pt-[72px] lg:flex-row">
+    <div className={`flex w-full flex-col gap-4 overflow-hidden bg-[#0a0a0a] p-4 pt-[72px] lg:flex-row ${mode === "sql" ? "h-screen lg:items-stretch" : "min-h-screen lg:items-start"}`}>
       <h1 className="sr-only">Visualize Your PostgreSQL Schema - ER Diagram Generator</h1>
 
-      <div className="flex h-[52vh] shrink-0 flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#141414] lg:h-[calc(100vh-88px)] lg:w-[380px] lg:shrink-0">
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden p-4">
+      <div className={`flex shrink-0 flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#141414] ${mode === "sql" ? "h-[52vh] lg:h-[calc(100vh-88px)] lg:w-[380px] lg:shrink-0" : "h-auto lg:w-[380px] lg:shrink-0"}`}>
+        <div className={`flex flex-col overflow-hidden p-4 ${mode === "sql" ? "min-h-0 flex-1" : "h-auto"}`}>
           <TryModal
+            mode={mode}
+            onModeChange={setMode}
             onSchemaGenerated={handleSchemaGenerated}
             onSchemaCleared={handleSchemaCleared}
           />
         </div>
       </div>
 
-      <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#0e0e0e] lg:h-[calc(100vh-88px)]">
+      <div className={`relative flex flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#0e0e0e] ${mode === "sql" ? "min-h-0 flex-1 lg:h-[calc(100vh-88px)]" : "min-h-[60vh] flex-1 lg:h-[calc(100vh-88px)]"}`}>
         <button
           type="button"
           aria-label="Close"

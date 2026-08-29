@@ -38,24 +38,27 @@ export default function TryPage() {
   }, [schema]);
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-cream pt-16 lg:flex-row">
+    <div className="flex h-screen w-full flex-col gap-4 overflow-hidden bg-[#0a0a0a] p-4 pt-[72px] lg:flex-row">
       <h1 className="sr-only">Visualize Your PostgreSQL Schema - ER Diagram Generator</h1>
 
-      <div className="flex h-[52vh] shrink-0 flex-col overflow-hidden border-b border-black/5 bg-cream lg:h-auto lg:w-[440px] lg:shrink-0 lg:border-b-0 lg:border-r lg:border-black/5">
-        <div className="flex-1 overflow-auto p-6">
+      <div className="flex h-[52vh] shrink-0 flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#141414] lg:h-auto lg:w-[380px] lg:shrink-0">
+        <div className="flex-1 overflow-auto p-4">
           <TryModal
             onSchemaGenerated={handleSchemaGenerated}
             onSchemaCleared={handleSchemaCleared}
           />
         </div>
-        <div className="hidden border-t border-black/5 bg-white px-6 py-3 lg:block">
-          <p className="font-mono text-[11px] leading-relaxed text-muted">
-            Files stay local. Nothing stored, diagram updates live.
-          </p>
-        </div>
       </div>
 
-      <div className="relative flex flex-1 flex-col overflow-hidden bg-[#1a1a1a]">
+      <div className="relative flex flex-1 flex-col overflow-hidden rounded-2xl border border-white/5 bg-[#0e0e0e]">
+        <button
+          type="button"
+          aria-label="Close"
+          onClick={() => handleSchemaCleared()}
+          className="absolute right-4 top-4 z-20 hidden h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-white/5 text-[#666] hover:bg-white/10 hover:text-white sm:flex"
+        >
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
         {schema && (
           <div className="absolute left-4 right-4 top-4 z-20 flex items-center gap-2 rounded-full border border-white/10 bg-[#1f1f1f]/90 px-3 py-2 shadow-2xl backdrop-blur-sm sm:left-1/2 sm:right-auto sm:top-4 sm:w-[420px] sm:max-w-[90%] sm:-translate-x-1/2">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2" className="shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>

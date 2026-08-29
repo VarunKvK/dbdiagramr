@@ -205,7 +205,23 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
 
   const isSql = mode === "sql";
   return (
-    <div className={`flex w-full flex-col gap-4 ${isSql ? "h-full min-h-0 flex-1" : "h-auto"}`}>
+    <div
+      onDragOver={isSql ? (e) => { e.preventDefault(); setIsDragging(true); } : undefined}
+      onDragLeave={isSql ? (e) => { e.preventDefault(); if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false); } : undefined}
+      onDrop={isSql ? handleDrop : undefined}
+      className={`relative flex w-full flex-col gap-4 rounded-2xl p-1 ${isSql && isDragging ? "ring-2 ring-indigo-500/30" : ""} ${isSql ? "h-full min-h-0 flex-1" : "h-auto"}`}
+    >
+      {isSql && isDragging && (
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-2xl border-2 border-dashed border-indigo-500 bg-black/60 backdrop-blur-sm">
+          <div className="flex flex-col items-center gap-2 rounded-xl bg-white px-6 py-4 shadow-xl">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-ink text-white">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></svg>
+            </div>
+            <span className="font-mono text-sm font-medium text-ink">Drop here</span>
+            <span className="font-mono text-xs text-muted">Drop your .sql file to load</span>
+          </div>
+        </div>
+      )}
       <div className="flex shrink-0 rounded-xl bg-[#1e1e1e] p-1">
         <button
           onClick={() => setMode("sql")}
@@ -225,12 +241,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
 
       {mode === "sql" ? (
         <div className="flex min-h-0 flex-1 flex-col gap-4">
-          <div
-            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={handleDrop}
-            className={`relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border bg-[#0e0e0e] ${isDragging ? "border-indigo-500/50 ring-2 ring-indigo-500/20" : "border-white/5"}`}
-          >
+          <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-white/5 bg-[#0e0e0e]">
             <textarea
               ref={textareaRef}
               value={sqlText}
@@ -251,11 +262,6 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
               aria-invalid={hasError}
               className="h-full min-h-0 w-full flex-1 resize-none bg-transparent p-4 font-mono text-xs leading-5 text-[#8a8a8a] placeholder:text-[#444] outline-none"
             />
-            {isDragging && (
-              <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-                <span className="rounded-full bg-white px-4 py-2 font-mono text-xs font-medium text-black">Drop .sql file to load</span>
-              </div>
-            )}
           </div>
 
           {hasError && (
@@ -290,11 +296,8 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
           </div>
 
           <div
-            onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
-            onDragLeave={() => setIsDragging(false)}
-            onDrop={handleDrop}
             onClick={() => fileInputRef.current?.click()}
-            className={`flex shrink-0 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed bg-[#0e0e0e] px-4 py-8 text-center transition-colors hover:bg-[#141414] ${isDragging ? "border-indigo-500/50 bg-[#141414]" : "border-[#2a3950]/60"}`}
+            className="flex shrink-0 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-[#2a3950]/60 bg-[#0e0e0e] px-4 py-8 text-center transition-colors hover:bg-[#141414]"
           >
             <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 ring-1 ring-white/5">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></svg>

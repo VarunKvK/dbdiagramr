@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import type { Schema } from "@/lib/diagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
-import { ECOMMERCE_SQL, SUPABASE_SQL, SIMPLE_SQL } from "@/lib/sql/pgDumpSamples";
+import { ECOMMERCE_SQL, SUPABASE_SQL } from "@/lib/sql/pgDumpSamples";
 
 type Phase = "form" | "loading" | "result" | "error";
 type Mode = "connection" | "sql";
@@ -17,13 +17,14 @@ interface TryModalProps {
 export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModalProps) {
   const [mode, setMode] = useState<Mode>("sql");
   const [connectionString, setConnectionString] = useState("");
-  const [sqlText, setSqlText] = useState(ECOMMERCE_SQL);
+  const [sqlText, setSqlText] = useState("");
   const [sqlError, setSqlError] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("form");
   const [errorMsg, setErrorMsg] = useState("");
   const [errorHint, setErrorHint] = useState<string | null>(null);
   const [isLiveSite, setIsLiveSite] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
+  const [activeFile, setActiveFile] = useState<"schema" | "ecommerce" | "sample">("schema");
 
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -36,14 +37,6 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModa
         window.location.hostname !== "127.0.0.1"
     );
   }, []);
-
-  // initial live parse for default ECOMMERCE_SQL
-  useEffect(() => {
-    try {
-      const { schema } = parseSqlToSchema(ECOMMERCE_SQL);
-      onSchemaGenerated(schema);
-    } catch {}
-  }, [onSchemaGenerated]);
 
   const isLocalhostInput =
     connectionString.includes("localhost") ||
@@ -81,16 +74,24 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModa
   }, [sqlText, mode, handleSqlLive]);
 
   function loadSample(kind: "schema" | "ecommerce" | "sample") {
+    if (kind === "schema") {
+      setSqlText("");
+      setSqlError(null);
+      setActiveFile("schema");
+      onSchemaCleared();
+      textareaRef.current?.focus();
+      return;
+    }
     let sample = "";
     if (kind === "ecommerce") sample = ECOMMERCE_SQL;
-    else if (kind === "schema") sample = SIMPLE_SQL;
     else sample = SUPABASE_SQL;
     setSqlText(sample);
+    setActiveFile(kind);
     try {
       const { schema } = parseSqlToSchema(sample);
       setSqlError(null);
       onSchemaGenerated(schema);
-      const label = kind === "ecommerce" ? "ecommerce.sql" : kind === "schema" ? "schema.sql" : "sample.sql";
+      const label = kind === "ecommerce" ? "ecommerce.sql" : "sample.sql";
       toast.success(`${label} loaded`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Failed to parse sample";
@@ -106,7 +107,11 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModa
       return;
     }
     const reader = new FileReader();
-    reader.onload = () => setSqlText(String(reader.result || ""));
+    reader.onload = () => {
+      const text = String(reader.result || "");
+      setSqlText(text);
+      setActiveFile("schema");
+    };
     reader.readAsText(file);
     e.target.value = "";
   }
@@ -117,12 +122,16 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModa
     const text = e.dataTransfer.getData("text/plain");
     if (text) {
       setSqlText(text);
+      setActiveFile("schema");
       return;
     }
     const file = e.dataTransfer.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = () => setSqlText(String(reader.result || ""));
+      reader.onload = () => {
+        setSqlText(String(reader.result || ""));
+        setActiveFile("schema");
+      };
       reader.readAsText(file);
     }
   }
@@ -184,6 +193,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModa
   function handleClearSql() {
     setSqlText("");
     setSqlError(null);
+    setActiveFile("schema");
     onSchemaCleared();
   }
 
@@ -219,11 +229,13 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared }: TryModa
             <textarea
               ref={textareaRef}
               value={sqlText}
-              onChange={(e) => setSqlText(e.target.value)}
-              placeholder={`-- E-commerce example (5 tables, copy-paste friendly)
-CREATE TABLE users (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  email varchar(255) NOT NULL
+              onChange={(e) => {
+                setSqlText(e.target.value);
+                if (activeFile !== "schema") setActiveFile("schema");
+              }}
+              placeholder={`CREATE TABLE users (
+  id uuid PRIMARY KEY,
+  email text NOT NULL
 );`}
               spellCheck={false}
               autoComplete="off"
@@ -232,7 +244,7 @@ CREATE TABLE users (
               aria-label="SQL editor"
               aria-describedby={hasError ? "sql-error" : undefined}
               aria-invalid={hasError}
-              className="h-full min-h-0 w-full flex-1 resize-none bg-transparent p-4 font-mono text-xs leading-5 text-[#8a8a8a] placeholder:text-[#555] outline-none"
+              className="h-full min-h-0 w-full flex-1 resize-none bg-transparent p-4 font-mono text-xs leading-5 text-[#8a8a8a] placeholder:text-[#444] outline-none"
             />
             {isDragging && (
               <div className="pointer-events-none absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
@@ -249,9 +261,27 @@ CREATE TABLE users (
           )}
 
           <div className="flex shrink-0 flex-wrap gap-2">
-            <button onClick={() => loadSample("schema")} className="rounded-full bg-[#e9e9e9] px-3 py-1.5 font-mono text-xs font-medium text-black hover:bg-white">schema.sql</button>
-            <button onClick={() => loadSample("ecommerce")} className="rounded-full bg-[#e9e9e9] px-3 py-1.5 font-mono text-xs font-medium text-black hover:bg-white">ecommerce.sql</button>
-            <button onClick={() => loadSample("sample")} className="rounded-full bg-[#e9e9e9] px-3 py-1.5 font-mono text-xs font-medium text-black hover:bg-white">sample.sql</button>
+            <button
+              onClick={() => loadSample("schema")}
+              aria-pressed={activeFile === "schema"}
+              className={`rounded-full px-3 py-1.5 font-mono text-xs font-medium transition-colors ${activeFile === "schema" ? "bg-white text-black shadow" : "bg-white/10 text-[#999] hover:bg-white/15 hover:text-white"}`}
+            >
+              schema.sql
+            </button>
+            <button
+              onClick={() => loadSample("ecommerce")}
+              aria-pressed={activeFile === "ecommerce"}
+              className={`rounded-full px-3 py-1.5 font-mono text-xs font-medium transition-colors ${activeFile === "ecommerce" ? "bg-white text-black shadow" : "bg-white/10 text-[#999] hover:bg-white/15 hover:text-white"}`}
+            >
+              ecommerce.sql
+            </button>
+            <button
+              onClick={() => loadSample("sample")}
+              aria-pressed={activeFile === "sample"}
+              className={`rounded-full px-3 py-1.5 font-mono text-xs font-medium transition-colors ${activeFile === "sample" ? "bg-white text-black shadow" : "bg-white/10 text-[#999] hover:bg-white/15 hover:text-white"}`}
+            >
+              sample.sql
+            </button>
           </div>
 
           <div

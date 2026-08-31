@@ -41,7 +41,7 @@ export default function Navbar() {
           : "fixed left-0 right-0 top-0 z-50 h-16 border-b border-border backdrop-blur-lg"
       }
     >
-      <div className="mx-auto flex h-full max-w-6xl items-center justify-between px-4">
+      <div className="flex h-full items-center justify-between px-6 lg:px-8">
         <a
           href="/"
           onClick={(e) => {

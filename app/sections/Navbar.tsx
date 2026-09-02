@@ -9,9 +9,8 @@ function scrollToId(id: string) {
 }
 
 const links = [
-  { label: "Product", target: "/#demo" },
-  { label: "Features", target: "/#features" },
   { label: "Schemas", target: "/schema" },
+  { label: "Blog", target: "/blog" },
   { label: "Alternatives", target: "/alternatives" },
   { label: "Pricing", target: "/#pricing" },
 ];

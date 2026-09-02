@@ -33,7 +33,7 @@ export default function Footer() {
               <li><span className="cursor-default">Documentation</span></li>
               <li>
                 <a
-                  href="https://github.com/dbdiagramr"
+                  href="https://github.com/VarunKvK/dbdiagramr"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="transition-colors hover:text-ink"
@@ -41,7 +41,7 @@ export default function Footer() {
                   GitHub
                 </a>
               </li>
-              <li><span className="cursor-default">Blog</span></li>
+              <li><a href="/blog" className="transition-colors hover:text-ink">Blog</a></li>
             </ul>
           </div>
           <div>
@@ -58,7 +58,7 @@ export default function Footer() {
             &copy; 2026 dbdiagramr. Open source schema visualization.
           </p>
           <a
-            href="https://github.com/dbdiagramr"
+            href="https://github.com/VarunKvK/dbdiagramr"
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 text-muted hover:text-ink md:mt-0"

@@ -4,6 +4,7 @@ import HowToGuide from "@/app/sections/HowToGuide";
 import Features from "@/app/sections/Features";
 import Comparison from "@/app/sections/Comparison";
 import Pricing from "@/app/sections/Pricing";
+import BlogTeaser from "@/app/sections/BlogTeaser";
 import Footer from "@/app/sections/Footer";
 
 const howToJsonLd = {
@@ -62,6 +63,7 @@ export default function Home() {
       <div id="pricing" className="scroll-mt-16">
         <Pricing />
       </div>
+      <BlogTeaser />
       <Footer />
     </main>
   );

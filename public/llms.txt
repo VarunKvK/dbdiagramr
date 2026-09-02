@@ -7,7 +7,10 @@ dbdiagramr is a free, open-source web tool that generates interactive entity-rel
 - Home: https://www.dbdiagramr.space
 - Visualize your database: https://www.dbdiagramr.space/visualize
 - Schema diagram library: https://www.dbdiagramr.space/schema
+- Blog (PostgreSQL guides): https://www.dbdiagramr.space/blog
+- Comparisons: https://www.dbdiagramr.space/alternatives
 - Pricing: https://www.dbdiagramr.space/pricing.md
+- Full context: https://www.dbdiagramr.space/llms-full.txt
 - Features: https://www.dbdiagramr.space#features
 - How it works: https://www.dbdiagramr.space#guide
 
@@ -19,6 +22,8 @@ Reference ER diagrams of popular PostgreSQL schemas, each showing every table, c
 - NextAuth.js / Auth.js schema (4 tables): https://www.dbdiagramr.space/schema/nextauth
 - Laravel 11 default schema (7 tables): https://www.dbdiagramr.space/schema/laravel
 - Django auth schema (9 tables): https://www.dbdiagramr.space/schema/django
+- Stripe billing schema (9 tables): https://www.dbdiagramr.space/schema/stripe
+- E-commerce schema (11 tables): https://www.dbdiagramr.space/schema/ecommerce
 
 ## Pricing
 
@@ -34,4 +39,4 @@ Reference ER diagrams of popular PostgreSQL schemas, each showing every table, c
 - Uses the Transaction pooler (port 6543) for serverless platform compatibility
 - Connection strings are never stored - introspected and discarded immediately
 - Built with Next.js, PostgreSQL, and Tailwind CSS
-- Last updated: 2026-08-03
+- Last updated: 2026-09-03

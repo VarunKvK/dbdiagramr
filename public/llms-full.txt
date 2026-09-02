@@ -1,0 +1,93 @@
+# dbdiagramr — Full Context for AI Systems
+
+> dbdiagramr is a free, open-source web tool that generates interactive entity-relationship (ER) diagrams from any PostgreSQL connection string. No signup, no setup — paste your connection string and visualize your database schema in under 10 seconds.
+
+## What dbdiagramr does
+
+dbdiagramr introspects a live PostgreSQL database via `information_schema` and renders every table, column, primary key, and foreign key as an interactive SVG diagram. Pan, zoom, hover to trace relationships, export as SVG or PNG. The connection string is never stored — introspected and discarded immediately.
+
+- Input: PostgreSQL connection string (e.g. `postgresql://user:pass@host:5432/db`)
+- Output: Interactive ER diagram with auto-layout (React Flow + dagre)
+- Works with: Supabase, Neon, Railway, any PostgreSQL provider
+- Handles: Transaction pooler (port 6543) for serverless/edge compatibility, IPv4/IPv6
+- Security: No row data is read, only schema structure. No credentials stored.
+
+## Key Pages
+
+- Home — https://www.dbdiagramr.space
+- Visualize your database (the tool) — https://www.dbdiagramr.space/visualize
+- Schema diagram library — https://www.dbdiagramr.space/schema
+- Alternatives / Comparisons — https://www.dbdiagramr.space/alternatives
+- dbdiagram.io vs dbdiagramr — https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr
+- DrawSQL vs dbdiagramr — https://www.dbdiagramr.space/drawsql-vs-dbdiagramr
+- Pricing (machine-readable) — https://www.dbdiagramr.space/pricing.md
+- Features — https://www.dbdiagramr.space#features
+- How it works — https://www.dbdiagramr.space#guide
+- Sitemap — https://www.dbdiagramr.space/sitemap.xml
+- llms.txt (short) — https://www.dbdiagramr.space/llms.txt
+
+## Schema Diagram Library
+
+Live, interactive ER diagrams of popular PostgreSQL schemas. Each page shows every table, column, primary key, and foreign key, rendered from official migrations/docs. Includes facts, FAQs, and an interactive diagram.
+
+- Supabase auth schema (7 tables, core: auth.users) — https://www.dbdiagramr.space/schema/supabase
+  Tables: users, identities, sessions, refresh_tokens, instances, audit_log_entries, schema_migrations
+- NextAuth.js / Auth.js schema (4 tables, core: users) — https://www.dbdiagramr.space/schema/nextauth
+  Tables: users, accounts, sessions, verification_tokens. Relationship: User 1→N Account
+- Laravel 11 default schema (7 tables, core: users) — https://www.dbdiagramr.space/schema/laravel
+  Tables: users, password_reset_tokens, sessions, jobs, failed_jobs, cache, cache_locks
+- Django auth schema (9 tables, core: auth_user) — https://www.dbdiagramr.space/schema/django
+  Tables: auth_user, auth_group, auth_permission, auth_user_groups, auth_user_user_permissions, auth_group_permissions, django_content_type, django_admin_log, django_migrations
+
+## Features
+
+- Instant: Connect and generate a diagram in under 10 seconds. No manual drawing.
+- Interactive: Pan, zoom, drag tables, hover to trace foreign key relationships.
+- Shareable: Export as PNG/SVG or share an interactive link (Pro).
+- Secure: Connection string never stored. Only schema structure is read, never row data.
+- Always current: Re-paste the same connection string after a migration — diagram updates in 10 seconds. No drift.
+- Self-hostable: Open source (MIT), Next.js 14 + TypeScript.
+
+## Comparison Summary
+
+| Feature | dbdiagramr | Manual (draw.io, dbdiagram.io) | IDE (pgAdmin, DBeaver) | SQL queries |
+|---|---|---|---|---|
+| Setup time | Under 10 sec | 30 min – hours | Instant but local only | Instant but no visual |
+| No signup | Yes | Varies | Yes (installed) | Yes |
+| Interactive diagram | Yes (auto-layout) | Yes (manual layout) | Partly | No |
+| Shows foreign keys | Yes (live FKs) | Only if you add them | Yes | Yes (query) |
+| Export SVG/PNG | Yes | Yes | Yes | No |
+| Live schema from your DB | Yes | No (hand copy) | Snapshot | Live but text |
+| Always up to date | Yes (re-introspect) | No (drifts) | Manual re-run | Always |
+| Free | Yes (free tier) | Free tier exists | Free | Free |
+
+## Pricing
+
+- Free: $0/month — 5 diagrams per month, static PNG export, single database connection, community support
+- Pro: $8/month — unlimited diagrams, interactive shareable links, version history, team access (up to 5 members), priority email support
+
+Details: https://www.dbdiagramr.space/pricing.md and https://www.dbdiagramr.space#pricing
+
+## How It Works (3 Steps)
+
+1. Get your connection string — In your database provider dashboard, click Connect to retrieve the PostgreSQL connection string.
+2. Select the Transaction pooler — Under Connection method, select Transaction pooler (port 6543) for serverless/edge compatibility.
+3. Paste it into dbdiagramr — Paste the connection string at https://www.dbdiagramr.space/visualize and generate a navigable ER diagram in under 10 seconds.
+
+Supports: Supabase (direct / session pooler / transaction pooler), Neon (pooled / direct), Railway, any standard PostgreSQL URL. Handles URL-encoded passwords, `?sslmode=require`, `?channel_binding=require`.
+
+## Ideal For
+
+- Developers onboarding to an existing database who need to understand the schema
+- Teams documenting a PostgreSQL schema that keeps changing (no drift)
+- Solo founders using Supabase / Neon / Railway who want a quick visual
+- Anyone comparing ER diagram tools (dbdiagram.io, DrawSQL, pgAdmin) to a live-introspection approach
+
+## About
+
+- Built by a solo indie developer in public
+- GitHub: https://github.com/VarunKvK/dbdiagramr
+- License: MIT
+- Stack: Next.js 14, TypeScript, Tailwind CSS, PostgreSQL (pg), @xyflow/react + dagre
+- Contact / X: https://x.com/im_daedalus
+- Last updated: 2026-09-03

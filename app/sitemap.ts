@@ -1,5 +1,6 @@
 import type { MetadataRoute } from "next";
 import { getAllSchemaEntries } from "@/data/schemas/registry";
+import { getAllPosts } from "@/data/blog/posts";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://www.dbdiagramr.space";
@@ -10,6 +11,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
     lastModified: today,
     changeFrequency: "monthly" as const,
     priority: 0.8,
+  }));
+
+  const blogPostUrls = getAllPosts().map((post) => ({
+    url: `${base}/blog/${post.slug}`,
+    lastModified: post.date,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
   }));
 
   return [
@@ -49,6 +57,13 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "monthly",
       priority: 0.7,
     },
+    {
+      url: `${base}/blog`,
+      lastModified: today,
+      changeFrequency: "weekly",
+      priority: 0.8,
+    },
     ...schemaUrls,
+    ...blogPostUrls,
   ];
 }

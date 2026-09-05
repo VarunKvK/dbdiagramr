@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Carattere } from "next/font/google";
 import Script from "next/script";
 import Navbar from "@/app/sections/Navbar";
 import Popup from "@/components/Popup";
@@ -7,6 +7,11 @@ import { Toaster } from "sonner";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"] });
+const carattere = Carattere({
+  subsets: ["latin"],
+  weight: "400",
+  variable: "--font-carattere",
+});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.dbdiagramr.space"),
@@ -52,7 +57,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.className} scroll-smooth`}>
+    <html lang="en" className={`${inter.className} ${carattere.variable} scroll-smooth`}>
       <body className="antialiased">
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-MK1QVPVPSJ"

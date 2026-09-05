@@ -27,11 +27,13 @@ export function generateMetadata({
       description: post.description,
       type: "article",
       url,
+      images: [{ url: `/og/blog/${post.slug}.png`, width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title: post.title,
       description: post.description,
+      images: [`/og/blog/${post.slug}.png`],
     },
   };
 }

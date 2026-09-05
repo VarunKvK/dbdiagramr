@@ -1,156 +1,113 @@
 "use client";
 
-import { useMemo, useState, useCallback, useRef, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
+import { MacWindow } from "@/components/ui/mac-window";
+import SchemaDiagram from "@/components/SchemaDiagram";
+import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
+import { ECOMMERCE_SQL, SUPABASE_SQL } from "@/lib/sql/pgDumpSamples";
 
-const PALETTE = [
-  "99, 102, 241",
-  "139, 92, 246",
-  "168, 85, 247",
-  "59, 130, 246",
-  "14, 165, 233",
-];
-
-interface CellData {
-  id: number;
-  skip: boolean;
-}
+type ActiveFile = "ecommerce" | "sample";
 
 export default function Hero() {
   const router = useRouter();
-  const [activeCells, setActiveCells] = useState<Record<number, string>>({});
-  const timeoutsRef = useRef<Record<number, ReturnType<typeof setTimeout>>>({});
-  const gridRef = useRef<HTMLDivElement>(null);
+  const [activeFile, setActiveFile] = useState<ActiveFile>("ecommerce");
 
-  const cells = useMemo<CellData[]>(
-    () =>
-      Array.from({ length: 160 }, (_, i) => ({
-        id: i,
-        skip: Math.random() < 0.35,
-      })),
-    []
-  );
-
-  const lightUp = useCallback((index: number) => {
-    if (cells[index]?.skip) return;
-
-    if (timeoutsRef.current[index]) {
-      clearTimeout(timeoutsRef.current[index]);
+  const schemas = useMemo(() => {
+    try {
+      const ecommerce = parseSqlToSchema(ECOMMERCE_SQL).schema;
+      const supabase = parseSqlToSchema(SUPABASE_SQL).schema;
+      return { ecommerce, supabase };
+    } catch {
+      return null;
     }
-
-    const color = PALETTE[Math.floor(Math.random() * PALETTE.length)];
-    setActiveCells((prev) => ({ ...prev, [index]: color }));
-
-    timeoutsRef.current[index] = setTimeout(() => {
-      setActiveCells((prev) => {
-        const next = { ...prev };
-        delete next[index];
-        return next;
-      });
-    }, 800);
-  }, [cells]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const count = 1 + Math.floor(Math.random() * 3);
-      for (let i = 0; i < count; i++) {
-        const idx = Math.floor(Math.random() * 160);
-        lightUp(idx);
-      }
-    }, 400);
-    return () => clearInterval(interval);
-  }, [lightUp]);
-
-  const handleMouseMove = useCallback(
-    (e: React.MouseEvent) => {
-      if (!gridRef.current) return;
-      const rect = gridRef.current.getBoundingClientRect();
-      const x = e.clientX - rect.left;
-      const y = e.clientY - rect.top;
-      const colW = rect.width / 40;
-      const rowH = rect.height / 4;
-
-      const c = Math.floor(x / colW);
-      const r = Math.floor(y / rowH);
-      const idx = r * 40 + c;
-
-      if (idx >= 0 && idx < 160) {
-        lightUp(idx);
-        const neighbors = [-1, 1, -40, 40].filter(() => Math.random() > 0.5);
-        neighbors.forEach((n) => {
-          const ni = idx + n;
-          if (ni >= 0 && ni < 160) lightUp(ni);
-        });
-      }
-    },
-    [lightUp]
-  );
-
-  useEffect(() => {
-    return () => {
-      Object.values(timeoutsRef.current).forEach(clearTimeout);
-    };
   }, []);
 
+  const activeSchema = activeFile === "ecommerce" ? schemas?.ecommerce ?? null : schemas?.supabase ?? null;
+
   return (
-    <section className="relative bg-cream">
-      <div className="relative z-10 mx-auto max-w-4xl px-4 py-32 text-center">
-        <h1 className="text-5xl font-medium leading-tight text-ink md:text-6xl">
-          Stop drawing your database by hand
+    <section className="bg-cream pt-[210px]">
+      <div className="mx-auto max-w-6xl px-6 lg:px-8">
+        <h1 className="text-5xl font-medium leading-tight text-ink md:text-6xl lg:pr-[90px]">
+          Stop drawing your{" "}
+          <span className="font-[family-name:var(--font-carattere)] text-[1.15em] font-normal">
+            database
+          </span>{" "}
+          by hand
         </h1>
-        <p className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
+        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
           Generate a beautiful ER diagram from your PostgreSQL database in under
           10 seconds. No signup, no setup, no sketching.
         </p>
-        <p className="mx-auto mt-4 max-w-xl text-sm leading-relaxed text-muted/70">
+        {/* Hidden: moved to About section — ping when designing about */}
+        <p className="mt-4 hidden max-w-xl text-sm leading-relaxed text-muted/70">
           dbdiagramr is a free tool that converts PostgreSQL connection strings
           into interactive entity-relationship diagrams. It introspects your live
           database schema, tables, columns, foreign keys, and constraints and
           renders them as a navigable SVG diagram you can pan, zoom, and export.
         </p>
-        <button
-          type="button"
-          onClick={() => router.push("/visualize")}
-          className="mt-10 rounded-lg bg-ink px-8 py-3 font-medium text-white transition-colors hover:bg-[#333]"
-        >
-          Try it free
-        </button>
-        <p className="mt-4 text-sm text-muted">
+        <div className="mt-10 flex flex-wrap items-center gap-6">
+          <button
+            type="button"
+            onClick={() => router.push("/visualize")}
+            className="rounded-lg bg-[#4F39F6] px-8 py-3 font-medium text-white transition-colors hover:bg-[#4338CA]"
+          >
+            Try it free
+          </button>
           <a
             href="/schema"
-            className="font-medium text-indigo-600 transition-colors hover:text-indigo-500"
+            className="text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500"
           >
             Browse popular database schemas →
           </a>
-        </p>
+        </div>
       </div>
 
-      <div className="w-full px-4 pb-16">
-        <div
-          ref={gridRef}
-          className="grid w-full cursor-crosshair grid-cols-[repeat(40,1fr)] gap-px"
-          onMouseMove={handleMouseMove}
-        >
-          {cells.map(({ id, skip }) => {
-            const activeColor = activeCells[id];
-            return (
-              <div
-                key={id}
-                className="aspect-square w-full rounded-[1px]"
-                style={{
-                  backgroundColor: activeColor
-                    ? `rgba(${activeColor}, 0.45)`
-                    : skip
-                      ? "transparent"
-                      : "rgba(0,0,0,0.03)",
-                  transition: activeColor
-                    ? "background-color 0.08s ease"
-                    : "background-color 0.6s ease",
-                }}
-              />
-            );
-          })}
-        </div>
+      <div className="mx-auto max-w-6xl px-6 pb-24 pt-16 lg:px-8">
+        <MacWindow url="dbdiagramr.space/visualize">
+          <div className="flex gap-2 border-b border-border bg-white px-3 py-3">
+            <button
+              type="button"
+              onClick={() => router.push("/visualize")}
+              className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-mono font-medium text-muted transition-colors hover:bg-white hover:text-ink"
+            >
+              schema.sql
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveFile("ecommerce")}
+              aria-pressed={activeFile === "ecommerce"}
+              className={`rounded-full border px-3 py-1 text-xs font-mono font-medium transition-colors ${
+                activeFile === "ecommerce"
+                  ? "border-ink bg-ink text-white shadow"
+                  : "border-border bg-surface text-muted hover:bg-white hover:text-ink"
+              }`}
+            >
+              ecommerce.sql
+            </button>
+            <button
+              type="button"
+              onClick={() => setActiveFile("sample")}
+              aria-pressed={activeFile === "sample"}
+              className={`rounded-full border px-3 py-1 text-xs font-mono font-medium transition-colors ${
+                activeFile === "sample"
+                  ? "border-ink bg-ink text-white shadow"
+                  : "border-border bg-surface text-muted hover:bg-white hover:text-ink"
+              }`}
+            >
+              sample.sql
+            </button>
+          </div>
+          <div className="h-[500px]">
+            {activeSchema ? (
+              <SchemaDiagram schema={activeSchema} className="h-full w-full" />
+            ) : (
+              <div className="flex h-full items-center justify-center text-sm text-muted">
+                Loading preview...
+              </div>
+            )}
+          </div>
+        </MacWindow>
       </div>
     </section>
   );

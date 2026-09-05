@@ -212,24 +212,24 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
       className={`relative flex w-full flex-col gap-4 rounded-2xl p-1 ${isSql && isDragging ? "ring-2 ring-indigo-500/30" : ""} ${isSql ? "h-full min-h-0 flex-1" : "h-auto"}`}
     >
       {isSql && isDragging && (
-        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-2xl border-2 border-dashed border-indigo-500/60 bg-black/30 backdrop-blur-sm">
-          <span className="rounded-full bg-white/10 px-6 py-3 font-mono text-sm font-medium text-white backdrop-blur-md ring-1 ring-white/10">
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-2xl border-2 border-dashed border-indigo-500/60 bg-black/10 backdrop-blur-sm">
+          <span className="rounded-full bg-white px-6 py-3 font-mono text-sm font-medium text-ink shadow ring-1 ring-border backdrop-blur-md">
             Drop here
           </span>
         </div>
       )}
-      <div className="flex shrink-0 rounded-xl bg-[#1e1e1e] p-1">
+      <div className="flex shrink-0 rounded-xl bg-surface p-1">
         <button
           onClick={() => setMode("sql")}
           aria-pressed={mode === "sql"}
-          className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${mode === "sql" ? "bg-white text-black shadow" : "text-[#999] hover:text-white"}`}
+          className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${mode === "sql" ? "bg-white text-ink shadow border border-border" : "text-muted hover:text-ink"}`}
         >
           Paste SQL
         </button>
         <button
           onClick={() => setMode("connection")}
           aria-pressed={mode === "connection"}
-          className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${mode === "connection" ? "bg-white text-black shadow" : "text-[#999] hover:text-white"}`}
+          className={`flex-1 rounded-lg px-4 py-2 text-sm font-medium transition-colors ${mode === "connection" ? "bg-white text-ink shadow border border-border" : "text-muted hover:text-ink"}`}
         >
           Connect
         </button>
@@ -237,7 +237,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
 
       {mode === "sql" ? (
         <div className="flex min-h-0 flex-1 flex-col gap-4">
-          <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-white/5 bg-[#0e0e0e]">
+          <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden rounded-xl border border-border bg-white">
             <textarea
               ref={textareaRef}
               value={sqlText}
@@ -256,14 +256,14 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
               aria-label="SQL editor"
               aria-describedby={hasError ? "sql-error" : undefined}
               aria-invalid={hasError}
-              className="h-full min-h-0 w-full flex-1 resize-none bg-transparent p-4 font-mono text-xs leading-5 text-[#8a8a8a] placeholder:text-[#444] outline-none"
+              className="h-full min-h-0 w-full flex-1 resize-none bg-transparent p-4 font-mono text-xs leading-5 text-ink placeholder:text-muted outline-none"
             />
           </div>
 
           {hasError && (
-            <div id="sql-error" role="alert" className="shrink-0 rounded-xl border border-amber-500/20 bg-amber-500/10 px-3 py-2">
-              <p className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-amber-300">{sqlError}</p>
-              <button onClick={handleClearSql} className="mt-2 font-mono text-xs text-amber-300 underline-offset-4 hover:underline">Clear</button>
+            <div id="sql-error" role="alert" className="shrink-0 rounded-xl border border-amber-200 bg-amber-50 px-3 py-2">
+              <p className="whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-amber-700">{sqlError}</p>
+              <button onClick={handleClearSql} className="mt-2 font-mono text-xs text-amber-700 underline-offset-4 hover:underline">Clear</button>
             </div>
           )}
 
@@ -271,21 +271,21 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
             <button
               onClick={() => loadSample("schema")}
               aria-pressed={activeFile === "schema"}
-              className={`rounded-full px-3 py-1.5 font-mono text-xs font-medium transition-colors ${activeFile === "schema" ? "bg-white text-black shadow" : "bg-white/10 text-[#999] hover:bg-white/15 hover:text-white"}`}
+              className={`rounded-full border px-3 py-1.5 font-mono text-xs font-medium transition-colors ${activeFile === "schema" ? "border-ink bg-ink text-white shadow" : "border-border bg-surface text-muted hover:bg-white hover:text-ink"}`}
             >
               schema.sql
             </button>
             <button
               onClick={() => loadSample("ecommerce")}
               aria-pressed={activeFile === "ecommerce"}
-              className={`rounded-full px-3 py-1.5 font-mono text-xs font-medium transition-colors ${activeFile === "ecommerce" ? "bg-white text-black shadow" : "bg-white/10 text-[#999] hover:bg-white/15 hover:text-white"}`}
+              className={`rounded-full border px-3 py-1.5 font-mono text-xs font-medium transition-colors ${activeFile === "ecommerce" ? "border-ink bg-ink text-white shadow" : "border-border bg-surface text-muted hover:bg-white hover:text-ink"}`}
             >
               ecommerce.sql
             </button>
             <button
               onClick={() => loadSample("sample")}
               aria-pressed={activeFile === "sample"}
-              className={`rounded-full px-3 py-1.5 font-mono text-xs font-medium transition-colors ${activeFile === "sample" ? "bg-white text-black shadow" : "bg-white/10 text-[#999] hover:bg-white/15 hover:text-white"}`}
+              className={`rounded-full border px-3 py-1.5 font-mono text-xs font-medium transition-colors ${activeFile === "sample" ? "border-ink bg-ink text-white shadow" : "border-border bg-surface text-muted hover:bg-white hover:text-ink"}`}
             >
               sample.sql
             </button>
@@ -293,22 +293,22 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
 
           <div
             onClick={() => fileInputRef.current?.click()}
-            className="flex shrink-0 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-[#2a3950]/60 bg-[#0e0e0e] px-4 py-8 text-center transition-colors hover:bg-[#141414]"
+            className="flex shrink-0 cursor-pointer flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface px-4 py-8 text-center transition-colors hover:bg-white"
           >
-            <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white/5 ring-1 ring-white/5">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></svg>
+            <div className="mb-3 flex h-8 w-8 items-center justify-center rounded-lg bg-white ring-1 ring-border">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#6b6b6b" strokeWidth="1.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="12" y1="12" x2="12" y2="17"/><polyline points="9 14 12 17 15 14"/></svg>
             </div>
-            <span className="font-mono text-sm text-white">Upload .sql file</span>
-            <span className="mt-1 font-mono text-xs text-[#666]">Drop a file or paste above.</span>
+            <span className="font-mono text-sm text-ink">Upload .sql file</span>
+            <span className="mt-1 font-mono text-xs text-muted">Drop a file or paste above.</span>
           </div>
           <input ref={fileInputRef} type="file" accept=".sql,.txt" onChange={handleFileUpload} className="hidden" aria-hidden />
         </div>
       ) : (
         <>
           {(phase === "form" || phase === "loading") && (
-            <div className="rounded-xl border border-white/5 bg-[#0e0e0e] p-5">
-              <h3 className="text-sm font-medium text-white">Connect to your database</h3>
-              <p className="mt-1 text-sm leading-relaxed text-[#666]">Paste your connection string to visualize your live schema.</p>
+            <div className="rounded-xl border border-border bg-white p-5">
+              <h3 className="text-sm font-medium text-ink">Connect to your database</h3>
+              <p className="mt-1 text-sm leading-relaxed text-muted">Paste your connection string to visualize your live schema.</p>
               <div className="mt-4">
                 <label htmlFor="connection-string" className="sr-only">Connection string</label>
                 <input
@@ -322,19 +322,19 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
                   spellCheck={false}
                   aria-invalid={showLocalhostWarning}
                   aria-describedby={showLocalhostWarning ? "localhost-warning" : undefined}
-                  className="w-full rounded-xl border border-white/10 bg-[#1a1a1a] px-4 py-3 font-mono text-sm text-white placeholder:text-[#555] outline-none focus:border-white/20 focus:ring-1 focus:ring-white/10"
+                  className="w-full rounded-xl border border-border bg-surface px-4 py-3 font-mono text-sm text-ink placeholder:text-muted outline-none focus:border-ink/20 focus:ring-1 focus:ring-ink/10"
                 />
               </div>
 
               {showLocalhostWarning && (
-                <div id="localhost-warning" className="mt-3 rounded-xl border border-amber-500/20 bg-amber-500/5 px-3 py-3">
-                  <p className="font-mono text-xs font-medium text-amber-400">Local database detected</p>
-                  <p className="mt-1 font-mono text-xs leading-relaxed text-amber-300/70">Local databases only work when running locally. For the hosted version, use Supabase, Neon, or Railway.</p>
+                <div id="localhost-warning" className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3">
+                  <p className="font-mono text-xs font-medium text-amber-700">Local database detected</p>
+                  <p className="mt-1 font-mono text-xs leading-relaxed text-amber-600">Local databases only work when running locally. For the hosted version, use Supabase, Neon, or Railway.</p>
                 </div>
               )}
 
               {isLiveSite && !showLocalhostWarning && (
-                <p className="mt-3 font-mono text-xs leading-relaxed text-[#666]">
+                <p className="mt-3 font-mono text-xs leading-relaxed text-muted">
                   Tip: On Vercel or Netlify use your database Transaction pooler (port 6543), not direct 5432.
                 </p>
               )}
@@ -342,7 +342,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
               <button
                 onClick={handleGenerateConnection}
                 disabled={!connectionString.trim() || showLocalhostWarning}
-                className="mt-5 w-full rounded-full bg-white px-4 py-3 font-mono text-sm font-medium text-black hover:bg-white/90 disabled:opacity-40"
+                className="mt-5 w-full rounded-full bg-[#4F39F6] px-4 py-3 font-mono text-sm font-medium text-white hover:bg-[#4338CA] disabled:opacity-40"
               >
                 Generate diagram
               </button>
@@ -350,29 +350,29 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
           )}
 
           {phase === "loading" && (
-            <div className="flex items-center justify-center gap-3 rounded-xl border border-white/5 bg-[#0e0e0e] p-6">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-white/10 border-t-white" />
-              <span className="font-mono text-sm text-[#888]">Analyzing schema...</span>
+            <div className="flex items-center justify-center gap-3 rounded-xl border border-border bg-white p-6">
+              <div className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-ink" />
+              <span className="font-mono text-sm text-muted">Analyzing schema...</span>
             </div>
           )}
 
           {phase === "error" && (
-            <div className="rounded-xl border border-red-500/20 bg-[#0e0e0e] p-5">
-              <p className="whitespace-pre-wrap break-words font-mono text-sm leading-relaxed text-red-400">{errorMsg}</p>
+            <div className="rounded-xl border border-red-200 bg-red-50 p-5">
+              <p className="whitespace-pre-wrap break-words font-mono text-sm leading-relaxed text-red-600">{errorMsg}</p>
               {errorHint === "pooler" && (
-                <div className="mt-3 rounded-xl border border-amber-500/20 bg-amber-500/5 p-3">
-                  <p className="font-mono text-xs font-medium text-amber-400">Try the Transaction pooler (port 6543)</p>
-                  <p className="mt-1 font-mono text-xs leading-relaxed text-amber-300/70">Direct connections often fail from serverless. In your dashboard go to Connect, Transaction pooler, copy the 6543 string.</p>
+                <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                  <p className="font-mono text-xs font-medium text-amber-700">Try the Transaction pooler (port 6543)</p>
+                  <p className="mt-1 font-mono text-xs leading-relaxed text-amber-600">Direct connections often fail from serverless. In your dashboard go to Connect, Transaction pooler, copy the 6543 string.</p>
                 </div>
               )}
-              <button onClick={handleNewConnection} className="mt-4 w-full rounded-full bg-white px-4 py-2.5 font-mono text-sm font-medium text-black hover:bg-white/90">Try again</button>
+              <button onClick={handleNewConnection} className="mt-4 w-full rounded-full bg-[#4F39F6] px-4 py-2.5 font-mono text-sm font-medium text-white hover:bg-[#4338CA]">Try again</button>
             </div>
           )}
 
           {phase === "result" && (
-            <div className="rounded-xl border border-white/5 bg-[#0e0e0e] p-5 text-center">
-              <p className="font-mono text-sm text-white">Connected</p>
-              <button onClick={handleNewConnection} className="mt-3 font-mono text-sm text-[#888] underline-offset-4 hover:text-white hover:underline">
+            <div className="rounded-xl border border-border bg-white p-5 text-center">
+              <p className="font-mono text-sm text-ink">Connected</p>
+              <button onClick={handleNewConnection} className="mt-3 font-mono text-sm text-muted underline-offset-4 hover:text-ink hover:underline">
                 New connection
               </button>
             </div>

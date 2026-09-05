@@ -57,10 +57,10 @@ function TableNode({ data }: NodeProps<TableFlowNode>) {
 
   return (
     <div
-      className={`overflow-hidden rounded-lg border shadow-[0_4px_20px_rgba(0,0,0,0.45)] ${data.searchActive && data.highlightTable ? "border-indigo-500/50" : "border-[#2a2a2a]"} bg-[#1a1a1a]`}
+      className={`overflow-hidden rounded-lg border bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] ${data.searchActive && data.highlightTable ? "border-indigo-500/50" : "border-border"}`}
       style={{ width: size.width, height: size.height }}
     >
-      <div className={`flex h-[38px] items-center justify-center text-[13px] font-semibold ${data.searchActive && data.highlightTable ? "bg-indigo-600/20 text-indigo-200" : "bg-[#252525] text-[#e5e5e5]"}`}>
+      <div className={`flex h-[38px] items-center justify-center text-[13px] font-semibold ${data.searchActive && data.highlightTable ? "bg-indigo-100 text-indigo-700" : "bg-surface text-ink"}`}>
         {table.name}
       </div>
       <div className="relative">
@@ -73,12 +73,12 @@ function TableNode({ data }: NodeProps<TableFlowNode>) {
           return (
             <div
               key={col.name}
-              className={`relative flex h-[26px] items-center justify-between border-b px-[14px] last:border-b-0 ${isColMatch ? "bg-indigo-600/20" : ""} ${isSearchActive && data.highlightTable === false && !isColMatch ? "opacity-60" : ""} border-[#2a2a2a]`}
+              className={`relative flex h-[26px] items-center justify-between border-b px-[14px] last:border-b-0 ${isColMatch ? "bg-indigo-50" : ""} ${isSearchActive && data.highlightTable === false && !isColMatch ? "opacity-60" : ""} border-border`}
               title={`${col.name} ${formatType(col.type)}${col.nullable === "YES" ? " nullable" : " not null"}${col.default ? ` default ${col.default}` : ""}`}
             >
-              <span className={`truncate font-mono text-[12px] ${isColMatch ? "font-semibold text-indigo-300" : "text-[#a0a0a0]"}`}>{col.name}</span>
+              <span className={`truncate font-mono text-[12px] ${isColMatch ? "font-semibold text-indigo-600" : "text-ink"}`}>{col.name}</span>
               <span className="ml-2 flex shrink-0 items-center gap-1.5">
-                <span className={`font-mono text-[10px] ${isColMatch ? "text-indigo-400" : "text-[#666]"}`}>{formatType(col.type)}</span>
+                <span className={`font-mono text-[10px] ${isColMatch ? "text-indigo-500" : "text-muted"}`}>{formatType(col.type)}</span>
                 {(isPk || isFkCol) && (
                   <span className="font-mono text-[10px] font-bold text-[#6366f1]">
                     {isPk ? "PK" : "FK"}
@@ -147,7 +147,7 @@ function ErdEdge({
           className="pointer-events-none absolute"
           style={{ transform: `translate(-50%, -50%) translate(${sourceX}px, ${sourceY}px)` }}
         >
-          <span className="flex h-4 w-4 items-center justify-center rounded bg-[#1a1a1a] text-[9px] font-bold text-[#4f46e5] ring-1 ring-[#333]">
+          <span className="flex h-4 w-4 items-center justify-center rounded bg-white text-[9px] font-bold text-[#4f46e5] ring-1 ring-border">
             {data?.fromLabel ?? "*"}
           </span>
         </div>
@@ -155,7 +155,7 @@ function ErdEdge({
           className="pointer-events-none absolute"
           style={{ transform: `translate(-50%, -50%) translate(${targetX}px, ${targetY}px)` }}
         >
-          <span className="flex h-4 w-4 items-center justify-center rounded bg-[#1a1a1a] text-[9px] font-bold text-[#4f46e5] ring-1 ring-[#333]">
+          <span className="flex h-4 w-4 items-center justify-center rounded bg-white text-[9px] font-bold text-[#4f46e5] ring-1 ring-border">
             {data?.toLabel ?? "1"}
           </span>
         </div>
@@ -379,7 +379,7 @@ function Canvas({ schema, className = "", searchQuery = "" }: SchemaDiagramProps
       canvas.width = w * 2;
       canvas.height = h * 2;
       const ctx = canvas.getContext("2d")!;
-      ctx.fillStyle = "#0f0f0f";
+      ctx.fillStyle = "#faf9f7";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.scale(2, 2);
       ctx.drawImage(img, 0, 0, w, h);
@@ -410,42 +410,42 @@ function Canvas({ schema, className = "", searchQuery = "" }: SchemaDiagramProps
         deleteKeyCode={null}
         minZoom={0.2}
         maxZoom={2.5}
-        colorMode="dark"
+        colorMode="light"
       >
-        <Background variant={BackgroundVariant.Dots} gap={28} size={1} color="#333" />
-        <Controls position="bottom-left" showInteractive={false} className="!border-white/10 !bg-[#252525] [&_button]:!text-[#ccc] [&_button:hover]:!bg-[#333]" />
+        <Background variant={BackgroundVariant.Dots} gap={28} size={1} color="#d4d4d4" />
+        <Controls position="bottom-left" showInteractive={false} className="!border-border !bg-white [&_button]:!text-ink [&_button:hover]:!bg-surface" />
         <MiniMap
           position="bottom-right"
           pannable
           zoomable
           nodeColor="#4f46e5"
           nodeStrokeWidth={2}
-          maskColor="rgba(10,10,10,0.7)"
-          className="!bg-[#1a1a1a]"
+          maskColor="rgba(250,249,247,0.7)"
+          className="!bg-white"
         />
         <Panel position="top-right">
           <div ref={downloadRef} className="relative">
             <button
               onClick={() => setDownloadOpen((v) => !v)}
               title="Download"
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-[#252525] text-[#ccc] shadow-md ring-1 ring-white/5 transition-colors hover:bg-[#333] hover:text-white"
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-ink shadow-md ring-1 ring-border transition-colors hover:bg-surface hover:text-ink"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
             </button>
             {downloadOpen && (
-              <div className="absolute right-0 top-10 z-20 w-36 rounded-lg border border-white/10 bg-[#1a1a1a] py-1 shadow-xl">
+              <div className="absolute right-0 top-10 z-20 w-36 rounded-lg border border-border bg-white py-1 shadow-xl">
                 <button
                   onClick={handleExportSVG}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#ccc] transition-colors hover:bg-[#252525] hover:text-white"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-xs text-muted transition-colors hover:bg-surface hover:text-ink"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><polyline points="16 16 12 12 8 16" /><line x1="12" y1="12" x2="12" y2="21" /><path d="M20.39 18.39A5 5 0 0 0 18 9h-1.26A8 8 0 1 0 3 16.3" /><polygon points="12 3 12 12 16 8" /></svg>
                   Export SVG
                 </button>
                 <button
                   onClick={handleExportPNG}
-                  className="flex w-full items-center gap-2 px-3 py-2 text-xs text-[#ccc] transition-colors hover:bg-[#252525] hover:text-white"
+                  className="flex w-full items-center gap-2 px-3 py-2 text-xs text-muted transition-colors hover:bg-surface hover:text-ink"
                 >
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2" /><circle cx="8.5" cy="8.5" r="1.5" /><polyline points="21 15 16 10 5 21" /></svg>
                   Export PNG

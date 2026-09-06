@@ -1,4 +1,5 @@
 import Hero from "@/app/sections/Hero";
+import About from "@/app/sections/About";
 import Demo from "@/app/sections/Demo";
 import HowToGuide from "@/app/sections/HowToGuide";
 import Features from "@/app/sections/Features";
@@ -47,6 +48,9 @@ export default function Home() {
       />
       <div id="hero" className="scroll-mt-16">
         <Hero />
+      </div>
+      <div className="scroll-mt-16">
+        <About />
       </div>
       <div className="scroll-mt-16">
         <Demo />

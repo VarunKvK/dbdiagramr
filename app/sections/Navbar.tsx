@@ -40,8 +40,8 @@ export default function Navbar() {
   }
 
   return (
-    <nav className="relative z-50 h-16 border-b border-border bg-white/70 backdrop-blur-lg">
-      <div className="flex h-full items-center justify-between px-6 pr-[90px] lg:px-8 lg:pr-[90px]">
+    <nav className="fixed z-50 h-16 border-b border-border bg-white/70 backdrop-blur-lg w-full">
+      <div className="flex h-full items-center justify-between px-6 lg:px-8 max-w-7xl mx-auto w-full">
         <a
           href="/"
           onClick={(e) => {

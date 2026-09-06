@@ -26,11 +26,11 @@ export default function Hero() {
   const activeSchema = activeFile === "ecommerce" ? schemas?.ecommerce ?? null : schemas?.supabase ?? null;
 
   return (
-    <section className="bg-cream pt-[210px]">
-      <div className="mx-auto max-w-6xl px-6 lg:px-8">
+    <section className="bg-cream pt-[400px]">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <h1 className="text-5xl font-medium leading-tight text-ink md:text-6xl lg:pr-[90px]">
           Stop drawing your{" "}
-          <span className="font-[family-name:var(--font-carattere)] text-[1.15em] font-normal">
+          <span className="underline decoration-2 underline-offset-4 font-[family-name:var(--font-carattere)] text-[1.15em] font-normal">
             database
           </span>{" "}
           by hand
@@ -38,13 +38,6 @@ export default function Hero() {
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
           Generate a beautiful ER diagram from your PostgreSQL database in under
           10 seconds. No signup, no setup, no sketching.
-        </p>
-        {/* Hidden: moved to About section — ping when designing about */}
-        <p className="mt-4 hidden max-w-xl text-sm leading-relaxed text-muted/70">
-          dbdiagramr is a free tool that converts PostgreSQL connection strings
-          into interactive entity-relationship diagrams. It introspects your live
-          database schema, tables, columns, foreign keys, and constraints and
-          renders them as a navigable SVG diagram you can pan, zoom, and export.
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <button
@@ -63,7 +56,7 @@ export default function Hero() {
         </div>
       </div>
 
-      <div className="mx-auto max-w-6xl px-6 pb-24 pt-16 lg:px-8">
+      <div className="mx-auto max-w-7xl px-6 pb-24 pt-16 lg:px-8">
         <MacWindow url="dbdiagramr.space/visualize">
           <div className="flex gap-2 border-b border-border bg-white px-3 py-3">
             <button

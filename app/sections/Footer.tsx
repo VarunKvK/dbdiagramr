@@ -13,7 +13,7 @@ export default function Footer() {
             </p>
           </div>
           <div>
-            <h4 className="mb-4 text-sm font-medium text-ink">Product</h4>
+            <h3 className="mb-4 text-sm font-medium text-ink">Product</h3>
             <ul className="space-y-3 text-sm text-muted">
               <li><a href="#features" className="transition-colors hover:text-ink">Features</a></li>
               <li><a href="#pricing" className="transition-colors hover:text-ink">Pricing</a></li>
@@ -22,7 +22,7 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="mb-4 text-sm font-medium text-ink">Resources</h4>
+            <h3 className="mb-4 text-sm font-medium text-ink">Resources</h3>
             <ul className="space-y-3 text-sm text-muted">
               <li>
                 <a href="/schema" className="transition-colors hover:text-ink">Schema Library</a>
@@ -45,7 +45,7 @@ export default function Footer() {
             </ul>
           </div>
           <div>
-            <h4 className="mb-4 text-sm font-medium text-ink">Legal</h4>
+            <h3 className="mb-4 text-sm font-medium text-ink">Legal</h3>
             <ul className="space-y-3 text-sm text-muted">
               <li><span className="cursor-default">Privacy</span></li>
               <li><span className="cursor-default">Terms</span></li>
@@ -62,6 +62,7 @@ export default function Footer() {
             target="_blank"
             rel="noopener noreferrer"
             className="mt-4 text-muted hover:text-ink md:mt-0"
+            aria-label="dbdiagramr on GitHub"
           >
             <svg
               width="20"

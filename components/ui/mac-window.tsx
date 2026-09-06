@@ -10,7 +10,7 @@ export function MacWindow({ children, url, className }: MacWindowProps) {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-border bg-white shadow-2xl",
+        "overflow-hidden rounded-2xl border border-border bg-white shadow-sm",
         className
       )}
     >

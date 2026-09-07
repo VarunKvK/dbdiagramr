@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "dbdiagram.io vs dbdiagramr - Compared",
+  title: "dbdiagram.io vs dbdiagramr -- Compared (2026)",
   description:
-    "dbdiagram.io vs dbdiagramr: DBML code-first diagram design vs instant visualization from a live PostgreSQL connection string. No signup required.",
+    "dbdiagram.io vs dbdiagramr: DBML code-first diagram design vs instant visualization from a live PostgreSQL connection string. Feature-by-feature comparison with FAQs.",
   alternates: {
     canonical: "https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr",
   },

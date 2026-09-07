@@ -12,6 +12,7 @@ function scrollToId(id: string) {
 
 const links = [
   { label: "Schemas", target: "/schema" },
+  { label: "Tools", target: "/postgres-er-diagram" },
   { label: "Blog", target: "/blog" },
   { label: "Alternatives", target: "/alternatives" },
   { label: "Pricing", target: "/#pricing" },

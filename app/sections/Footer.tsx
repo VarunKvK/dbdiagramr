@@ -30,7 +30,9 @@ export default function Footer() {
               <li>
                 <a href="/alternatives" className="transition-colors hover:text-ink">Alternatives</a>
               </li>
-              <li><span className="cursor-default">Documentation</span></li>
+              <li>
+                <a href="/blog" className="transition-colors hover:text-ink">Blog</a>
+              </li>
               <li>
                 <a
                   href="https://github.com/VarunKvK/dbdiagramr"
@@ -41,7 +43,26 @@ export default function Footer() {
                   GitHub
                 </a>
               </li>
-              <li><a href="/blog" className="transition-colors hover:text-ink">Blog</a></li>
+            </ul>
+          </div>
+          <div>
+            <h3 className="mb-4 text-sm font-medium text-ink">Tools</h3>
+            <ul className="space-y-3 text-sm text-muted">
+              <li>
+                <a href="/postgres-er-diagram" className="transition-colors hover:text-ink">PostgreSQL ER Diagram</a>
+              </li>
+              <li>
+                <a href="/supabase-schema-diagram" className="transition-colors hover:text-ink">Supabase Schema Diagram</a>
+              </li>
+              <li>
+                <a href="/free-schema-generator" className="transition-colors hover:text-ink">Free Schema Generator</a>
+              </li>
+              <li>
+                <a href="/database-diagram-online" className="transition-colors hover:text-ink">Database Diagram Online</a>
+              </li>
+              <li>
+                <a href="/postgres-schema-visualizer" className="transition-colors hover:text-ink">Schema Visualizer</a>
+              </li>
             </ul>
           </div>
           <div>

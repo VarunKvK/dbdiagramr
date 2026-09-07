@@ -7,7 +7,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=flat-square)](LICENSE)
 [![GitHub Stars](https://img.shields.io/github/stars/VarunKvK/dbdiagramr?style=flat-square&logo=github)](https://github.com/VarunKvK/dbdiagramr/stargazers)
 
-![Screenshot of dbdiagramr showing an interactive ER diagram](screenshot.png)
+![Screenshot of dbdiagramr showing an interactive ER diagram](https://www.dbdiagramr.space/DbDiagramr-OG.png)
 
 **[Try it live →](https://www.dbdiagramr.space/visualize)** — No signup. Paste a connection string, see your schema in under 10 seconds.
 

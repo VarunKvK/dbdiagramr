@@ -2,9 +2,9 @@ import type { Metadata } from "next";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "DrawSQL vs dbdiagramr - Which ER Diagram Tool?",
+  title: "DrawSQL vs dbdiagramr -- Which ER Diagram Tool? (2026)",
   description:
-    "DrawSQL vs dbdiagramr: team collaboration and visual schema editing vs instant ER diagrams from a live PostgreSQL connection string.",
+    "DrawSQL vs dbdiagramr: team collaboration and visual schema editing vs instant ER diagrams from a live PostgreSQL connection string. Feature comparison with FAQs.",
   alternates: {
     canonical: "https://www.dbdiagramr.space/drawsql-vs-dbdiagramr",
   },

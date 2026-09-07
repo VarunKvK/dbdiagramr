@@ -16,11 +16,11 @@ const carattere = Carattere({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.dbdiagramr.space"),
   title: {
-    default: "PostgreSQL ER Diagram Generator | dbdiagramr",
+    default: "PostgreSQL ER Diagram Tool -- Generate Diagrams in 10 Seconds | dbdiagramr",
     template: "%s | dbdiagramr",
   },
   description:
-    "Paste a PostgreSQL connection string and generate an interactive ER diagram in seconds. No signup required.",
+    "Paste a PostgreSQL connection string and generate an interactive ER diagram in under 10 seconds. No signup, no setup. Free for 5 diagrams/month.",
   keywords:
     "postgresql er diagram, postgresql schema diagram, er diagram generator, database schema visualization, postgresql schema visualization, db diagram, supabase schema, er diagram tool",
   authors: [{ name: "dbdiagramr" }],
@@ -32,9 +32,9 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: "dbdiagramr - See your database, visually",
+    title: "PostgreSQL ER Diagram Tool -- Paste Connection String, Get Diagram",
     description:
-      "Generate interactive ER diagrams from any PostgreSQL database. Hover to trace relationships, export as SVG or PNG.",
+      "Generate interactive ER diagrams from any PostgreSQL database. Hover to trace foreign key relationships, export as SVG or PNG. Free.",
     type: "website",
     url: "https://www.dbdiagramr.space",
     images: [{ url: "/DbDiagramr-OG.png", width: 1200, height: 630 }],

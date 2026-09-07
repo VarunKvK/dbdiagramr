@@ -63,6 +63,36 @@ export default function sitemap(): MetadataRoute.Sitemap {
       changeFrequency: "weekly",
       priority: 0.8,
     },
+    {
+      url: `${base}/postgres-er-diagram`,
+      lastModified: today,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${base}/supabase-schema-diagram`,
+      lastModified: today,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${base}/free-schema-generator`,
+      lastModified: today,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${base}/database-diagram-online`,
+      lastModified: today,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${base}/postgres-schema-visualizer`,
+      lastModified: today,
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
     ...schemaUrls,
     ...blogPostUrls,
   ];

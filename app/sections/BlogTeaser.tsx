@@ -5,8 +5,8 @@ export default function BlogTeaser() {
   const posts = getAllPosts().slice(0, 3);
 
   return (
-    <section className="bg-white py-20">
-      <div className="mx-auto max-w-6xl px-4">
+    <section className="bg-white py-20 mt-[120px] mb-24">
+      <div className="mx-auto max-w-7xl px-4">
         <div className="mb-10 flex items-end justify-between">
           <div>
             <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">

@@ -36,8 +36,8 @@ export default function Hero() {
           by hand
         </h1>
         <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
-          Generate a beautiful ER diagram from your PostgreSQL database in under
-          10 seconds. No signup, no setup, no sketching.
+            Paste SQL or connect to your database. See tables, columns, and
+            foreign keys as an interactive diagram in seconds.
         </p>
         <div className="mt-10 flex flex-wrap items-center gap-6">
           <button

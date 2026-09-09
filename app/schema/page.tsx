@@ -62,15 +62,15 @@ export default function SchemaHubPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto max-w-6xl px-4 pb-16 pt-24">
-        <div className="mb-12 text-center">
+      <div className="mx-auto max-w-7xl px-4 pb-16 pt-[30rem]">
+        <div className="mb-12">
           <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
             Schema Library
           </span>
           <h1 className="mt-4 text-4xl font-medium text-ink md:text-5xl">
             Popular database schema diagrams
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
+          <p className="mt-4 max-w-4xl text-lg text-muted">
             Explore the real database schemas behind popular projects. Every
             diagram shows tables, columns, primary keys, and foreign key
             relationships - rendered from official migrations and docs.

@@ -83,17 +83,12 @@ const headers = [
 
 export default function Comparison() {
   return (
-    <section className="bg-[#fafafa]">
-      <div className="mx-auto max-w-4xl px-4 py-24">
-        <div className="mb-4 text-center">
-          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
-            Comparison
-          </span>
-        </div>
-        <h2 className="mb-4 text-center text-3xl font-medium text-[#1a1a1a] md:text-4xl">
+    <section className="bg-[#fafafa] pt-[120px]">
+      <div className="mx-auto max-w-7xl px-4 py-24">
+        <h2 className="mb-4 text-3xl font-medium text-[#1a1a1a] md:text-4xl">
           Why use dbdiagramr?
         </h2>
-        <p className="mx-auto mb-16 max-w-lg text-center text-[#737373]">
+        <p className="mb-16 max-w-2xl text-lg text-[#737373]">
           See how dbdiagramr compares to the alternatives for understanding your
           PostgreSQL schema.
         </p>

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/app/sections/Footer";
+import TwoWaysToUse from "@/app/sections/TwoWaysToUse";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
 import { ECOMMERCE_SQL } from "@/lib/sql/pgDumpSamples";
@@ -137,12 +138,11 @@ export default function FreeSchemaGeneratorPage() {
             Free Database Schema Generator
           </h1>
           <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted">
-            Turn your PostgreSQL database into a visual schema diagram. No
-            signup, no credit card, no limits on the free plan. Export as PNG or
-            SVG.
+            Paste SQL or connect to your PostgreSQL database. Generate a visual
+            schema diagram in seconds. Free forever, no signup.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            {["Free Forever", "No Credit Card", "Export SVG/PNG"].map(
+            {["Free Forever", "Paste SQL or Connect", "Export SVG/PNG"].map(
               (label) => (
                 <span
                   key={label}
@@ -170,43 +170,7 @@ export default function FreeSchemaGeneratorPage() {
           </div>
         </div>
 
-        <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
-            How to generate your schema
-          </h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                step: "1",
-                title: "Get your connection string",
-                desc: "From Supabase, Neon, Railway, or any PostgreSQL provider, copy the connection string.",
-              },
-              {
-                step: "2",
-                title: "Paste it into the generator",
-                desc: "No account needed. Just paste and click Generate.",
-              },
-              {
-                step: "3",
-                title: "Download or share",
-                desc: "Export as PNG or SVG, or share the interactive diagram link with your team.",
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5"
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-sm font-medium text-white">
-                  {item.step}
-                </div>
-                <h3 className="mt-4 text-lg font-medium text-ink">
-                  {item.title}
-                </h3>
-                <p className="mt-2 leading-relaxed text-muted">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <TwoWaysToUse />
 
         <section className="mt-16">
           <h2 className="mb-6 text-2xl font-medium text-ink">

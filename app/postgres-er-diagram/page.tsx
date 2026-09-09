@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/app/sections/Footer";
+import TwoWaysToUse from "@/app/sections/TwoWaysToUse";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
 import { ECOMMERCE_SQL } from "@/lib/sql/pgDumpSamples";
@@ -136,11 +137,11 @@ export default function PostgresErDiagramPage() {
             PostgreSQL ER Diagram Tool
           </h1>
           <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted">
-            Generate a beautiful entity-relationship diagram from your PostgreSQL
-            database in under 10 seconds. No signup, no setup, no sketching.
+            Paste SQL or connect to your PostgreSQL database. See tables, columns,
+            and foreign keys as an interactive ER diagram in seconds.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            {["No Signups", "Free", "Open Source"].map((label) => (
+            {["Paste SQL or Connect", "Live Preview", "Export SVG/PNG"].map((label) => (
               <span
                 key={label}
                 className="inline-flex items-center gap-2 rounded-full border border-indigo-400 bg-[#D4D2FF] px-4 py-1.5 text-xs font-medium text-ink"
@@ -166,43 +167,7 @@ export default function PostgresErDiagramPage() {
           </div>
         </div>
 
-        <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
-            How it works
-          </h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                step: "1",
-                title: "Copy your connection string",
-                desc: "Get the PostgreSQL connection string from your database provider -- Supabase, Neon, Railway, AWS RDS, or any managed PostgreSQL.",
-              },
-              {
-                step: "2",
-                title: "Paste it into dbdiagramr",
-                desc: "No signup required. Just paste the connection string and click Generate.",
-              },
-              {
-                step: "3",
-                title: "See your ER diagram",
-                desc: "Every table, column, and foreign key appears as an interactive diagram. Pan, zoom, hover to trace relationships.",
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5"
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-sm font-medium text-white">
-                  {item.step}
-                </div>
-                <h3 className="mt-4 text-lg font-medium text-ink">
-                  {item.title}
-                </h3>
-                <p className="mt-2 leading-relaxed text-muted">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <TwoWaysToUse />
 
         <section className="mt-16">
           <h2 className="mb-4 text-2xl font-medium text-ink">

@@ -44,15 +44,15 @@ const plans = [
 
 export default function Pricing() {
   return (
-    <section className="bg-cream">
-      <div className="mx-auto max-w-5xl px-4 py-24">
-        <h2 className="mb-4 text-center text-3xl font-medium text-ink md:text-4xl">
+    <section className="bg-cream pt-[120px]">
+      <div className="mx-auto max-w-7xl px-4 py-24">
+        <h2 className="mb-4 text-3xl font-medium text-ink md:text-4xl">
           Simple pricing
         </h2>
-        <p className="mx-auto mb-16 max-w-2xl text-center text-lg text-muted">
+        <p className="mb-16 max-w-2xl text-lg text-muted">
           Start free. Upgrade when you need more.
         </p>
-        <div className="mx-auto grid max-w-3xl gap-8 md:grid-cols-2">
+        <div className="mx-auto grid max-w-7xl gap-8 md:grid-cols-2">
           {plans.map((plan) => (
             <div key={plan.name}>
               {plan.popular && (

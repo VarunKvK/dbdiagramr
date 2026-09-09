@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/app/sections/Footer";
+import TwoWaysToUse from "@/app/sections/TwoWaysToUse";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
 import { ECOMMERCE_SQL } from "@/lib/sql/pgDumpSamples";
@@ -137,11 +138,11 @@ export default function DatabaseDiagramOnlinePage() {
             Database Diagram Online
           </h1>
           <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted">
-            Visualize your PostgreSQL database schema right in your browser. No
-            installation, no account, no schema code to write.
+            Paste SQL or connect to your PostgreSQL database right in your browser.
+            See your schema as an interactive diagram in seconds.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            {["Browser-Based", "No Install", "Instant"].map((label) => (
+            {["Browser-Based", "Paste SQL or Connect", "Live Preview"].map((label) => (
               <span
                 key={label}
                 className="inline-flex items-center gap-2 rounded-full border border-indigo-400 bg-[#D4D2FF] px-4 py-1.5 text-xs font-medium text-ink"
@@ -167,43 +168,7 @@ export default function DatabaseDiagramOnlinePage() {
           </div>
         </div>
 
-        <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
-            How to create a database diagram online
-          </h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                step: "1",
-                title: "Open the tool",
-                desc: "No download needed. Just open dbdiagramr in your browser on any device.",
-              },
-              {
-                step: "2",
-                title: "Paste your connection string",
-                desc: "Get the PostgreSQL connection string from your database provider and paste it in.",
-              },
-              {
-                step: "3",
-                title: "Interact with your diagram",
-                desc: "Pan, zoom, hover to trace foreign key relationships. Export as PNG or SVG.",
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5"
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-sm font-medium text-white">
-                  {item.step}
-                </div>
-                <h3 className="mt-4 text-lg font-medium text-ink">
-                  {item.title}
-                </h3>
-                <p className="mt-2 leading-relaxed text-muted">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <TwoWaysToUse />
 
         <section className="mt-16">
           <h2 className="mb-6 text-2xl font-medium text-ink">

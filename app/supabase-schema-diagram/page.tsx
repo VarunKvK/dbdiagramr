@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/app/sections/Footer";
+import TwoWaysToUse from "@/app/sections/TwoWaysToUse";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
 import { SUPABASE_SQL } from "@/lib/sql/pgDumpSamples";
@@ -140,12 +141,12 @@ export default function SupabaseSchemaDiagramPage() {
             Supabase Schema Diagram Generator
           </h1>
           <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted">
-            Visualize your Supabase database schema -- auth tables, foreign
-            keys, and relationships -- in under 10 seconds. Paste your
-            connection string and see every table in one interactive diagram.
+            See your Supabase database -- auth tables, public tables, and foreign
+            keys -- as an interactive ER diagram. Paste SQL or connect with
+            Session pooler (port 5432).
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            {["No Signups", "Free", "Supabase Native"].map((label) => (
+            {["Supabase Native", "Paste SQL or Connect", "Free"].map((label) => (
               <span
                 key={label}
                 className="inline-flex items-center gap-2 rounded-full border border-indigo-400 bg-[#D4D2FF] px-4 py-1.5 text-xs font-medium text-ink"
@@ -171,43 +172,7 @@ export default function SupabaseSchemaDiagramPage() {
           </div>
         </div>
 
-        <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
-            How to visualize your Supabase schema
-          </h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                step: "1",
-                title: "Get your connection string",
-                desc: "Supabase Dashboard > Settings > Database > Connection string > Session pooler (port 5432).",
-              },
-              {
-                step: "2",
-                title: "Paste into dbdiagramr",
-                desc: "Copy the full postgresql:// URI and paste it into the tool. No signup required.",
-              },
-              {
-                step: "3",
-                title: "See your diagram",
-                desc: "Every table, column, and foreign key appears as an interactive ER diagram you can pan, zoom, and export.",
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5"
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-sm font-medium text-white">
-                  {item.step}
-                </div>
-                <h3 className="mt-4 text-lg font-medium text-ink">
-                  {item.title}
-                </h3>
-                <p className="mt-2 leading-relaxed text-muted">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <TwoWaysToUse />
 
         <section className="mt-16">
           <h2 className="mb-4 text-2xl font-medium text-ink">

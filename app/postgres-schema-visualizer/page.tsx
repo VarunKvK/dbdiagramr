@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/app/sections/Footer";
+import TwoWaysToUse from "@/app/sections/TwoWaysToUse";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
 import { ECOMMERCE_SQL } from "@/lib/sql/pgDumpSamples";
@@ -139,11 +140,11 @@ export default function PostgresSchemaVisualizerPage() {
             PostgreSQL Schema Visualizer
           </h1>
           <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted">
-            See your PostgreSQL database structure as an interactive diagram.
-            Understand tables, relationships, and constraints in seconds.
+            Paste SQL or connect to your PostgreSQL database. See tables,
+            relationships, and constraints as an interactive diagram in seconds.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
-            {["Live Schema", "Interactive", "Privacy-First"].map((label) => (
+            {["Paste SQL or Connect", "Live Preview", "Export SVG/PNG"].map((label) => (
               <span
                 key={label}
                 className="inline-flex items-center gap-2 rounded-full border border-indigo-400 bg-[#D4D2FF] px-4 py-1.5 text-xs font-medium text-ink"
@@ -169,43 +170,7 @@ export default function PostgresSchemaVisualizerPage() {
           </div>
         </div>
 
-        <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
-            How to visualize your schema
-          </h2>
-          <div className="grid gap-6 md:grid-cols-3">
-            {[
-              {
-                step: "1",
-                title: "Copy your connection string",
-                desc: "From Supabase, Neon, Railway, or any PostgreSQL provider, copy the connection string.",
-              },
-              {
-                step: "2",
-                title: "Paste into the visualizer",
-                desc: "No signup required. Just paste and click Generate.",
-              },
-              {
-                step: "3",
-                title: "Explore your schema",
-                desc: "Hover over tables to trace foreign key relationships. Pan and zoom to explore.",
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5"
-              >
-                <div className="flex h-8 w-8 items-center justify-center rounded-full bg-indigo-600 text-sm font-medium text-white">
-                  {item.step}
-                </div>
-                <h3 className="mt-4 text-lg font-medium text-ink">
-                  {item.title}
-                </h3>
-                <p className="mt-2 leading-relaxed text-muted">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </section>
+        <TwoWaysToUse />
 
         <section className="mt-16">
           <h2 className="mb-4 text-2xl font-medium text-ink">

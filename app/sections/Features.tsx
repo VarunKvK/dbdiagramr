@@ -1,49 +1,51 @@
-import { Zap, Share2, Shield } from "lucide-react";
+import { Code, MousePointer, Download } from "lucide-react";
 
 const features = [
   {
-    icon: Zap,
-    title: "Instant",
+    icon: Code,
+    title: "Paste SQL or Connect",
     description:
-      "Connect your PostgreSQL database and generate a diagram in under 10 seconds. No manual drawing required.",
+      "Two ways to generate a diagram. Paste CREATE TABLE statements for a quick preview, or connect to your live database for the full schema.",
   },
   {
-    icon: Share2,
-    title: "Shareable",
+    icon: MousePointer,
+    title: "Interactive diagram",
     description:
-      "Export as PNG or share an interactive link with your team. Everyone sees the same schema, always up to date.",
+      "Pan, zoom, and hover to trace foreign key relationships. See exactly how your tables connect at a glance.",
   },
   {
-    icon: Shield,
-    title: "Secure",
+    icon: Download,
+    title: "Export anywhere",
     description:
-      "Your connection string is never stored. We introspect your schema and discard everything else. Your data never leaves your control.",
+      "Download as SVG or PNG, or share an interactive link with your team. Your data stays private.",
   },
 ];
 
 export default function Features() {
   return (
-    <section className="bg-surface">
-      <div className="mx-auto max-w-5xl px-4 py-24">
-        <h2 className="mb-4 text-center text-3xl font-medium text-ink md:text-4xl">
+    <section className="bg-cream pb-24 pt-[120px]">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <h2 className="mb-4 text-3xl font-medium text-ink md:text-4xl">
           Everything you need
         </h2>
-        <p className="mx-auto mb-16 max-w-2xl text-center text-lg text-muted">
+        <p className="mb-16 max-w-2xl text-lg text-muted">
           No complex setup. No enterprise sales. Just your database, visualized.
         </p>
-        <div className="mx-auto grid max-w-4xl gap-8 md:grid-cols-3">
+        <div className="grid gap-8 md:grid-cols-3">
           {features.map((f) => {
             const Icon = f.icon;
             return (
               <div
                 key={f.title}
-                className="rounded-lg bg-cream p-10"
+                className="flex flex-col rounded-2xl bg-white p-8 pt-14"
               >
-                <Icon size={40} className="mx-auto text-ink" />
-                <h3 className="mt-6 text-center text-xl font-medium text-ink">
+                <div className="mb-8 flex h-32 items-end">
+                  <Icon size={32} className="text-indigo-600" />
+                </div>
+                <h3 className="text-xl font-medium text-ink">
                   {f.title}
                 </h3>
-                <p className="mt-3 text-center leading-relaxed text-muted">
+                <p className="mt-3 text-sm leading-relaxed text-muted">
                   {f.description}
                 </p>
               </div>

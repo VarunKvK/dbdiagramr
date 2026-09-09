@@ -52,7 +52,7 @@ export default function ProductShowcase() {
   }, [paused, next]);
 
   return (
-    <section className="bg-cream pb-24 pt-[90px]">
+    <section className="bg-cream pb-24 pt-[120px]">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <h2 className="mb-12 text-3xl font-medium text-ink md:text-4xl">
           What DBdiagramr does

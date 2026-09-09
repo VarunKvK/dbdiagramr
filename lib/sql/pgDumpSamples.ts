@@ -137,3 +137,45 @@ CREATE TABLE books (
   title varchar(200) NOT NULL
 );
 `.trim();
+
+export const BLOG_SQL = `-- Blog platform schema (5 tables)
+CREATE TABLE users (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  username varchar(50) NOT NULL UNIQUE,
+  email varchar(255) NOT NULL UNIQUE,
+  avatar_url text,
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE categories (
+  id serial PRIMARY KEY,
+  name varchar(100) NOT NULL UNIQUE,
+  slug varchar(100) NOT NULL UNIQUE
+);
+
+CREATE TABLE posts (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  author_id uuid NOT NULL REFERENCES users(id),
+  category_id integer REFERENCES categories(id),
+  title varchar(255) NOT NULL,
+  slug varchar(255) NOT NULL UNIQUE,
+  content text NOT NULL,
+  published boolean DEFAULT false,
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE comments (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id uuid NOT NULL REFERENCES posts(id),
+  user_id uuid NOT NULL REFERENCES users(id),
+  body text NOT NULL,
+  created_at timestamptz DEFAULT now()
+);
+
+CREATE TABLE likes (
+  user_id uuid NOT NULL REFERENCES users(id),
+  post_id uuid NOT NULL REFERENCES posts(id),
+  created_at timestamptz DEFAULT now(),
+  PRIMARY KEY (user_id, post_id)
+);
+`.trim();

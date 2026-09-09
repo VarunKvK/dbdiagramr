@@ -4,9 +4,9 @@ import Footer from "@/app/sections/Footer";
 import TwoWaysToUse from "@/app/sections/TwoWaysToUse";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
-import { ECOMMERCE_SQL } from "@/lib/sql/pgDumpSamples";
+import { BLOG_SQL } from "@/lib/sql/pgDumpSamples";
 
-const schema = parseSqlToSchema(ECOMMERCE_SQL).schema;
+const schema = parseSqlToSchema(BLOG_SQL).schema;
 
 export const metadata: Metadata = {
   title: "PostgreSQL Schema Visualizer -- See Your Database Structure",

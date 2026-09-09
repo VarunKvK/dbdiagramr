@@ -4,9 +4,9 @@ import Footer from "@/app/sections/Footer";
 import TwoWaysToUse from "@/app/sections/TwoWaysToUse";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
-import { ECOMMERCE_SQL } from "@/lib/sql/pgDumpSamples";
+import { NEXTAUTH_SQL } from "@/lib/sql/pgDumpSamples";
 
-const schema = parseSqlToSchema(ECOMMERCE_SQL).schema;
+const schema = parseSqlToSchema(NEXTAUTH_SQL).schema;
 
 export const metadata: Metadata = {
   title: "Database Diagram Online -- Free Tool to Visualize PostgreSQL",
@@ -169,6 +169,32 @@ export default function DatabaseDiagramOnlinePage() {
         </div>
 
         <TwoWaysToUse />
+
+        <section className="mt-16">
+          <h2 className="mb-4 text-2xl font-medium text-ink">
+            What the diagram shows
+          </h2>
+          <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <ul className="list-disc space-y-2 pl-5 leading-relaxed text-muted">
+              <li>
+                <strong className="text-ink">All tables</strong> with their
+                columns and data types
+              </li>
+              <li>
+                <strong className="text-ink">Primary keys</strong> highlighted
+                on each table
+              </li>
+              <li>
+                <strong className="text-ink">Foreign keys</strong> drawn as
+                lines connecting related tables
+              </li>
+              <li>
+                <strong className="text-ink">Nullable columns</strong> marked so
+                you can see optional relationships
+              </li>
+            </ul>
+          </div>
+        </section>
 
         <section className="mt-16">
           <h2 className="mb-6 text-2xl font-medium text-ink">

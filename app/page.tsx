@@ -4,7 +4,6 @@ import ProductShowcase from "@/app/sections/ProductShowcase";
 import TwoWaysToUse from "@/app/sections/TwoWaysToUse";
 import Features from "@/app/sections/Features";
 import Comparison from "@/app/sections/Comparison";
-import Pricing from "@/app/sections/Pricing";
 import BlogTeaser from "@/app/sections/BlogTeaser";
 import Footer from "@/app/sections/Footer";
 
@@ -64,9 +63,9 @@ export default function Home() {
       <div id="comparison" className="scroll-mt-16">
         <Comparison />
       </div>
-      <div id="pricing" className="scroll-mt-16">
+      {/* <div id="pricing" className="scroll-mt-16">
         <Pricing />
-      </div>
+      </div> */}
       <BlogTeaser />
       <Footer />
     </main>

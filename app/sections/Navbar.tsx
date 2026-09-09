@@ -15,7 +15,7 @@ const links = [
   { label: "Tools", target: "/postgres-er-diagram" },
   { label: "Blog", target: "/blog" },
   { label: "Alternatives", target: "/alternatives" },
-  { label: "Pricing", target: "/#pricing" },
+  // { label: "Pricing", target: "/#pricing" },
 ];
 
 export default function Navbar() {

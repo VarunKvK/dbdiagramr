@@ -62,7 +62,7 @@ export default function SchemaHubPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto max-w-7xl px-4 pb-16 pt-[30rem]">
+      <div className="mx-auto max-w-7xl px-6 pb-16 pt-[30rem] lg:px-8">
         <div className="mb-12">
           <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
             Schema Library
@@ -77,32 +77,33 @@ export default function SchemaHubPage() {
           </p>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2">
+        <div className="grid gap-10 md:grid-cols-2">
           {entries.map((entry) => {
             const svg = generateDiagramSVG(entry.schema);
             return (
               <Link
                 key={entry.slug}
                 href={`/schema/${entry.slug}`}
-                className="group overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5 transition-all hover:-translate-y-1 hover:shadow-lg"
+                className="group bg-white p-4 rounded-2xl transition-all hover:-translate-y-1 hover:shadow-sm"
               >
-                <div className="border-b border-border bg-[#fafafa] px-6 py-4">
-                  <div className="flex items-center justify-between">
-                    <h2 className="text-xl font-medium text-ink">
+                <div className="relative min-h-[400px] overflow-hidden rounded-2xl bg-[#1a1a1a] shadow-sm ring-1 ring-black/5 transition-all group-hover:-translate-y-1 group-hover:shadow-lg">
+                  <div
+                    className="absolute inset-0"
+                    dangerouslySetInnerHTML={{ __html: svg }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center opacity-30 transition-opacity group-hover:opacity-100">
+                    <h2 className="text-4xl font-medium text-white">
                       {entry.name}
+                      <span className="text-indigo-500">.</span>
                     </h2>
-                    <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
-                      {entry.schema.tables.length} tables
-                    </span>
                   </div>
-                  <p className="mt-1 text-sm text-muted">{entry.title}</p>
                 </div>
-                <div
-                  className="relative h-56 overflow-hidden bg-[#1a1a1a]"
-                  dangerouslySetInnerHTML={{ __html: svg }}
-                />
-                <div className="border-t border-border px-6 py-4 text-sm font-medium text-indigo-600 transition-colors group-hover:text-indigo-500">
-                  View schema diagram →
+                <div className="mt-4">
+                  <h3 className="text-2xl font-medium text-ink">
+                    {entry.name}
+                  </h3>
+                  <p className="mt-1 text-muted">{entry.title}</p>
                 </div>
               </Link>
             );

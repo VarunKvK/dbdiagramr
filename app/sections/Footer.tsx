@@ -16,7 +16,7 @@ export default function Footer() {
             <h3 className="mb-4 text-sm font-medium text-ink">Product</h3>
             <ul className="space-y-3 text-sm text-muted">
               <li><a href="#features" className="transition-colors hover:text-ink">Features</a></li>
-              <li><a href="#pricing" className="transition-colors hover:text-ink">Pricing</a></li>
+              {/* <li><a href="#pricing" className="transition-colors hover:text-ink">Pricing</a></li> */}
               <li><span className="cursor-default">Changelog</span></li>
               <li><span className="cursor-default">Roadmap</span></li>
             </ul>

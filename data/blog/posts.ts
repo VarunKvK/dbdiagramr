@@ -227,6 +227,54 @@ export const blogPosts: BlogPost[] = [
     tags: ["database", "tutorial", "tools"],
     devtoUrl: undefined,
   },
+  {
+    slug: "free-online-database-diagram-tool",
+    title: "Free Online Database Diagram Tool: Visualize Your Schema in Seconds",
+    description:
+      "Need a free database diagram tool? Paste SQL or connect to PostgreSQL to generate ER diagrams instantly. No signup, no limits, no catch.",
+    keywords: [
+      "free online database diagram tool",
+      "free database diagram tool",
+      "database diagram tool free",
+      "free schema generator",
+      "database diagram online",
+    ],
+    date: "2026-09-15",
+    readingMinutes: 5,
+    tags: ["postgres", "database", "tutorial"],
+  },
+  {
+    slug: "sql-to-schema-diagram-online",
+    title: "SQL to Schema Diagram Online: Convert SQL to ERD in Seconds",
+    description:
+      "Convert SQL to a schema diagram online. Paste your CREATE TABLE statements and get an interactive ER diagram instantly. No signup required.",
+    keywords: [
+      "sql to schema diagram online",
+      "sql to diagram online",
+      "convert sql to erd",
+      "sql to erd",
+      "sql schema diagram generator",
+    ],
+    date: "2026-09-15",
+    readingMinutes: 4,
+    tags: ["postgres", "database", "tutorial"],
+  },
+  {
+    slug: "database-schema-diagram-tool",
+    title: "Database Schema Diagram Tool: 5 Ways to Visualize PostgreSQL",
+    description:
+      "Compare 5 database schema diagram tools for PostgreSQL -- from psql to live connection string. Find the one that fits your workflow.",
+    keywords: [
+      "database schema diagram tool",
+      "database diagram tool",
+      "postgres schema diagram tool",
+      "er diagram tool",
+      "database visualization tool",
+    ],
+    date: "2026-09-16",
+    readingMinutes: 5,
+    tags: ["postgres", "database", "tutorial"],
+  },
 ];
 
 export function getPost(slug: string): BlogPost | undefined {

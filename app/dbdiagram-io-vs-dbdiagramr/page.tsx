@@ -259,6 +259,65 @@ export default function DbDiagramIoVsPage() {
         </section>
 
         <section className="mt-16">
+          <h2 className="mb-4 text-2xl font-medium text-ink">
+            Feature-by-feature breakdown
+          </h2>
+          <div className="space-y-4">
+            <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+              <h3 className="font-medium text-ink">Diagram creation</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                <strong>dbdiagram.io:</strong> You write DBML code describing tables and relationships. The tool renders a diagram from your code. You need to learn DBML syntax first.
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                <strong>dbdiagramr:</strong> Paste SQL or a PostgreSQL connection string. The tool parses your schema and renders a diagram automatically. No new syntax to learn.
+              </p>
+            </div>
+            <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+              <h3 className="font-medium text-ink">Keeping diagrams current</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                <strong>dbdiagram.io:</strong> Your diagram is a DBML file you maintain. When your database changes, you must update the DBML manually or the diagram drifts out of date.
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                <strong>dbdiagramr:</strong> The diagram reads your live database. Change a migration, paste the same connection string again, up-to-date in seconds. No drift.
+              </p>
+            </div>
+            <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+              <h3 className="font-medium text-ink">Pricing</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                <strong>dbdiagram.io:</strong> Free tier limited to 10 diagrams, all public. Pro at $14/month removes limits and makes diagrams private.
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                <strong>dbdiagramr:</strong> Free tier includes 5 diagrams/month, all private. Pro at $8/month for unlimited diagrams. No credit card required.
+              </p>
+            </div>
+            <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+              <h3 className="font-medium text-ink">Privacy</h3>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                <strong>dbdiagram.io:</strong> Free diagrams are public by default. Anyone with the link can view them.
+              </p>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                <strong>dbdiagramr:</strong> Nothing is stored or published. Your connection string is used client-side and discarded immediately.
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className="mt-16 rounded-xl bg-indigo-50 p-8">
+          <h2 className="text-2xl font-medium text-ink">
+            Verdict
+          </h2>
+          <p className="mt-4 text-lg leading-relaxed text-muted">
+            <strong>Use dbdiagram.io</strong> if you&apos;re designing a new schema from scratch and prefer writing code (DBML) to define your tables. It&apos;s excellent for planning and prototyping.
+          </p>
+          <p className="mt-3 text-lg leading-relaxed text-muted">
+            <strong>Use dbdiagramr</strong> if you need to understand or document a PostgreSQL database that already exists. Paste a connection string, get an interactive diagram in seconds. No signup, no limits, no drift.
+          </p>
+          <p className="mt-3 text-sm text-muted/70">
+            For most developers working with existing databases, dbdiagramr is faster and more practical. For schema design from scratch, dbdiagram.io has the edge.
+          </p>
+        </section>
+
+        <section className="mt-16">
           <h2 className="mb-6 text-2xl font-medium text-ink">
             Frequently asked questions
           </h2>

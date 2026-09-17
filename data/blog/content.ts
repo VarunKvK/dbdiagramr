@@ -691,4 +691,238 @@ order by o.placed_at desc;</code></pre>
     <p><strong>Does dbdiagramr support MySQL?</strong><br/>Not yet. PostgreSQL only. MySQL support is planned.</p>
     <p><strong>Is DrawSQL worth the money?</strong><br/>If you need a desktop GUI with exports and team collaboration, yes. If you just need to see your schema, dbdiagramr does it for free.</p>
   `,
+  "free-online-database-diagram-tool": `
+    <h2>The short version</h2>
+    <p>You need a database diagram. You don't want to pay for it, sign up for another account, or install anything. A free online database diagram tool should let you paste SQL or connect to your database and get a visual schema in seconds.</p>
+    <p>Most tools claim to be free, then hit you with table limits, export restrictions, or require an email before you can do anything. The one that actually works the way you expect is <a href="https://www.dbdiagramr.space">dbdiagramr</a> -- paste SQL or a PostgreSQL connection string, get an interactive ER diagram, export SVG/PNG. No signup, no limits, no catch.</p>
+
+    <h2>What a good free database diagram tool should do</h2>
+    <table>
+      <thead><tr><th>Feature</th><th>Why it matters</th></tr></thead>
+      <tbody>
+        <tr><td>Paste SQL directly</td><td>You already have the schema -- just show it</td></tr>
+        <tr><td>Live database connection</td><td>See what's actually deployed, not what you think is deployed</td></tr>
+        <tr><td>Interactive diagram</td><td>Pan, zoom, drag tables around</td></tr>
+        <tr><td>Export SVG/PNG</td><td>Share with your team or drop in docs</td></tr>
+        <tr><td>Search tables/columns</td><td>Find anything in a large schema fast</td></tr>
+        <tr><td>No signup required</td><td>You're diagramming, not buying enterprise software</td></tr>
+      </tbody>
+    </table>
+
+    <h2>How to use dbdiagramr as your free database diagram tool</h2>
+
+    <h3>Option 1: Paste SQL</h3>
+    <p>If you have a SQL dump or migration file, paste it directly into dbdiagramr and see your ER diagram appear instantly. Works with PostgreSQL CREATE TABLE statements, foreign keys, indexes -- the whole schema.</p>
+
+    <h3>Option 2: Connect to a live database</h3>
+    <p>If you have a PostgreSQL connection string, paste it into dbdiagramr. It queries <code>information_schema</code> for tables, columns, primary keys, and foreign keys, then renders an interactive ER diagram you can pan, zoom, drag, and export as SVG or PNG. Your SQL never leaves your browser -- the connection happens client-side.</p>
+
+    <h3>Option 3: Upload a file</h3>
+    <p>Drag and drop a <code>.sql</code> file or use the file picker. Same result -- instant diagram.</p>
+
+    <h2>Why most "free" database diagram tools aren't actually free</h2>
+    <table>
+      <thead><tr><th>Tool</th><th>Free tier limitations</th></tr></thead>
+      <tbody>
+        <tr><td>dbdiagram.io</td><td>10 tables on free plan, export requires paid plan</td></tr>
+        <tr><td>DrawSQL</td><td>Limited to 10 diagrams, no collaboration on free plan</td></tr>
+        <tr><td>Lucidchart</td><td>3 editable documents, 60 shapes per document</td></tr>
+        <tr><td>QuickDBD</td><td>Limited diagrams, watermark on exports</td></tr>
+      </tbody>
+    </table>
+    <p>dbdiagramr has none of these limits. Paste SQL, connect to your database, export as much as you want. The tool is open-source -- you can even self-host it.</p>
+
+    <h2>Real example: visualizing a Supabase schema</h2>
+    <p>Supabase projects come with auth, storage, and realtime tables out of the box. Understanding how they connect requires a diagram.</p>
+    <p>Paste this SQL into dbdiagramr:</p>
+    <pre><code>CREATE TABLE users (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  email TEXT UNIQUE NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE posts (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  title TEXT NOT NULL,
+  content TEXT,
+  published BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE TABLE comments (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
+  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+  body TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);</code></pre>
+    <p>In two seconds you see: <code>users</code> -- <code>posts</code> -- <code>comments</code> with all foreign key relationships drawn. Drag the boxes around, zoom in, export as PNG for your README.</p>
+
+    <h2>When to use a free tool vs. a paid one</h2>
+    <p><strong>Use a free tool when:</strong></p>
+    <ul>
+      <li>You're exploring an existing schema</li>
+      <li>You need a quick diagram for documentation</li>
+      <li>You're a solo developer or small team</li>
+      <li>You want to understand relationships before writing queries</li>
+    </ul>
+    <p><strong>Consider paid when:</strong></p>
+    <ul>
+      <li>You need real-time collaboration (Lucidchart, DrawSQL paid)</li>
+      <li>You need version control integration (some enterprise tools)</li>
+      <li>You're designing a schema from scratch with a large team</li>
+    </ul>
+    <p>For 90% of database diagramming tasks, a free tool is enough.</p>
+
+    <h2>FAQ</h2>
+    <p><strong>What's the best free online database diagram tool?</strong><br/>dbdiagramr is the best free option -- no table limits, no signup, open-source. Paste SQL or connect to a live PostgreSQL database.</p>
+    <p><strong>Can I create a database diagram without signing up?</strong><br/>Yes. dbdiagramr requires no account. Go to the site, paste SQL, get your diagram.</p>
+    <p><strong>Does it work with PostgreSQL only?</strong><br/>Currently yes. PostgreSQL is the most common target for ER diagrams, and dbdiagramr specializes in it. SQL paste works with any PostgreSQL-compatible syntax.</p>
+    <p><strong>Can I export the diagram?</strong><br/>Yes. Export as SVG or PNG with one click. No paid plan required.</p>
+    <p><strong>Is my database connection secure?</strong><br/>Yes. dbdiagramr connects to your database client-side. Your connection string never leaves your browser. No data is sent to any server.</p>
+  `,
+  "sql-to-schema-diagram-online": `
+    <h2>The short version</h2>
+    <p>You have SQL. You need a diagram. The fastest path from <code>CREATE TABLE</code> to a visual schema is a tool that parses SQL and renders an ER diagram on the spot.</p>
+    <p><a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> does exactly that -- paste your SQL, get an interactive diagram in seconds. No signup, no install, no export limits.</p>
+
+    <h2>Why convert SQL to a schema diagram?</h2>
+    <p>SQL is precise. Diagrams are comprehensible. When you're onboarding to a new codebase or explaining a schema to a non-technical stakeholder, a visual representation does something SQL can't: it shows relationships at a glance.</p>
+    <p>Reading 200 lines of <code>CREATE TABLE</code> statements, you'll find the foreign keys eventually. Seeing them drawn as lines between boxes takes half a second.</p>
+
+    <h2>How to convert SQL to a schema diagram online</h2>
+
+    <h3>Step 1: Get your SQL</h3>
+    <p>Grab your schema from one of these sources:</p>
+    <ul>
+      <li><code>pg_dump --schema-only yourdb</code></li>
+      <li>Migration files (Prisma, Drizzle, Rails, Django)</li>
+      <li>Your IDE's schema export</li>
+      <li>A SQL file you already have</li>
+    </ul>
+
+    <h3>Step 2: Paste into dbdiagramr</h3>
+    <p>Go to <a href="https://www.dbdiagramr.space/visualize">dbdiagramr.com/visualize</a> and paste your SQL in the editor. The tool parses CREATE TABLE statements, detects primary keys, and maps foreign key relationships automatically.</p>
+
+    <h3>Step 3: Explore and export</h3>
+    <p>Your ER diagram appears instantly. Pan, zoom, drag tables around to arrange them. When you're happy, export as SVG or PNG with one click.</p>
+
+    <h2>What SQL syntax works?</h2>
+    <p>dbdiagramr understands standard PostgreSQL syntax:</p>
+    <ul>
+      <li><code>CREATE TABLE</code> with columns and types</li>
+      <li><code>PRIMARY KEY</code> constraints</li>
+      <li><code>REFERENCES</code> for foreign keys</li>
+      <li><code>DEFAULT</code> values</li>
+      <li><code>NOT NULL</code> and <code>UNIQUE</code> constraints</li>
+      <li><code>ON DELETE</code> and <code>ON UPDATE</code> actions</li>
+    </ul>
+    <p>If your SQL is valid PostgreSQL, dbdiagramr will parse it.</p>
+
+    <h2>Example: converting a Laravel migration</h2>
+    <p>If you're using Laravel, your migrations live in <code>database/migrations/</code>. Export them to SQL and paste the result:</p>
+    <pre><code>-- Laravel migration exported to SQL
+CREATE TABLE users (
+  id BIGSERIAL PRIMARY KEY,
+  name VARCHAR(255) NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL,
+  remember_token VARCHAR(100),
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ
+);
+
+CREATE TABLE posts (
+  id BIGSERIAL PRIMARY KEY,
+  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+  title VARCHAR(255) NOT NULL,
+  slug VARCHAR(255) UNIQUE NOT NULL,
+  body TEXT,
+  published BOOLEAN DEFAULT FALSE,
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ
+);</code></pre>
+    <p>dbdiagramr renders the <code>users</code> and <code>posts</code> tables with the foreign key relationship drawn between them. Done in seconds.</p>
+
+    <h2>Alternative methods (and why they're slower)</h2>
+    <table>
+      <thead><tr><th>Method</th><th>Setup</th><th>Speed</th><th>Limitation</th></tr></thead>
+      <tbody>
+        <tr><td>pgAdmin ERD tool</td><td>Already installed</td><td>Medium</td><td>Snapshot, manual re-run</td></tr>
+        <tr><td>Draw.io + manual</td><td>Short</td><td>Slow</td><td>Hand-draw every table</td></tr>
+        <tr><td>dbdiagram.io</td><td>Account required</td><td>Fast</td><td>Must learn DBML syntax</td></tr>
+        <tr><td>dbdiagramr</td><td>None</td><td>Instant</td><td>PostgreSQL only (for now)</td></tr>
+      </tbody>
+    </table>
+    <p>dbdiagramr is the only option that requires zero setup and accepts raw SQL directly.</p>
+
+    <h2>FAQ</h2>
+    <p><strong>Can I convert MySQL SQL to a diagram?</strong><br/>Not yet. dbdiagramr currently supports PostgreSQL syntax only. MySQL support is planned.</p>
+    <p><strong>Does it work with Prisma schema files?</strong><br/>Not directly. Export your Prisma schema to SQL first with <code>prisma db pull</code> or <code>pg_dump</code>, then paste the SQL.</p>
+    <p><strong>How large a schema can it handle?</strong><br/>dbdiagramr handles schemas with dozens of tables comfortably. Very large schemas (100+ tables) may need some manual arrangement, but the parsing works fine.</p>
+    <p><strong>Is there a table limit?</strong><br/>No. Paste as many tables as you want. No signup, no limits.</p>
+  `,
+  "database-schema-diagram-tool": `
+    <h2>The short version</h2>
+    <p>You need a database schema diagram tool that works with PostgreSQL. There are five practical options, each making a different tradeoff between speed, depth, and how current the diagram stays.</p>
+    <p>For most developers, the fastest path to a usable diagram is <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> -- paste SQL or connect to a live database, get an interactive ER diagram in seconds. No signup, no install, no limits.</p>
+
+    <h2>5 database schema diagram tools compared</h2>
+    <table>
+      <thead><tr><th>Tool</th><th>Setup</th><th>Free?</th><th>Live connection</th><th>Best for</th></tr></thead>
+      <tbody>
+        <tr><td><code>psql</code> + <code>pg_catalog</code></td><td>Zero</td><td>Yes</td><td>Always live</td><td>Quick inspection</td></tr>
+        <tr><td>pgAdmin ERD</td><td>Already installed</td><td>Yes</td><td>Snapshot</td><td>One-off look</td></tr>
+        <tr><td>dbdiagram.io</td><td>Account required</td><td>Limited</td><td>No (DBML)</td><td>Designing new schema</td></tr>
+        <tr><td>DrawSQL</td><td>Account required</td><td>Limited</td><td>Yes (paid)</td><td>Team collaboration</td></tr>
+        <tr><td>dbdiagramr</td><td>None</td><td>Yes</td><td>Yes (free)</td><td>Understanding real DB</td></tr>
+      </tbody>
+    </table>
+
+    <h2>1. psql: the zero-setup baseline</h2>
+    <p>If you have PostgreSQL installed, you already have <code>psql</code>. It's not a diagram tool, but it shows schema structure:</p>
+    <pre><code>\\dt              -- list all tables
+\\d table_name    -- show one table's structure</code></pre>
+    <p>For relationships, query <code>information_schema</code> directly. The output is text, not a picture. Past a dozen tables you're reconstructing the graph in your head.</p>
+
+    <h2>2. pgAdmin ERD: free and built in</h2>
+    <p>pgAdmin 4 includes an ER diagram tool. Right-click your database, select <em>ERD For Database</em>, and it generates a diagram from the live schema.</p>
+    <p><strong>Pros:</strong> Free, already installed, connects to live database.</p>
+    <p><strong>Cons:</strong> Auto-layout struggles past a few dozen tables. No SVG export. Not shareable without screenshots.</p>
+
+    <h2>3. dbdiagram.io: the popular choice</h2>
+    <p>dbdiagram.io is the most well-known database diagram tool. You write schema definitions in DBML (a custom markup language) and it renders an interactive diagram.</p>
+    <p><strong>Pros:</strong> Clean UI, good for designing new schemas, shareable links.</p>
+    <p><strong>Cons:</strong> Must learn DBML. Free tier limited to 10 tables. No live database connection -- the diagram is always a manual copy.</p>
+
+    <h2>4. DrawSQL: the desktop option</h2>
+    <p>DrawSQL is a desktop app that connects to live databases and generates ER diagrams. Supports MySQL, PostgreSQL, SQL Server, and MariaDB.</p>
+    <p><strong>Pros:</strong> Desktop app, exports, team collaboration (paid).</p>
+    <p><strong>Cons:</strong> Paid for full features. Free tier limited to 10 diagrams.</p>
+
+    <h2>5. dbdiagramr: paste SQL, get a diagram</h2>
+    <p><a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> takes a different approach: paste SQL or a PostgreSQL connection string, get an interactive ER diagram. No account, no install, no table limits.</p>
+    <p>Because it introspects the live database, the diagram is always current. Change a migration, paste the same connection string again, up-to-date in under 10 seconds.</p>
+    <p><strong>Pros:</strong> Free, no signup, no limits, live connection, SVG/PNG export, search tables/columns.</p>
+    <p><strong>Cons:</strong> PostgreSQL only (for now).</p>
+
+    <h2>Which tool should you choose?</h2>
+    <ul>
+      <li><strong>Just need a quick look?</strong> <code>psql</code> or pgAdmin. Fast, local, no sharing.</li>
+      <li><strong>Designing a new schema?</strong> dbdiagram.io. Great for planning before you build.</li>
+      <li><strong>Need to understand an existing database?</strong> dbdiagramr. Paste SQL or connect, get a diagram in seconds.</li>
+      <li><strong>Team collaboration?</strong> DrawSQL paid plan. Real-time editing with multiple cursors.</li>
+    </ul>
+
+    <h2>Why "stays current" matters</h2>
+    <p>Every tool except dbdiagramr shares the same failure mode: the diagram is a snapshot. The day someone runs a migration, the diagram is wrong. A wrong diagram is worse than none -- it's confidently wrong.</p>
+    <p>The test that settles it: <strong>how much work does it take to make this picture true again?</strong> If the answer is "re-export" or "drag boxes by hand," humans will stop doing it and the diagram will lie to you.</p>
+
+    <h2>FAQ</h2>
+    <p><strong>What's the best database schema diagram tool for PostgreSQL?</strong><br/>For understanding an existing database, dbdiagramr is the fastest -- paste SQL or connect to a live database, no signup required.</p>
+    <p><strong>Can I use dbdiagram.io without learning DBML?</strong><br/>Not really. DBML is the input format. If you prefer raw SQL, dbdiagramr accepts it directly.</p>
+    <p><strong>Is pgAdmin's ERD tool good enough?</strong><br/>For small schemas and quick inspection, yes. For anything you need to share or keep current, use a dedicated tool.</p>
+    <p><strong>Does DrawSQL support live PostgreSQL connections?</strong><br/>Yes, but only on paid plans. The free tier is limited to 10 diagrams.</p>
+  `,
 };

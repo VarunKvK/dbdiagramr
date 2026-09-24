@@ -46,9 +46,41 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   };
 }
 
+const relatedBlogBySchema: Record<string, { href: string; label: string }[]> = {
+  supabase: [
+    { href: "/blog/supabase-auth-schema-explained", label: "Supabase Auth Schema Explained" },
+    { href: "/blog/postgres-connection-string-supabase-neon-railway", label: "PostgreSQL Connection String Guide" },
+  ],
+  nextauth: [
+    { href: "/blog/nextauth-auth-schema-explained", label: "NextAuth Schema Explained" },
+    { href: "/blog/visualize-postgres-schema-5-ways", label: "5 Ways to Visualize a Postgres Schema" },
+  ],
+  laravel: [
+    { href: "/blog/laravel-database-schema-explained", label: "Laravel Tables Explained" },
+    { href: "/blog/sql-to-schema-diagram-online", label: "SQL to Schema Diagram Online" },
+  ],
+  django: [
+    { href: "/blog/django-auth-schema-explained", label: "Django Auth Tables Explained" },
+    { href: "/blog/database-schema-diagram-tool", label: "Database Schema Diagram Tools" },
+  ],
+  stripe: [
+    { href: "/blog/stripe-billing-schema-postgres", label: "Stripe Billing Schema for PostgreSQL" },
+    { href: "/blog/free-online-database-diagram-tool", label: "Free Online Database Diagram Tool" },
+  ],
+  ecommerce: [
+    { href: "/blog/ecommerce-database-schema-postgres", label: "E-commerce Schema for PostgreSQL" },
+    { href: "/blog/free-online-database-diagram-tool", label: "Free Online Database Diagram Tool" },
+  ],
+};
+
 export default function SchemaPage({ params }: { params: { slug: string } }) {
   const entry = getSchemaEntry(params.slug);
   if (!entry) notFound();
+
+  const relatedSchemas = getAllSchemaEntries()
+    .filter((e) => e.slug !== entry.slug)
+    .slice(0, 3);
+  const relatedBlogs = relatedBlogBySchema[entry.slug] ?? [];
 
   return (
     <main className="min-h-screen bg-cream">
@@ -143,6 +175,44 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
               </div>
             ))}
           </div>
+        </section>
+
+        <section className="mt-16">
+          <h2 className="mb-4 text-2xl font-medium text-ink">
+            Explore more schemas
+          </h2>
+          <div className="grid gap-4 md:grid-cols-3">
+            {relatedSchemas.map((rel) => (
+              <a
+                key={rel.slug}
+                href={`/schema/${rel.slug}`}
+                className="block rounded-xl bg-white p-5 shadow-sm ring-1 ring-black/5 transition-all hover:-translate-y-0.5 hover:shadow-md"
+              >
+                <div className="font-medium text-ink">{rel.name}</div>
+                <div className="mt-1 line-clamp-2 text-sm text-muted">
+                  {rel.title}
+                </div>
+              </a>
+            ))}
+          </div>
+          {relatedBlogs.length > 0 && (
+            <div className="mt-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+              <div className="text-sm font-medium uppercase tracking-wider text-muted">
+                Related guides
+              </div>
+              <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+                {relatedBlogs.map((b) => (
+                  <a
+                    key={b.href}
+                    href={b.href}
+                    className="font-medium text-indigo-600 hover:text-indigo-500"
+                  >
+                    {b.label} →
+                  </a>
+                ))}
+              </div>
+            </div>
+          )}
         </section>
 
         <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">

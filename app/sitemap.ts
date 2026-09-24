@@ -4,11 +4,27 @@ import { getAllPosts } from "@/data/blog/posts";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://www.dbdiagramr.space";
-  const today = new Date().toISOString().split("T")[0];
+  // Honest lastmod: only bump when the route's source actually changed.
+  // Do NOT use today's date on every build — Google treats that as noise
+  // and stops trusting lastmod. Dates below = last git change per route.
+  const staticLastmod: Record<string, string> = {
+    "/": "2026-09-10",
+    "/visualize": "2026-09-08",
+    "/schema": "2026-09-10",
+    "/blog": "2026-09-17",
+    "/alternatives": "2026-08-30",
+    "/dbdiagram-io-vs-dbdiagramr": "2026-09-17",
+    "/drawsql-vs-dbdiagramr": "2026-09-08",
+    "/postgres-er-diagram": "2026-09-09",
+    "/supabase-schema-diagram": "2026-09-09",
+    "/free-schema-generator": "2026-09-10",
+    "/database-diagram-online": "2026-09-10",
+    "/postgres-schema-visualizer": "2026-09-10",
+  };
 
   const schemaUrls = getAllSchemaEntries().map((entry) => ({
     url: `${base}/schema/${entry.slug}`,
-    lastModified: today,
+    lastModified: entry.lastUpdated,
     changeFrequency: "monthly" as const,
     priority: 0.8,
   }));
@@ -23,73 +39,73 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [
     {
       url: base,
-      lastModified: today,
+      lastModified: staticLastmod["/"],
       changeFrequency: "weekly",
       priority: 1,
     },
     {
       url: `${base}/visualize`,
-      lastModified: today,
+      lastModified: staticLastmod["/visualize"],
       changeFrequency: "monthly",
       priority: 0.9,
     },
     {
       url: `${base}/schema`,
-      lastModified: today,
+      lastModified: staticLastmod["/schema"],
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${base}/alternatives`,
-      lastModified: today,
+      lastModified: staticLastmod["/alternatives"],
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
       url: `${base}/dbdiagram-io-vs-dbdiagramr`,
-      lastModified: today,
+      lastModified: staticLastmod["/dbdiagram-io-vs-dbdiagramr"],
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
       url: `${base}/drawsql-vs-dbdiagramr`,
-      lastModified: today,
+      lastModified: staticLastmod["/drawsql-vs-dbdiagramr"],
       changeFrequency: "monthly",
       priority: 0.7,
     },
     {
       url: `${base}/blog`,
-      lastModified: today,
+      lastModified: staticLastmod["/blog"],
       changeFrequency: "weekly",
       priority: 0.8,
     },
     {
       url: `${base}/postgres-er-diagram`,
-      lastModified: today,
+      lastModified: staticLastmod["/postgres-er-diagram"],
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${base}/supabase-schema-diagram`,
-      lastModified: today,
+      lastModified: staticLastmod["/supabase-schema-diagram"],
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${base}/free-schema-generator`,
-      lastModified: today,
+      lastModified: staticLastmod["/free-schema-generator"],
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${base}/database-diagram-online`,
-      lastModified: today,
+      lastModified: staticLastmod["/database-diagram-online"],
       changeFrequency: "monthly",
       priority: 0.8,
     },
     {
       url: `${base}/postgres-schema-visualizer`,
-      lastModified: today,
+      lastModified: staticLastmod["/postgres-schema-visualizer"],
       changeFrequency: "monthly",
       priority: 0.8,
     },

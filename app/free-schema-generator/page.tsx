@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/app/sections/Footer";
+import RelatedTools from "@/app/sections/RelatedTools";
 import TwoWaysToUse from "@/app/sections/TwoWaysToUse";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
@@ -210,6 +211,8 @@ export default function FreeSchemaGeneratorPage() {
             ))}
           </div>
         </section>
+
+        <RelatedTools current="/free-schema-generator" />
 
         <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">
           <h2 className="text-2xl font-medium text-white">

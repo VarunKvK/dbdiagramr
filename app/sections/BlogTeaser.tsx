@@ -1,8 +1,23 @@
 import Link from "next/link";
 import { getAllPosts } from "@/data/blog/posts";
 
+const toolLinks = [
+  { href: "/postgres-er-diagram", label: "PostgreSQL ER Diagram" },
+  { href: "/supabase-schema-diagram", label: "Supabase Schema Diagram" },
+  { href: "/free-schema-generator", label: "Free Schema Generator" },
+  { href: "/database-diagram-online", label: "Database Diagram Online" },
+  { href: "/postgres-schema-visualizer", label: "Schema Visualizer" },
+];
+
+const schemaLinks = [
+  { href: "/schema/supabase", label: "Supabase" },
+  { href: "/schema/nextauth", label: "NextAuth.js" },
+  { href: "/schema/stripe", label: "Stripe" },
+  { href: "/schema/ecommerce", label: "E-commerce" },
+];
+
 export default function BlogTeaser() {
-  const posts = getAllPosts().slice(0, 3);
+  const posts = getAllPosts().slice(0, 6);
 
   return (
     <section className="bg-white py-20 mt-[120px] mb-24">
@@ -58,6 +73,43 @@ export default function BlogTeaser() {
           >
             View all posts →
           </Link>
+        </div>
+
+        <div className="mt-12 grid gap-6 md:grid-cols-2">
+          <div className="rounded-2xl bg-cream p-6 ring-1 ring-black/5">
+            <h3 className="text-sm font-medium uppercase tracking-wider text-muted">
+              Free tools
+            </h3>
+            <ul className="mt-3 space-y-2">
+              {toolLinks.map((t) => (
+                <li key={t.href}>
+                  <Link
+                    href={t.href}
+                    className="text-sm font-medium text-ink hover:text-indigo-600 hover:underline"
+                  >
+                    {t.label} →
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+          <div className="rounded-2xl bg-cream p-6 ring-1 ring-black/5">
+            <h3 className="text-sm font-medium uppercase tracking-wider text-muted">
+              Popular schemas
+            </h3>
+            <ul className="mt-3 space-y-2">
+              {schemaLinks.map((s) => (
+                <li key={s.href}>
+                  <Link
+                    href={s.href}
+                    className="text-sm font-medium text-ink hover:text-indigo-600 hover:underline"
+                  >
+                    {s.label} schema diagram →
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
       </div>
     </section>

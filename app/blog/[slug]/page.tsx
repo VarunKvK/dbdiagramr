@@ -50,6 +50,12 @@ export default function BlogPostPage({
   if (!body) notFound();
 
   const postUrl = `https://www.dbdiagramr.space/blog/${post.slug}`;
+  const relatedPosts = getAllPosts()
+    .filter(
+      (p) =>
+        p.slug !== post.slug && p.tags.some((t) => post.tags.includes(t))
+    )
+    .slice(0, 3);
 
   const jsonLd = {
     "@context": "https://schema.org",
@@ -180,6 +186,47 @@ export default function BlogPostPage({
             >
               Browse schemas
             </a>
+          </div>
+        </section>
+
+        {relatedPosts.length > 0 && (
+          <section className="mt-12">
+            <h2 className="mb-4 text-xl font-medium text-ink">
+              Related guides
+            </h2>
+            <div className="grid gap-4">
+              {relatedPosts.map((rel) => (
+                <Link
+                  key={rel.slug}
+                  href={`/blog/${rel.slug}`}
+                  className="block rounded-xl bg-white p-5 shadow-sm ring-1 ring-black/5 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                >
+                  <div className="text-sm font-medium text-ink hover:text-indigo-600">
+                    {rel.title}
+                  </div>
+                  <div className="mt-1 line-clamp-2 text-sm text-muted">
+                    {rel.description}
+                  </div>
+                </Link>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <section className="mt-8 rounded-xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+          <h2 className="text-sm font-medium uppercase tracking-wider text-muted">
+            Try it on your database
+          </h2>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+            <Link href="/postgres-er-diagram" className="font-medium text-indigo-600 hover:text-indigo-500">
+              PostgreSQL ER Diagram →
+            </Link>
+            <Link href="/supabase-schema-diagram" className="font-medium text-indigo-600 hover:text-indigo-500">
+              Supabase Schema Diagram →
+            </Link>
+            <Link href="/free-schema-generator" className="font-medium text-indigo-600 hover:text-indigo-500">
+              Free Schema Generator →
+            </Link>
           </div>
         </section>
 

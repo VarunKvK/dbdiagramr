@@ -7,6 +7,8 @@ const toolLinks = [
   { href: "/free-schema-generator", label: "Free Schema Generator" },
   { href: "/database-diagram-online", label: "Database Diagram Online" },
   { href: "/postgres-schema-visualizer", label: "Schema Visualizer" },
+  { href: "/database-schema-analyzer", label: "Schema Health Analyzer" },
+  { href: "/sql-formatter", label: "SQL Formatter" },
 ];
 
 const schemaLinks = [

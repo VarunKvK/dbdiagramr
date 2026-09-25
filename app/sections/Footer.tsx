@@ -49,6 +49,9 @@ export default function Footer() {
             <h3 className="mb-4 text-sm font-medium text-ink">Tools</h3>
             <ul className="space-y-3 text-sm text-muted">
               <li>
+                <a href="/tools" className="transition-colors hover:text-ink">All tools</a>
+              </li>
+              <li>
                 <a href="/postgres-er-diagram" className="transition-colors hover:text-ink">PostgreSQL ER Diagram</a>
               </li>
               <li>
@@ -62,6 +65,12 @@ export default function Footer() {
               </li>
               <li>
                 <a href="/postgres-schema-visualizer" className="transition-colors hover:text-ink">Schema Visualizer</a>
+              </li>
+              <li>
+                <a href="/database-schema-analyzer" className="transition-colors hover:text-ink">Schema Health Analyzer</a>
+              </li>
+              <li>
+                <a href="/sql-formatter" className="transition-colors hover:text-ink">SQL Formatter</a>
               </li>
             </ul>
           </div>

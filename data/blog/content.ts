@@ -925,4 +925,105 @@ CREATE TABLE posts (
     <p><strong>Is pgAdmin's ERD tool good enough?</strong><br/>For small schemas and quick inspection, yes. For anything you need to share or keep current, use a dedicated tool.</p>
     <p><strong>Does DrawSQL support live PostgreSQL connections?</strong><br/>Yes, but only on paid plans. The free tier is limited to 10 diagrams.</p>
   `,
+  "database-schema-health-check": `
+    <h2>The short version</h2>
+    <p>Most schema problems are boring and preventable: a table with no primary key, a foreign key nobody indexed, <code>userId</code> in one table and <code>user_id</code> in the next. A 60-second health check catches them before they become production incidents.</p>
+    <p><a href="https://www.dbdiagramr.space/database-schema-analyzer">dbdiagramr's free schema analyzer</a> grades your PostgreSQL schema 0-100 against seven checks and gives you a one-line fix for each issue. Paste SQL, get the report. Nothing leaves your browser.</p>
+
+    <h2>The 7 checks, in priority order</h2>
+
+    <h3>1. Every table needs a primary key</h3>
+    <p>No primary key means no reliable row identity, painful replication, and ORMs that misbehave. This is the one error-level check — fix it before anything else.</p>
+    <pre><code>-- bad: no way to address a single row
+CREATE TABLE events (
+  name TEXT,
+  happened_at TIMESTAMPTZ
+);
+
+-- good
+CREATE TABLE events (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  name TEXT NOT NULL,
+  happened_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+);</code></pre>
+
+    <h3>2. Index your foreign keys</h3>
+    <p>PostgreSQL does not automatically index foreign key columns. Without an index, joins against the child table and deletes on the parent table degrade into sequential scans. The fix is one line per FK:</p>
+    <pre><code>CREATE INDEX idx_posts_user_id ON posts (user_id);</code></pre>
+
+    <h3>3. Make foreign keys NOT NULL unless optional</h3>
+    <p>A nullable <code>user_id</code> says "this row may belong to nobody." Sometimes that is true (a draft, an anonymous session). Usually it is an accident that later produces orphan-handling code everywhere.</p>
+
+    <h3>4. Don't name a non-PK column "id"</h3>
+    <p>Every reader assumes <code>id</code> is the primary key. A table with both a UUID <code>pk</code> and an integer <code>id</code> guarantees confusion in every query written against it.</p>
+
+    <h3>5. One naming convention</h3>
+    <p><code>snake_case</code> is the Postgres norm. A schema that mixes <code>userId</code> and <code>user_id</code> forces every query author to guess. Pick one and rename.</p>
+
+    <h3>6. Watch wide tables</h3>
+    <p>Past ~30 columns, a table is usually two tables wearing a trench coat. Split rarely-used or repeated column groups into a related table.</p>
+
+    <h3>7. Add created_at</h3>
+    <p><code>created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()</code> costs nothing and pays for itself the first time you debug a data issue at 2am.</p>
+
+    <h2>How to run the check</h2>
+    <ol>
+      <li>Export your schema: <code>pg_dump --schema-only yourdb &gt; schema.sql</code></li>
+      <li>Paste it into the <a href="https://www.dbdiagramr.space/database-schema-analyzer">schema analyzer</a></li>
+      <li>Fix errors first, then warnings, then notes</li>
+      <li>Copy the Markdown report into your PR or design doc</li>
+      <li>Visualize the clean schema with <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> to confirm the relationships look right</li>
+    </ol>
+
+    <h2>FAQ</h2>
+    <p><strong>How often should I audit my schema?</strong><br/>On every migration that adds tables or foreign keys, plus a full pass quarterly. The automated check takes a minute.</p>
+    <p><strong>Does the analyzer see my data?</strong><br/>No. It reads table and column definitions only, and it runs entirely in your browser — your SQL is never uploaded.</p>
+    <p><strong>What score should I aim for?</strong><br/>90+ (grade A) for production schemas. Anything below 60 almost always means missing primary keys — fix those first.</p>
+  `,
+  "how-to-format-sql-postgres": `
+    <h2>The short version</h2>
+    <p>Unformatted SQL — a 400-character single line from your logs, an ORM dump with random indentation — slows down everyone who reads it. Formatting is a solved problem: paste it into a formatter, pick a style, move on.</p>
+    <p><a href="https://www.dbdiagramr.space/sql-formatter">dbdiagramr's free SQL formatter</a> formats PostgreSQL in your browser. Uppercase or lowercase keywords, 2 or 4 space indent, copy or download. Nothing is uploaded.</p>
+
+    <h2>What "formatted" actually means</h2>
+    <p>Take this real-world log line:</p>
+    <pre><code>select u.email, count(p.id) as post_count from users u left join posts p on p.user_id = u.id where u.created_at > now() - interval '30 days' group by u.email order by post_count desc limit 20;</code></pre>
+    <p>Formatted:</p>
+    <pre><code>SELECT
+  u.email,
+  count(p.id) AS post_count
+FROM
+  users u
+  LEFT JOIN posts p ON p.user_id = u.id
+WHERE
+  u.created_at > now() - interval '30 days'
+GROUP BY
+  u.email
+ORDER BY
+  post_count DESC
+LIMIT
+  20;</code></pre>
+    <p>Same query. The second version shows the misplaced JOIN or wrong GROUP BY in seconds; the first hides it.</p>
+
+    <h2>Uppercase vs lowercase keywords</h2>
+    <p>There is no technical difference — Postgres parses both identically. It is purely culture:</p>
+    <ul>
+      <li><strong>UPPERCASE</strong> — traditional DBA style, SQL Server and Oracle shops, certification materials. Keywords visually pop against table names.</li>
+      <li><strong>lowercase</strong> — modern analytics style (dbt, Postgres-first teams). Less shouting, easier to type.</li>
+    </ul>
+    <p>Pick the one that matches your codebase and enforce it with a formatter, not a style doc nobody reads.</p>
+
+    <h2>Where formatting pays off most</h2>
+    <ul>
+      <li><strong>Migration PRs</strong> — formatted DDL diffs review in minutes; single-line dumps review never.</li>
+      <li><strong>Log triage</strong> — paste the slow query from pg_stat_statements or your app logs and read it.</li>
+      <li><strong>Onboarding</strong> — new hires can read the schema migrations as documentation.</li>
+      <li><strong>Before diagramming</strong> — clean SQL is easier to sanity-check before you <a href="https://www.dbdiagramr.space/visualize">visualize it as an ER diagram</a>.</li>
+    </ul>
+
+    <h2>FAQ</h2>
+    <p><strong>Does formatting change what my query does?</strong><br/>No. A formatter only changes whitespace and keyword casing. Same semantics, better manners.</p>
+    <p><strong>Can I format SELECT queries or only DDL?</strong><br/>Both — SELECTs, CTEs, JOINs, migrations, anything valid PostgreSQL.</p>
+    <p><strong>Is my SQL sent to a server?</strong><br/>Not with dbdiagramr's formatter — it runs entirely in your browser.</p>
+  `,
 };

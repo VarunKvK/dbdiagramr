@@ -20,6 +20,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/free-schema-generator": "2026-09-10",
     "/database-diagram-online": "2026-09-10",
     "/postgres-schema-visualizer": "2026-09-10",
+    "/database-schema-analyzer": "2026-09-25",
+    "/tools": "2026-09-25",
+    "/sql-formatter": "2026-09-25",
   };
 
   const schemaUrls = getAllSchemaEntries().map((entry) => ({
@@ -106,6 +109,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${base}/postgres-schema-visualizer`,
       lastModified: staticLastmod["/postgres-schema-visualizer"],
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${base}/database-schema-analyzer`,
+      lastModified: staticLastmod["/database-schema-analyzer"],
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${base}/tools`,
+      lastModified: staticLastmod["/tools"],
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${base}/sql-formatter`,
+      lastModified: staticLastmod["/sql-formatter"],
       changeFrequency: "monthly",
       priority: 0.8,
     },

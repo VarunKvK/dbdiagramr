@@ -275,6 +275,38 @@ export const blogPosts: BlogPost[] = [
     readingMinutes: 5,
     tags: ["postgres", "database", "tutorial"],
   },
+  {
+    slug: "database-schema-health-check",
+    title: "Database Schema Health Check: 7 Things to Audit Before You Ship",
+    description:
+      "Run a 60-second health check on your PostgreSQL schema: missing primary keys, unindexed foreign keys, naming drift, and the fixes for each.",
+    keywords: [
+      "database schema health check",
+      "postgres schema audit",
+      "database schema quality",
+      "missing primary key",
+      "unindexed foreign key",
+    ],
+    date: "2026-09-25",
+    readingMinutes: 5,
+    tags: ["postgres", "database", "tutorial"],
+  },
+  {
+    slug: "how-to-format-sql-postgres",
+    title: "How to Format SQL in PostgreSQL: Styles, Tools, and Team Standards",
+    description:
+      "Messy single-line SQL slows everyone down. How to format PostgreSQL properly, which style to pick, and a free formatter that runs in your browser.",
+    keywords: [
+      "how to format sql",
+      "format sql postgres",
+      "sql style guide",
+      "prettify sql query",
+      "sql formatting standards",
+    ],
+    date: "2026-09-25",
+    readingMinutes: 4,
+    tags: ["postgres", "database", "tutorial"],
+  },
 ];
 
 export function getPost(slug: string): BlogPost | undefined {

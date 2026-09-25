@@ -227,6 +227,9 @@ export default function BlogPostPage({
             <Link href="/free-schema-generator" className="font-medium text-indigo-600 hover:text-indigo-500">
               Free Schema Generator →
             </Link>
+            <Link href="/database-schema-analyzer" className="font-medium text-indigo-600 hover:text-indigo-500">
+              Schema Health Analyzer →
+            </Link>
           </div>
         </section>
 

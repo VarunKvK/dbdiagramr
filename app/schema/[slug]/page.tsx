@@ -1,8 +1,10 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getAllSchemaEntries, getSchemaEntry } from "@/data/schemas/registry";
+import { getAllSchemaEntries, getSchemaEntry, type SchemaEntry } from "@/data/schemas/registry";
 import Footer from "@/app/sections/Footer";
 import SchemaDiagram from "@/components/SchemaDiagram";
+import SchemaCopyButtons from "@/components/SchemaCopyButtons";
+import { schemaToMermaid, schemaToSql } from "@/lib/schemaExport";
 
 export function generateStaticParams() {
   return getAllSchemaEntries().map((entry) => ({ slug: entry.slug }));
@@ -77,10 +79,20 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
   const entry = getSchemaEntry(params.slug);
   if (!entry) notFound();
 
-  const relatedSchemas = getAllSchemaEntries()
-    .filter((e) => e.slug !== entry.slug)
-    .slice(0, 3);
+  const allEntries = getAllSchemaEntries();
+  const bySlug = new Map(allEntries.map((e) => [e.slug, e]));
+  const topical: SchemaEntry[] = [];
+  for (const slug of entry.related ?? []) {
+    const e = bySlug.get(slug);
+    if (e && e.slug !== entry.slug) topical.push(e);
+  }
+  const relatedSchemas =
+    topical.length > 0
+      ? topical.slice(0, 3)
+      : allEntries.filter((e) => e.slug !== entry.slug).slice(0, 3);
   const relatedBlogs = relatedBlogBySchema[entry.slug] ?? [];
+  const schemaSql = schemaToSql(entry.schema);
+  const schemaMermaid = schemaToMermaid(entry.schema);
 
   return (
     <main className="min-h-screen bg-cream">
@@ -105,6 +117,40 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
           <p className="mt-3 text-sm text-muted/70">
             Last updated: {entry.lastUpdated}
           </p>
+          {entry.source && (
+            <p className="mt-1 text-sm text-muted/70">
+              Source:{" "}
+              {entry.source.url ? (
+                <a
+                  href={entry.source.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                >
+                  {entry.source.label}
+                </a>
+              ) : (
+                entry.source.label
+              )}
+              {entry.source.license && (
+                <>
+                  {" "}· License:{" "}
+                  {entry.source.licenseUrl ? (
+                    <a
+                      href={entry.source.licenseUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-indigo-600 hover:text-indigo-500"
+                    >
+                      {entry.source.license}
+                    </a>
+                  ) : (
+                    entry.source.license
+                  )}
+                </>
+              )}
+            </p>
+          )}
           <div className="mt-6 flex flex-wrap gap-4">
             {entry.facts.map((fact) => (
               <div
@@ -132,6 +178,12 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
             <SchemaDiagram schema={entry.schema} className="h-full w-full" />
           </div>
         </div>
+
+        <SchemaCopyButtons
+          sql={schemaSql}
+          mermaid={schemaMermaid}
+          slug={entry.slug}
+        />
 
         <section className="mt-16">
           <h2 className="mb-6 text-2xl font-medium text-ink">

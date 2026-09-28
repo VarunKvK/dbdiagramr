@@ -14,9 +14,11 @@ interface TryModalProps {
   onSchemaCleared: () => void;
   mode?: Mode;
   onModeChange?: (mode: Mode) => void;
+  /** Preload SQL (e.g. from /visualize?schema=slug); parsed via the normal live path */
+  initialSql?: string;
 }
 
-export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: controlledMode, onModeChange }: TryModalProps) {
+export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: controlledMode, onModeChange, initialSql }: TryModalProps) {
   const [internalMode, setInternalMode] = useState<Mode>("sql");
   const mode = controlledMode ?? internalMode;
   const setMode = onModeChange ?? setInternalMode;
@@ -33,6 +35,16 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const initialApplied = useRef(false);
+
+  // Preload SQL once (e.g. "Open in DBdiagramr to edit" from a schema page)
+  useEffect(() => {
+    if (initialSql && !initialApplied.current) {
+      initialApplied.current = true;
+      setSqlText(initialSql);
+      setActiveFile("schema");
+    }
+  }, [initialSql]);
 
   useEffect(() => {
     setIsLiveSite(

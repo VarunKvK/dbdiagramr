@@ -266,7 +266,7 @@ function handleTableConstraint(def: string, columns: Column[], foreignKeys: Fore
   // Strip CONSTRAINT name if present
   if (upper.startsWith("CONSTRAINT")) {
     // Remove CONSTRAINT "name" prefix
-    const m = d.match(/^CONSTRAINT\s+(?:"[^"]+"\s+|\S+\s+)?(.*)$/i);
+    const m = d.match(/^CONSTRAINT\s+(?:"[^"]+"\s+|\S+\s+)?([\s\S]*)$/i);
     if (m) d = m[1];
   }
   const up = d.toUpperCase();

@@ -4,12 +4,26 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import type { Schema } from "@/lib/diagram";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import TryModal from "@/components/TryModal";
+import { getSchemaEntry } from "@/data/schemas/registry";
+import { schemaToSql } from "@/lib/schemaExport";
 
 export default function TryPage() {
   const [schema, setSchema] = useState<Schema | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [mode, setMode] = useState<"sql" | "connection">("sql");
+  const [initialSql, setInitialSql] = useState<string | undefined>(undefined);
   const searchInputRef = useRef<HTMLInputElement>(null);
+
+  // Support /visualize?schema=<slug> ("Open in DBdiagramr to edit")
+  useEffect(() => {
+    const slug = new URLSearchParams(window.location.search).get("schema");
+    if (!slug) return;
+    const entry = getSchemaEntry(slug);
+    if (entry) {
+      setMode("sql");
+      setInitialSql(schemaToSql(entry.schema));
+    }
+  }, []);
 
   const handleSchemaGenerated = useCallback((s: Schema) => {
     setSchema(s);
@@ -49,6 +63,7 @@ export default function TryPage() {
             onModeChange={setMode}
             onSchemaGenerated={handleSchemaGenerated}
             onSchemaCleared={handleSchemaCleared}
+            initialSql={initialSql}
           />
         </div>
       </div>

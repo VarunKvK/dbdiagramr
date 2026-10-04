@@ -14,6 +14,10 @@ const toolLinks = [
 const schemaLinks = [
   { href: "/schema/supabase", label: "Supabase" },
   { href: "/schema/nextauth", label: "NextAuth.js" },
+  { href: "/schema/chinook", label: "Chinook" },
+  { href: "/schema/pagila", label: "Pagila" },
+  { href: "/schema/rbac", label: "RBAC" },
+  { href: "/schema/dvd-rental", label: "DVD Rental" },
   { href: "/schema/stripe", label: "Stripe" },
   { href: "/schema/ecommerce", label: "E-commerce" },
 ];

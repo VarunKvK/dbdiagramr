@@ -39,8 +39,12 @@ const faqs = [
     a: "Schema visualization converts your database metadata -- tables, columns, foreign keys, and constraints -- into a visual diagram. Instead of reading SQL or browsing a list, you see how your database is structured at a glance.",
   },
   {
-    q: "What is information_schema vs pg_catalog?",
-    a: "information_schema is the SQL-standard way to query database metadata. pg_catalog is PostgreSQL's internal catalog with more detail. dbdiagramr reads your schema using the standard approach, so it works with any PostgreSQL version.",
+    q: "How do I find a table in a large schema?",
+    a: "Open your schema in the visualizer and press / (or Ctrl+K). Start typing a table, column, or type name and the diagram filters instantly, with the matching table count shown. It works the same on 10-table and 300-table schemas.",
+  },
+  {
+    q: "How is this different from an ER diagram generator?",
+    a: "A visualizer explores your live database: connect, search, trace relationships, and re-read the schema any time. A generator builds a one-off diagram from pasted SQL. Use the visualizer for databases you own; use the SQL generator for dumps, migrations, and other people's schemas.",
   },
   {
     q: "Does this work with managed PostgreSQL?",
@@ -53,6 +57,10 @@ const faqs = [
   {
     q: "Can I use this for database documentation?",
     a: "Yes. Export the diagram as PNG or SVG and include it in your README, technical docs, or architecture diagrams. It is a great way to onboard new team members.",
+  },
+  {
+    q: "Can I share the diagram with my team?",
+    a: "Yes. Export a PNG for Slack or a GitHub PR, or an SVG for docs that need to stay sharp at any size. Because the diagram reads the live schema, re-exporting before a review always shows the current structure.",
   },
 ];
 
@@ -67,7 +75,7 @@ const jsonLd = {
       description:
         "Visualize your PostgreSQL schema with an interactive ER diagram. Tables, columns, foreign keys, and relationships at a glance.",
       datePublished: "2026-09-08",
-      dateModified: "2026-09-08",
+      dateModified: "2026-09-28",
       mainEntityOfPage:
         "https://www.dbdiagramr.space/postgres-schema-visualizer",
       author: {
@@ -175,29 +183,32 @@ export default function PostgresSchemaVisualizerPage() {
 
         <section className="mt-16">
           <h2 className="mb-4 text-2xl font-medium text-ink">
-            What you can see
+            Explore the schema, not just view it
           </h2>
           <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
             <ul className="list-disc space-y-2 pl-5 leading-relaxed text-muted">
               <li>
-                <strong className="text-ink">Every table</strong> in your
-                database with columns and data types
+                <strong className="text-ink">Instant search</strong> -- press /
+                and filter by table, column, or type; the match count stays
+                visible while you explore
               </li>
               <li>
-                <strong className="text-ink">Foreign key relationships</strong>{" "}
-                drawn as lines between tables
+                <strong className="text-ink">Trace relationships</strong> --
+                hover any table to highlight its foreign-key lines and follow
+                joins across the schema
               </li>
               <li>
-                <strong className="text-ink">Primary keys</strong> highlighted
-                on each table
+                <strong className="text-ink">Large schemas welcome</strong> --
+                pan and zoom from 10 tables to 300 without losing orientation
               </li>
               <li>
-                <strong className="text-ink">Nullable columns</strong> marked so
-                you can see optional relationships
+                <strong className="text-ink">Always current</strong> -- the
+                diagram reads your live database, so a migration today shows up
+                the next time you visualize
               </li>
               <li>
-                <strong className="text-ink">Export options</strong> -- PNG, SVG,
-                or interactive shareable link
+                <strong className="text-ink">Export anywhere</strong> -- PNG for
+                chat and PRs, SVG for docs that must stay sharp
               </li>
             </ul>
           </div>

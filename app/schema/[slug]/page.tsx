@@ -73,6 +73,46 @@ const relatedBlogBySchema: Record<string, { href: string; label: string }[]> = {
     { href: "/blog/ecommerce-database-schema-postgres", label: "E-commerce Schema for PostgreSQL" },
     { href: "/blog/free-online-database-diagram-tool", label: "Free Online Database Diagram Tool" },
   ],
+  "library-management-system": [
+    { href: "/blog/what-is-an-er-diagram", label: "How to Read an ER Diagram" },
+    { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
+  ],
+  "hospital-management-system": [
+    { href: "/blog/what-is-an-er-diagram", label: "How to Read an ER Diagram" },
+    { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
+  ],
+  rbac: [
+    { href: "/blog/django-auth-schema-explained", label: "Django Auth Tables and Permissions" },
+    { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
+  ],
+  "multi-tenant-saas": [
+    { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
+    { href: "/blog/what-is-an-er-diagram", label: "How to Read an ER Diagram" },
+  ],
+  chinook: [
+    { href: "/blog/what-is-an-er-diagram", label: "How to Read an ER Diagram" },
+    { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
+  ],
+  pagila: [
+    { href: "/blog/what-is-an-er-diagram", label: "How to Read an ER Diagram" },
+    { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
+  ],
+  "dvd-rental": [
+    { href: "/blog/what-is-an-er-diagram", label: "How to Read an ER Diagram" },
+    { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
+  ],
+  northwind: [
+    { href: "/blog/what-is-an-er-diagram", label: "How to Read an ER Diagram" },
+    { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
+  ],
+  "better-auth": [
+    { href: "/blog/nextauth-auth-schema-explained", label: "NextAuth Schema Explained" },
+    { href: "/blog/django-auth-schema-explained", label: "Django Auth Tables and Permissions" },
+  ],
+  "spring-batch": [
+    { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
+    { href: "/blog/visualize-postgres-schema-5-ways", label: "5 Ways to Visualize a Postgres Schema" },
+  ],
 };
 
 export default function SchemaPage({ params }: { params: { slug: string } }) {

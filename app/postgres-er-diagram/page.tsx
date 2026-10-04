@@ -43,12 +43,16 @@ const faqs = [
     a: "Copy your PostgreSQL connection string from your database provider (Supabase, Neon, Railway, AWS RDS, etc.) and paste it into dbdiagramr. The tool reads your schema and generates an interactive ER diagram in under 10 seconds.",
   },
   {
-    q: "Does this work with Supabase, Neon, and Railway?",
-    a: "Yes. dbdiagramr works with any managed PostgreSQL provider. For Supabase, use the Session pooler connection string (port 5432). For Neon, use the pooled connection string. For Railway, use the standard PostgreSQL connection string.",
+    q: "How are many-to-many relationships shown?",
+    a: "As their own node. A join table like film_actor appears as a table with two foreign-key lines -- one to film, one to actor. Composite primary keys (order_id, product_id) get a PK badge on each column, so junction tables are instantly recognizable.",
   },
   {
-    q: "Is my database connection secure?",
-    a: "Yes. dbdiagramr connects to your database to read the schema (tables, columns, foreign keys) and immediately discards the connection string. Your data is never stored, logged, or shared.",
+    q: "How does the diagram display Postgres arrays, enums, and jsonb?",
+    a: "Type strings are preserved exactly as PostgreSQL reports them: text[], integer[], custom enum names, jsonb, tstzrange, and domains all render verbatim on the column. Nothing is simplified into generic types, so the diagram matches \\d output.",
+  },
+  {
+    q: "What do the PK badges and connecting lines mean?",
+    a: "A PK badge marks a primary-key column. Each line is a foreign key from one table's column to another table's primary key. A line from a nullable column is an optional relationship; a line from a NOT NULL column is mandatory. Self-referencing keys (like employees.reports_to) draw as a loop back to the same table.",
   },
   {
     q: "Can I export the ER diagram?",
@@ -66,7 +70,7 @@ const jsonLd = {
       description:
         "Generate an interactive ER diagram from any PostgreSQL database. Paste your connection string and see tables, columns, and foreign keys instantly.",
       datePublished: "2026-09-08",
-      dateModified: "2026-09-08",
+      dateModified: "2026-09-28",
       mainEntityOfPage: "https://www.dbdiagramr.space/postgres-er-diagram",
       author: {
         "@type": "Person",
@@ -172,25 +176,31 @@ export default function PostgresErDiagramPage() {
 
         <section className="mt-16">
           <h2 className="mb-4 text-2xl font-medium text-ink">
-            What the diagram shows
+            How Postgres-specific types render
           </h2>
           <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
             <ul className="list-disc space-y-2 pl-5 leading-relaxed text-muted">
               <li>
-                <strong className="text-ink">All tables</strong> in your
-                database with their columns and data types
+                <strong className="text-ink">Arrays</strong> -- text[],
+                integer[], and multi-dimensional arrays render with brackets,
+                exactly as \d shows them
               </li>
               <li>
-                <strong className="text-ink">Primary keys</strong> highlighted
-                on each table
+                <strong className="text-ink">Enums and domains</strong> -- custom
+                type names (mpaa_rating, email_address) are preserved, never
+                collapsed to varchar
               </li>
               <li>
-                <strong className="text-ink">Foreign keys</strong> drawn as
-                lines connecting related tables
+                <strong className="text-ink">json / jsonb</strong> -- shown as-is
+                on the column; key structure inside the document is not expanded
               </li>
               <li>
-                <strong className="text-ink">Nullable columns</strong> marked
-                so you can see optional relationships
+                <strong className="text-ink">Ranges and network types</strong> --
+                tstzrange, int4range, inet, cidr, and uuid all render verbatim
+              </li>
+              <li>
+                <strong className="text-ink">Composite keys</strong> -- every
+                column in a multi-column primary key gets its own PK badge
               </li>
             </ul>
           </div>

@@ -62,6 +62,11 @@ const comparisonRows = [
     drawsql: "$19/month",
   },
   {
+    feature: "Free companion tools",
+    dbdiagramr: "SQL formatter and schema health analyzer included free",
+    drawsql: "Templates and MySQL/SQL Server import on free canvas",
+  },
+  {
     feature: "Best for",
     dbdiagramr: "Understanding a PostgreSQL database that already exists",
     drawsql: "Designing and collaborating on schemas with a team",
@@ -97,7 +102,7 @@ const jsonLd = {
       description:
         "DrawSQL vs dbdiagramr compared: team collaboration and visual schema editing vs instant ER diagrams from a live PostgreSQL connection string.",
       datePublished: "2026-08-04",
-      dateModified: "2026-08-04",
+      dateModified: "2026-09-28",
       mainEntityOfPage: "https://www.dbdiagramr.space/drawsql-vs-dbdiagramr",
       author: {
         "@type": "Person",
@@ -193,7 +198,7 @@ export default function DrawSqlVsPage() {
             seconds.
           </p>
           <p className="mt-3 text-sm text-muted/70">
-            Last updated: 2026-08-04
+            Last updated: 2026-09-28
           </p>
         </div>
 

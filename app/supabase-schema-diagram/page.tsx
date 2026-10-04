@@ -56,6 +56,10 @@ const faqs = [
     q: "Is this affiliated with Supabase?",
     a: "No. dbdiagramr is an independent tool that works with any PostgreSQL database. Supabase is just one of many providers we support -- it also works with Neon, Railway, AWS RDS, Google Cloud SQL, and self-hosted PostgreSQL.",
   },
+  {
+    q: "Do I need the service_role key to visualize my schema?",
+    a: "No -- never paste API keys here. Schema visualization needs a PostgreSQL connection string, not a Supabase API key. Use the database password from Dashboard, Settings, Database (the postgres role). The anon and service_role keys are for the API, not for direct database connections.",
+  },
 ];
 
 const jsonLd = {
@@ -68,7 +72,7 @@ const jsonLd = {
       description:
         "Generate an ER diagram from your Supabase PostgreSQL database. See auth, storage, and foreign keys instantly.",
       datePublished: "2026-09-08",
-      dateModified: "2026-09-08",
+      dateModified: "2026-09-28",
       mainEntityOfPage:
         "https://www.dbdiagramr.space/supabase-schema-diagram",
       author: {
@@ -177,6 +181,38 @@ export default function SupabaseSchemaDiagramPage() {
 
         <section className="mt-16">
           <h2 className="mb-4 text-2xl font-medium text-ink">
+            Connect your Supabase project in 3 steps
+          </h2>
+          <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <ol className="list-decimal space-y-2 pl-5 leading-relaxed text-muted">
+              <li>
+                Open your Supabase Dashboard, go to{" "}
+                <strong className="text-ink">Settings, Database</strong>, and
+                find Connection string
+              </li>
+              <li>
+                Select <strong className="text-ink">Session pooler</strong>{" "}
+                (port 5432) -- the Direct connection uses IPv6 and fails from
+                most networks, and the Transaction pooler (6543) cannot run
+                schema queries
+              </li>
+              <li>
+                Paste the URI into{" "}
+                <a
+                  href="/visualize"
+                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                >
+                  /visualize
+                </a>{" "}
+                -- auth, storage, and your public tables appear in one diagram
+                in under 10 seconds
+              </li>
+            </ol>
+          </div>
+        </section>
+
+        <section className="mt-16">
+          <h2 className="mb-4 text-2xl font-medium text-ink">
             What gets visualized
           </h2>
           <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
@@ -219,6 +255,38 @@ export default function SupabaseSchemaDiagramPage() {
         </section>
 
         <RelatedTools current="/supabase-schema-diagram" />
+
+        <div className="mt-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+          <div className="text-sm font-medium uppercase tracking-wider text-muted">
+            Supabase schema guides
+          </div>
+          <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
+            <a
+              href="/schema/supabase"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Supabase auth schema diagram →
+            </a>
+            <a
+              href="/blog/supabase-auth-schema-explained"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Supabase Auth Schema Explained →
+            </a>
+            <a
+              href="/blog/postgres-connection-string-supabase-neon-railway"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Connection String Guide →
+            </a>
+            <a
+              href="/blog/supabase-connection-string-ipv6-enotfound"
+              className="font-medium text-indigo-600 hover:text-indigo-500"
+            >
+              Fix IPv6 ENOTFOUND →
+            </a>
+          </div>
+        </div>
 
         <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">
           <h2 className="text-2xl font-medium text-white">

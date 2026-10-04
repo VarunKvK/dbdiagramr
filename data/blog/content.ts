@@ -240,7 +240,8 @@ join auth.sessions  s on s.user_id = u.id;</code></pre>
       <li><strong>Look for join tables.</strong> Two FKs, often just two columns + PK = M:N.</li>
       <li><strong>Read PKs first.</strong> The PK tells you what makes a row unique.</li>
     </ol>
-    <p>Example: In the <a href="https://www.dbdiagramr.space/schema/supabase">Supabase auth diagram</a>, <code>auth.users</code> is the core. Lines radiate to <code>identities</code> and <code>sessions</code> -- one user, many identities and many sessions. Each line is a foreign key you can follow with a query.</p>
+    <p>Example: In the <a href="https://www.dbdiagramr.space/schema/supabase">Supabase auth diagram</a>, <code>auth.users</code> is the core. Lines radiate to <code>identities</code> and <code>sessions</code> -- one user, many identities and many sessions. Each line is a foreign key you can follow with a query. Two more worked examples at different scales: the 11-table <a href="https://www.dbdiagramr.space/schema/chinook">Chinook music-store diagram</a> (note the composite-key join table <code>playlist_track</code>) and the 16-table <a href="https://www.dbdiagramr.space/schema/pagila">Pagila rental-store diagram</a> (note the partitioned <code>payment</code> table).</p>
+    <p>If you are choosing tooling rather than learning notation, compare the options in <a href="https://www.dbdiagramr.space/blog/database-schema-diagram-tool">5 database schema diagram tools</a> -- or skip straight to the <a href="https://www.dbdiagramr.space/postgres-er-diagram">PostgreSQL ER diagram tool</a> and read a live diagram.</p>
 
     <h2>Why ER diagrams matter for PostgreSQL</h2>
     <p>PostgreSQL doesn't show you relationships -- <code>\\d</code> shows one table at a time, <code>information_schema</code> is a wall of text. An ER diagram collapses that into one picture where you can see at a glance: which tables exist, how they connect, where the join tables are, and what you'd need to <code>JOIN</code> to answer a question.</p>
@@ -486,7 +487,7 @@ order by o.placed_at desc;</code></pre>
 
   "django-auth-schema-explained": `
     <h2>The short version</h2>
-    <p>Django creates 5 core auth tables: <code>auth_user</code>, <code>auth_group</code>, <code>auth_permission</code>, <code>django_content_type</code>, and two join tables (<code>auth_user_groups</code>, <code>auth_group_permissions</code>). The permission system is built on content types -- each model gets a default <code>add</code>, <code>change</code>, <code>delete</code>, and <code>view</code> permission.</p>
+    <p>Django's auth system is 9 tables: <code>auth_user</code>, <code>auth_group</code>, <code>auth_permission</code>, <code>django_content_type</code>, <code>django_admin_log</code>, and three join tables (<code>auth_user_groups</code>, <code>auth_user_user_permissions</code>, <code>auth_group_permissions</code>). The permission system is built on content types -- each model gets a default <code>add</code>, <code>change</code>, <code>delete</code>, and <code>view</code> permission. See the full interactive version in the <a href="https://www.dbdiagramr.space/schema/django">Django auth schema diagram</a>.</p>
 
     <h2>The core tables</h2>
     <h3>auth_user</h3>
@@ -530,8 +531,26 @@ order by o.placed_at desc;</code></pre>
     <h2>How permissions work</h2>
     <p>A <strong>permission</strong> is tied to a <strong>content type</strong> (a model). <strong>Groups</strong> collect permissions. <strong>Users</strong> are added to groups to inherit their permissions. You can also assign permissions directly to users.</p>
 
+    <h2>Which migration creates which tables</h2>
+    <p>The tables arrive in layers as you migrate. The <code>contenttypes</code> app migration creates <code>django_content_type</code> first -- every model in your project gets one row. Then the <code>auth</code> app's initial migration creates <code>auth_user</code>, <code>auth_group</code>, <code>auth_permission</code>, and the three join tables. The <code>admin</code> app adds <code>django_admin_log</code> last. If you only need users without groups, you still get all of them -- Django does not split the auth migrations.</p>
+
+    <h2>The contenttypes trick</h2>
+    <p><code>django_content_type</code> is the clever bit: it maps (app_label, model) pairs to integer IDs, so permissions attach to <em>models</em> rather than tables. A permission row says "can change X" where X is a content type ID; the same mechanism powers generic foreign keys elsewhere in Django. This is why adding a new model and running migrations silently creates four new permission rows -- one per default action.</p>
+
+    <h2>A permission check in one query</h2>
+    <p>To list everything user 42 can do, join through both paths -- group memberships and direct grants:</p>
+    <pre><code>SELECT DISTINCT p.codename
+FROM auth_permission p
+JOIN django_content_type ct ON ct.id = p.content_type_id
+LEFT JOIN auth_group_permissions gp ON gp.permission_id = p.id
+LEFT JOIN auth_user_groups ug ON ug.group_id = gp.group_id AND ug.user_id = 42
+LEFT JOIN auth_user_user_permissions up ON up.permission_id = p.id AND up.user_id = 42
+WHERE ug.user_id = 42 OR up.user_id = 42;</code></pre>
+    <p>Note the two join tables doing different jobs: <code>auth_user_groups</code> carries role-like membership, while <code>auth_user_user_permissions</code> carries one-off grants. Most RBAC designs -- see the <a href="https://www.dbdiagramr.space/schema/rbac">RBAC schema</a> -- separate these the same way.</p>
+
     <h2>FAQ</h2>
-    <p><strong>Does Django create all these tables automatically?</strong><br/>Yes. Running <code>python manage.py migrate</code> creates all auth tables.</p>
+    <p><strong>Does Django create all these tables automatically?</strong><br/>Yes. Running <code>python manage.py migrate</code> creates all auth tables -- contenttypes first, then auth, then admin.</p>
+    <p><strong>How is this different from NextAuth or Laravel auth?</strong><br/>Django's permissions attach to models via content types, which neither NextAuth nor Laravel do. Compare the <a href="https://www.dbdiagramr.space/blog/nextauth-auth-schema-explained">NextAuth schema</a> (OAuth accounts and sessions, no permissions) and the <a href="https://www.dbdiagramr.space/blog/laravel-database-schema-explained">Laravel schema</a> (sessions and jobs, no permission tables at all).</p>
     <p><strong>What's the difference between <code>is_superuser</code> and <code>is_staff</code>?</strong><br/><code>is_superuser</code> bypasses all permission checks. <code>is_staff</code> only controls access to the Django admin.</p>
     <p><strong>Can I use Django without the permission system?</strong><br/>Yes. Remove <code>django.contrib.auth</code> from <code>INSTALLED_APPS</code>.</p>
   `,
@@ -892,17 +911,17 @@ CREATE TABLE posts (
     <p><strong>Cons:</strong> Auto-layout struggles past a few dozen tables. No SVG export. Not shareable without screenshots.</p>
 
     <h2>3. dbdiagram.io: the popular choice</h2>
-    <p>dbdiagram.io is the most well-known database diagram tool. You write schema definitions in DBML (a custom markup language) and it renders an interactive diagram.</p>
+    <p>dbdiagram.io is the most well-known database diagram tool. You write schema definitions in DBML (a custom markup language) and it renders an interactive diagram. Full head-to-head: <a href="https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr">dbdiagram.io vs dbdiagramr</a>.</p>
     <p><strong>Pros:</strong> Clean UI, good for designing new schemas, shareable links.</p>
     <p><strong>Cons:</strong> Must learn DBML. Free tier limited to 10 tables. No live database connection -- the diagram is always a manual copy.</p>
 
     <h2>4. DrawSQL: the desktop option</h2>
-    <p>DrawSQL is a desktop app that connects to live databases and generates ER diagrams. Supports MySQL, PostgreSQL, SQL Server, and MariaDB.</p>
+    <p>DrawSQL is a desktop app that connects to live databases and generates ER diagrams. Supports MySQL, PostgreSQL, SQL Server, and MariaDB. Full head-to-head: <a href="https://www.dbdiagramr.space/drawsql-vs-dbdiagramr">DrawSQL vs dbdiagramr</a>.</p>
     <p><strong>Pros:</strong> Desktop app, exports, team collaboration (paid).</p>
     <p><strong>Cons:</strong> Paid for full features. Free tier limited to 10 diagrams.</p>
 
     <h2>5. dbdiagramr: paste SQL, get a diagram</h2>
-    <p><a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> takes a different approach: paste SQL or a PostgreSQL connection string, get an interactive ER diagram. No account, no install, no table limits.</p>
+    <p><a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> takes a different approach: paste SQL or a PostgreSQL connection string, get an interactive ER diagram. No account, no install, no table limits. The same engine powers the <a href="https://www.dbdiagramr.space/tools">free tools page</a> (SQL formatter, schema health analyzer) and the <a href="https://www.dbdiagramr.space/schema">interactive schema library</a> -- real schemas like Chinook and Pagila you can explore before touching your own database.</p>
     <p>Because it introspects the live database, the diagram is always current. Change a migration, paste the same connection string again, up-to-date in under 10 seconds.</p>
     <p><strong>Pros:</strong> Free, no signup, no limits, live connection, SVG/PNG export, search tables/columns.</p>
     <p><strong>Cons:</strong> PostgreSQL only (for now).</p>

@@ -72,6 +72,27 @@ export default function Footer() {
               <li>
                 <a href="/sql-formatter" className="transition-colors hover:text-ink">SQL Formatter</a>
               </li>
+              <li>
+                <a href="/csv-to-sql" className="transition-colors hover:text-ink">CSV to SQL</a>
+              </li>
+              <li>
+                <a href="/json-to-sql" className="transition-colors hover:text-ink">JSON to SQL</a>
+              </li>
+              <li>
+                <a href="/sql-validator" className="transition-colors hover:text-ink">SQL Validator</a>
+              </li>
+              <li>
+                <a href="/sql-to-mermaid" className="transition-colors hover:text-ink">SQL to Mermaid</a>
+              </li>
+              <li>
+                <a href="/sql-to-typescript" className="transition-colors hover:text-ink">SQL to TypeScript</a>
+              </li>
+              <li>
+                <a href="/sql-to-prisma" className="transition-colors hover:text-ink">SQL to Prisma</a>
+              </li>
+              <li>
+                <a href="/postgres-connection-string" className="transition-colors hover:text-ink">Connection String Builder</a>
+              </li>
             </ul>
           </div>
           <div>

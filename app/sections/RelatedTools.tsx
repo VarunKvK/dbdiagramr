@@ -8,10 +8,27 @@ const allTools = [
   { href: "/postgres-schema-visualizer", label: "Schema Visualizer" },
   { href: "/database-schema-analyzer", label: "Schema Health Analyzer" },
   { href: "/sql-formatter", label: "SQL Formatter" },
+  { href: "/csv-to-sql", label: "CSV to SQL" },
+  { href: "/json-to-sql", label: "JSON to SQL" },
+  { href: "/sql-validator", label: "SQL Validator" },
+  { href: "/sql-to-mermaid", label: "SQL to Mermaid" },
+  { href: "/sql-to-typescript", label: "SQL to TypeScript" },
+  { href: "/sql-to-prisma", label: "SQL to Prisma" },
+  { href: "/postgres-connection-string", label: "Connection String Builder" },
 ];
 
-export default function RelatedTools({ current }: { current: string }) {
-  const tools = allTools.filter((t) => t.href !== current);
+export default function RelatedTools({
+  current,
+  siblings,
+}: {
+  current: string;
+  siblings?: string[];
+}) {
+  const tools = siblings
+    ? siblings
+        .map((href) => allTools.find((t) => t.href === href))
+        .filter((t): t is (typeof allTools)[number] => Boolean(t))
+    : allTools.filter((t) => t.href !== current);
   return (
     <section className="mt-16">
       <h2 className="mb-4 text-2xl font-medium text-ink">

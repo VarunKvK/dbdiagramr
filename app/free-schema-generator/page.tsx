@@ -10,26 +10,26 @@ import { SIMPLE_SQL } from "@/lib/sql/pgDumpSamples";
 const schema = parseSqlToSchema(SIMPLE_SQL).schema;
 
 export const metadata: Metadata = {
-  title: "Free Database Schema Generator -- No Signup Required",
+  title: "SQL Dump to ER Diagram -- Free Schema Generator, No Signup",
   description:
-    "Generate a visual database schema from your PostgreSQL connection string. Free, instant, no account needed. Export as PNG or SVG.",
+    "Turn a PostgreSQL SQL dump into an interactive ER diagram. Paste CREATE TABLE statements or a pg_dump file and see every table and foreign key. Free, no signup.",
   keywords:
-    "free database schema generator, schema generator, database diagram tool, free erd tool, postgresql schema generator",
+    "sql dump to er diagram, sql to er diagram, pg_dump visualize, sql dump diagram generator, create table to diagram",
   alternates: {
     canonical: "https://www.dbdiagramr.space/free-schema-generator",
   },
   openGraph: {
-    title: "Free Database Schema Generator -- No Signup Required",
+    title: "SQL Dump to ER Diagram -- Free Schema Generator, No Signup",
     description:
-      "Generate a visual database schema from your PostgreSQL connection string. Free forever.",
+      "Turn a PostgreSQL SQL dump into an interactive ER diagram. Free forever.",
     type: "website",
     url: "https://www.dbdiagramr.space/free-schema-generator",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free Database Schema Generator -- No Signup Required",
+    title: "SQL Dump to ER Diagram -- Free Schema Generator, No Signup",
     description:
-      "Generate a visual database schema from your PostgreSQL connection string. Free forever.",
+      "Turn a PostgreSQL SQL dump into an interactive ER diagram. Free forever.",
   },
 };
 

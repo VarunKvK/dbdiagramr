@@ -16,9 +16,11 @@ interface TryModalProps {
   onModeChange?: (mode: Mode) => void;
   /** Preload SQL (e.g. from /visualize?schema=slug); parsed via the normal live path */
   initialSql?: string;
+  /** Preload a connection string (e.g. staged by the conn-string builder) */
+  initialConnString?: string;
 }
 
-export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: controlledMode, onModeChange, initialSql }: TryModalProps) {
+export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: controlledMode, onModeChange, initialSql, initialConnString }: TryModalProps) {
   const [internalMode, setInternalMode] = useState<Mode>("sql");
   const mode = controlledMode ?? internalMode;
   const setMode = onModeChange ?? setInternalMode;
@@ -45,6 +47,15 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
       setActiveFile("schema");
     }
   }, [initialSql]);
+
+  // Preload a staged connection string once (e.g. from the conn-string builder)
+  const connApplied = useRef(false);
+  useEffect(() => {
+    if (initialConnString && !connApplied.current) {
+      connApplied.current = true;
+      setConnectionString(initialConnString);
+    }
+  }, [initialConnString]);
 
   useEffect(() => {
     setIsLiveSite(

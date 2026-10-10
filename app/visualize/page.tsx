@@ -12,16 +12,37 @@ export default function TryPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [mode, setMode] = useState<"sql" | "connection">("sql");
   const [initialSql, setInitialSql] = useState<string | undefined>(undefined);
+  const [initialConn, setInitialConn] = useState<string | undefined>(undefined);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
   // Support /visualize?schema=<slug> ("Open in DBdiagramr to edit")
+  // and sessionStorage handoffs from converter tools (preload-sql / preload-conn)
   useEffect(() => {
     const slug = new URLSearchParams(window.location.search).get("schema");
-    if (!slug) return;
-    const entry = getSchemaEntry(slug);
-    if (entry) {
-      setMode("sql");
-      setInitialSql(schemaToSql(entry.schema));
+    if (slug) {
+      const entry = getSchemaEntry(slug);
+      if (entry) {
+        setMode("sql");
+        setInitialSql(schemaToSql(entry.schema));
+        return;
+      }
+    }
+    try {
+      const sql = window.sessionStorage.getItem("dbdiagramr:preload-sql");
+      if (sql) {
+        window.sessionStorage.removeItem("dbdiagramr:preload-sql");
+        setMode("sql");
+        setInitialSql(sql);
+        return;
+      }
+      const conn = window.sessionStorage.getItem("dbdiagramr:preload-conn");
+      if (conn) {
+        window.sessionStorage.removeItem("dbdiagramr:preload-conn");
+        setMode("connection");
+        setInitialConn(conn);
+      }
+    } catch {
+      // sessionStorage unavailable (private mode) — ignore
     }
   }, []);
 
@@ -64,6 +85,7 @@ export default function TryPage() {
             onSchemaGenerated={handleSchemaGenerated}
             onSchemaCleared={handleSchemaCleared}
             initialSql={initialSql}
+            initialConnString={initialConn}
           />
         </div>
       </div>

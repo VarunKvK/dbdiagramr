@@ -10,26 +10,26 @@ import { NEXTAUTH_SQL } from "@/lib/sql/pgDumpSamples";
 const schema = parseSqlToSchema(NEXTAUTH_SQL).schema;
 
 export const metadata: Metadata = {
-  title: "Database Diagram Online -- Free Tool to Visualize PostgreSQL",
+  title: "Online ERD Tool -- No Install, No Signup | dbdiagramr",
   description:
-    "Create a database diagram online without installing anything. Paste your PostgreSQL connection string and see your schema as an interactive ER diagram.",
+    "Draw and explore ER diagrams entirely online: nothing to install, no account, no desktop app. Paste SQL or connect Postgres and share via PNG or SVG.",
   keywords:
-    "database diagram online, database diagram tool, online erd, database visualizer, postgresql diagram online",
+    "online erd tool no signup, online erd tool free, no install er diagram, browser er diagram tool, online erd maker",
   alternates: {
     canonical: "https://www.dbdiagramr.space/database-diagram-online",
   },
   openGraph: {
-    title: "Database Diagram Online -- Free Tool to Visualize PostgreSQL",
+    title: "Online ERD Tool -- No Install, No Signup | dbdiagramr",
     description:
-      "Create a database diagram online without installing anything. Free, no signup.",
+      "Draw and explore ER diagrams entirely online. Free, no signup.",
     type: "website",
     url: "https://www.dbdiagramr.space/database-diagram-online",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Database Diagram Online -- Free Tool to Visualize PostgreSQL",
+    title: "Online ERD Tool -- No Install, No Signup | dbdiagramr",
     description:
-      "Create a database diagram online without installing anything. Free, no signup.",
+      "Draw and explore ER diagrams entirely online. Free, no signup.",
   },
 };
 

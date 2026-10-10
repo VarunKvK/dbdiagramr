@@ -9,6 +9,13 @@ const toolLinks = [
   { href: "/postgres-schema-visualizer", label: "Schema Visualizer" },
   { href: "/database-schema-analyzer", label: "Schema Health Analyzer" },
   { href: "/sql-formatter", label: "SQL Formatter" },
+  { href: "/csv-to-sql", label: "CSV to SQL" },
+  { href: "/json-to-sql", label: "JSON to SQL" },
+  { href: "/sql-validator", label: "SQL Validator" },
+  { href: "/sql-to-mermaid", label: "SQL to Mermaid" },
+  { href: "/sql-to-typescript", label: "SQL to TypeScript" },
+  { href: "/sql-to-prisma", label: "SQL to Prisma" },
+  { href: "/postgres-connection-string", label: "Connection String Builder" },
 ];
 
 const schemaLinks = [

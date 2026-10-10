@@ -3,13 +3,26 @@ import Link from "next/link";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "Free Database Tools — ER Diagrams, Schema Analyzer & Generators",
+  title: "Free Database Tools -- ER Diagrams, Converters & Validators",
   description:
-    "Every free dbdiagramr tool in one place: PostgreSQL ER diagrams, Supabase visualizer, schema health analyzer, and SQL-to-diagram generators. No signup required.",
+    "Every free dbdiagramr tool in one place: ER diagrams, SQL validator, CSV/JSON to SQL, SQL to Prisma/TypeScript/Mermaid, connection string builder. No signup.",
   keywords:
-    "free database tools, postgres tools, er diagram tool, schema analyzer, sql to diagram, supabase schema diagram",
+    "free database tools, postgres tools, er diagram tool, sql validator, csv to sql, json to sql, sql to prisma, sql to typescript",
   alternates: {
     canonical: "https://www.dbdiagramr.space/tools",
+  },
+  openGraph: {
+    title: "Free Database Tools -- ER Diagrams, Converters & Validators",
+    description:
+      "Every free dbdiagramr tool in one place: ER diagrams, SQL validator, CSV/JSON to SQL, SQL to Prisma/TypeScript/Mermaid. No signup.",
+    type: "website",
+    url: "https://www.dbdiagramr.space/tools",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Free Database Tools -- ER Diagrams, Converters & Validators",
+    description:
+      "Every free dbdiagramr tool in one place: ER diagrams, SQL validator, CSV/JSON to SQL, SQL to Prisma/TypeScript/Mermaid. No signup.",
   },
 };
 
@@ -61,7 +74,56 @@ const tools = [
     name: "SQL Formatter",
     description:
       "Paste messy SQL and get clean, consistently formatted PostgreSQL. Keyword casing, smart indenting, copy or download.",
-    tags: ["Formatter", "PostgreSQL", "New"],
+    tags: ["Formatter", "PostgreSQL"],
+  },
+  {
+    href: "/csv-to-sql",
+    name: "CSV to SQL",
+    description:
+      "Drop in a CSV and get CREATE TABLE with detected types plus INSERTs. File never leaves your browser.",
+    tags: ["Converter", "CSV", "New"],
+  },
+  {
+    href: "/json-to-sql",
+    name: "JSON to SQL",
+    description:
+      "Paste JSON and get CREATE TABLE + INSERTs. Nested objects become linked child tables.",
+    tags: ["Converter", "JSON", "New"],
+  },
+  {
+    href: "/sql-validator",
+    name: "SQL Validator",
+    description:
+      "Check PostgreSQL syntax with the real Postgres parser. Line-level errors, private, instant.",
+    tags: ["Validator", "PostgreSQL", "New"],
+  },
+  {
+    href: "/sql-to-mermaid",
+    name: "SQL to Mermaid",
+    description:
+      "Paste CREATE TABLE and get erDiagram code for GitHub READMEs, Notion, and docs.",
+    tags: ["Converter", "Mermaid", "New"],
+  },
+  {
+    href: "/sql-to-typescript",
+    name: "SQL to TypeScript",
+    description:
+      "Generate TypeScript interfaces and Zod schemas from PostgreSQL DDL. Nullables handled.",
+    tags: ["Converter", "TypeScript", "New"],
+  },
+  {
+    href: "/sql-to-prisma",
+    name: "SQL to Prisma",
+    description:
+      "Turn CREATE TABLE into schema.prisma with native types, ids, and relations mapped.",
+    tags: ["Converter", "Prisma", "New"],
+  },
+  {
+    href: "/postgres-connection-string",
+    name: "Connection String Builder",
+    description:
+      "Build or decode PostgreSQL URIs with Supabase, Neon, and Railway presets. Passwords stay local.",
+    tags: ["PostgreSQL", "Connection", "New"],
   },
 ];
 

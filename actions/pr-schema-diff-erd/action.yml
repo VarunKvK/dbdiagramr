@@ -1,0 +1,24 @@
+name: "PR Schema Diff & ER Diagram"
+description: "Comments a schema diff + migration preview + Mermaid ER diagram on PRs that touch SQL migration files. No database, no API keys."
+author: "VarunKvK"
+branding:
+  icon: "database"
+  color: "indigo"
+
+inputs:
+  migrations-path:
+    description: "Glob (repo-relative) matching SQL migration files"
+    required: false
+    default: "**/migrations/**/*.sql"
+  github-token:
+    description: "Token used to create/update the PR comment"
+    required: false
+    default: ${{ github.token }}
+
+outputs:
+  changed:
+    description: "'true' if migration files changed, else 'false'"
+
+runs:
+  using: "node20"
+  main: "dist/index.js"

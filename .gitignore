@@ -38,3 +38,6 @@ next-env.d.ts
 DIRECTORY-SUBMISSIONS.md
 DESIGN.md
 FREEALTERNATIVE-SUBMISSION.md
+
+# action build deps (dist IS committed)
+actions/**/node_modules

@@ -1,0 +1,15 @@
+{
+  "name": "pr-schema-diff-erd",
+  "version": "1.0.0",
+  "private": true,
+  "description": "GitHub Action: schema diff + Mermaid ER diagram comment on PRs that touch SQL migration files.",
+  "scripts": {
+    "build": "esbuild src/index.ts --bundle --platform=node --target=node20 --outfile=dist/index.js --log-level=warning && esbuild src/cli.ts --bundle --platform=node --target=node20 --outfile=dist/cli.js --log-level=warning",
+    "typecheck": "tsc --noEmit",
+    "test": "npm run build && node test/run-fixtures.mjs"
+  },
+  "devDependencies": {
+    "esbuild": "^0.24.0",
+    "typescript": "^5"
+  }
+}

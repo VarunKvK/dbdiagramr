@@ -17,6 +17,7 @@ const toolLinks = [
   { href: "/sql-schema-diff", label: "Schema Diff" },
   { href: "/dbml-to-sql", label: "DBML to SQL" },
   { href: "/prisma-erd-generator", label: "Prisma ERD" },
+  { href: "/github-schema-action", label: "PR Schema Diff Action" },
 ];
 
 const schemaLinks = [

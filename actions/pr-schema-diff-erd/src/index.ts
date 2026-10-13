@@ -85,6 +85,13 @@ async function api<T>(token: string, method: string, url: string, body?: unknown
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
+    // Fork PRs get a read-only token → 403 on comment writes. Not a code error.
+    if (res.status === 403) {
+      process.stdout.write(
+        `::notice::Token is read-only (fork PR?) — skipping comment. Copy the workflow's permissions block or run from a branch in the base repo.\n`
+      );
+      process.exit(0);
+    }
     fail(`GitHub API ${method} ${url} → ${res.status}: ${text.slice(0, 300)}`);
   }
   return (await res.json()) as T;

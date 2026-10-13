@@ -105,6 +105,13 @@ const tools = [
     tags: ["Diff", "Migrations", "New"],
   },
   {
+    href: "/github-schema-action",
+    name: "PR Schema Diff Action",
+    description:
+      "GitHub Action that comments a schema diff, migration preview, and Mermaid ER diagram on every PR touching your Postgres migrations.",
+    tags: ["GitHub Action", "CI", "New"],
+  },
+  {
     href: "/dbml-to-sql",
     name: "DBML to SQL",
     description:

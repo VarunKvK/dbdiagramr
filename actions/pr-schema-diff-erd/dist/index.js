@@ -906,6 +906,13 @@ async function api(token, method, url, body) {
   });
   if (!res.ok) {
     const text = await res.text().catch(() => "");
+    if (res.status === 403) {
+      process.stdout.write(
+        `::notice::Token is read-only (fork PR?) \u2014 skipping comment. Copy the workflow's permissions block or run from a branch in the base repo.
+`
+      );
+      process.exit(0);
+    }
     fail(`GitHub API ${method} ${url} \u2192 ${res.status}: ${text.slice(0, 300)}`);
   }
   return await res.json();

@@ -29,6 +29,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/sql-schema-diff": "2026-10-10",
     "/dbml-to-sql": "2026-10-10",
     "/prisma-erd-generator": "2026-10-10",
+    "/github-schema-action": "2026-10-13",
   };
 
   const schemaUrls = getAllSchemaEntries().map((entry) => ({
@@ -169,6 +170,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${base}/prisma-erd-generator`,
       lastModified: staticLastmod["/prisma-erd-generator"],
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${base}/github-schema-action`,
+      lastModified: staticLastmod["/github-schema-action"],
       changeFrequency: "monthly",
       priority: 0.8,
     },

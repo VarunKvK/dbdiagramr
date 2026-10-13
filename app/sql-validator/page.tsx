@@ -7,7 +7,7 @@ import ToolPageShell, {
 const SqlValidator = dynamic(() => import("@/components/SqlValidator"), {
   ssr: false,
   loading: () => (
-    <div className="rounded-2xl bg-white p-8 text-center font-mono text-sm text-muted shadow-sm ring-1 ring-black/5">
+    <div className="rounded-[20px] border border-border bg-white p-8 text-center font-mono text-sm text-muted shadow-sm">
       Loading Postgres parser…
     </div>
   ),
@@ -40,7 +40,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: 'Why do I get "syntax error at or near"?',
-    a: "That is PostgreSQL telling you the exact token where parsing failed -- usually a missing comma, a misplaced keyword, or a typo just before the quoted word. Paste the query here and the validator points at the precise line and column, which is almost always one token after the real mistake.",
+    a: "That is PostgreSQL telling you the exact token where parsing failed, usually a missing comma, a misplaced keyword, or a typo just before the quoted word. Paste the query here and the validator points at the precise line and column, which is almost always one token after the real mistake.",
   },
   {
     q: "Is it free?",
@@ -48,7 +48,7 @@ const faqs = [
   },
   {
     q: "Is my SQL uploaded anywhere?",
-    a: "No. The real PostgreSQL parser runs as WebAssembly entirely in your browser. Your SQL is never uploaded, stored, or logged -- safe for production queries.",
+    a: "No. The real PostgreSQL parser runs as WebAssembly entirely in your browser. Your SQL is never uploaded, stored, or logged, safe for production queries.",
   },
   {
     q: "Which PostgreSQL features are supported?",
@@ -72,7 +72,7 @@ export default function SqlValidatorPage() {
     <ToolPageShell
       appName="PostgreSQL SQL Validator"
       h1="PostgreSQL SQL validator"
-      intro="Paste any PostgreSQL and get a verdict from the real Postgres parser -- not a regex approximation. Line-level errors with caret positioning, free, private, instant."
+      intro="Paste any PostgreSQL and get a verdict from the real Postgres parser, not a regex approximation. Line-level errors with caret positioning, free, private, instant."
       current="/sql-validator"
       siblings={["/sql-formatter", "/database-schema-analyzer", "/csv-to-sql"]}
       faqs={faqs}

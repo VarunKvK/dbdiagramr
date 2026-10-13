@@ -5,7 +5,7 @@ import ToolPageShell, {
 import JsonToSql from "@/components/JsonToSql";
 
 const URL = "https://www.dbdiagramr.space/json-to-sql";
-const TITLE = "JSON to SQL Converter -- CREATE TABLE + INSERT | dbdiagramr";
+const TITLE = "JSON to SQL Converter | CREATE TABLE + INSERT | dbdiagramr";
 const DESCRIPTION =
   "Paste JSON and get a PostgreSQL CREATE TABLE with inferred types, plus INSERT statements. Handles nested objects. Free, no signup.";
 
@@ -43,11 +43,11 @@ const faqs = [
   },
   {
     q: "Which PostgreSQL types are inferred?",
-    a: "integer, bigint, double precision, boolean, date, timestamptz, uuid, text, and jsonb -- with nullability inferred from nulls and missing keys. Mixed-type columns safely fall back to text or jsonb.",
+    a: "integer, bigint, double precision, boolean, date, timestamptz, uuid, text, and jsonb, with nullability inferred from nulls and missing keys. Mixed-type columns safely fall back to text or jsonb.",
   },
   {
     q: "Can I turn the result into an ER diagram?",
-    a: "Yes. Click Visualize this schema to open the generated tables -- including the flattened child tables and their foreign keys -- as an interactive ER diagram.",
+    a: "Yes. Click Visualize this schema to open the generated tables, including the flattened child tables and their foreign keys, as an interactive ER diagram.",
   },
 ];
 
@@ -68,7 +68,6 @@ export default function JsonToSqlPage() {
       siblings={["/csv-to-sql", "/sql-formatter", "/database-schema-analyzer"]}
       faqs={faqs}
       exploreLinks={[
-        { href: "/free-schema-generator", label: "Free Schema Generator" },
         { href: "/schema/chinook", label: "Chinook schema diagram" },
       ]}
     >

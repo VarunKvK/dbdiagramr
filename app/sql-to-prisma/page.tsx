@@ -5,7 +5,7 @@ import ToolPageShell, {
 import SqlToPrisma from "@/components/SqlToPrisma";
 
 const URL = "https://www.dbdiagramr.space/sql-to-prisma";
-const TITLE = "SQL to Prisma Schema Converter -- Free Online | dbdiagramr";
+const TITLE = "SQL to Prisma Schema Converter | Free Online | dbdiagramr";
 const DESCRIPTION =
   "Turn CREATE TABLE statements into a ready-to-use schema.prisma with types and relations mapped. Free, instant, no signup.";
 
@@ -31,11 +31,11 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "Is this the same as prisma db pull?",
-    a: "No -- prisma db pull introspects a live database and needs credentials and a network round-trip. This tool converts SQL text you already have (a dump, a migration, docs) into schema.prisma syntax entirely in your browser. Use db pull for live databases; use this for SQL on your clipboard.",
+    a: "No, prisma db pull introspects a live database and needs credentials and a network round-trip. This tool converts SQL text you already have (a dump, a migration, docs) into schema.prisma syntax entirely in your browser. Use db pull for live databases; use this for SQL on your clipboard.",
   },
   {
     q: "Is it free?",
-    a: "Yes, completely free with no signup. Paste DDL, copy schema.prisma -- models, scalar types with native mappings, @id attributes, and @relation fields included.",
+    a: "Yes, completely free with no signup. Paste DDL, copy schema.prisma, models, scalar types with native mappings, @id attributes, and @relation fields included.",
   },
   {
     q: "Is my SQL uploaded anywhere?",
@@ -47,7 +47,7 @@ const faqs = [
   },
   {
     q: "Can I turn the result into an ER diagram?",
-    a: "Yes. Click Visualize this schema to open the same SQL in dbdiagramr as an interactive ER diagram -- the fastest way to review the relations Prisma will generate a client for.",
+    a: "Yes. Click Visualize this schema to open the same SQL in dbdiagramr as an interactive ER diagram, the fastest way to review the relations Prisma will generate a client for.",
   },
 ];
 
@@ -63,7 +63,7 @@ export default function SqlToPrismaPage() {
     <ToolPageShell
       appName="SQL to Prisma Schema Converter"
       h1="SQL to Prisma schema converter"
-      intro="Turn PostgreSQL CREATE TABLE statements into a ready-to-use schema.prisma -- models, native type mappings, ids, defaults, and relations on both sides."
+      intro="Turn PostgreSQL CREATE TABLE statements into a ready-to-use schema.prisma, models, native type mappings, ids, defaults, and relations on both sides."
       current="/sql-to-prisma"
       siblings={["/sql-to-typescript", "/postgres-er-diagram", "/sql-formatter"]}
       faqs={faqs}

@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     q: "Is it free?",
-    a: "Yes, completely free with no signup. Everything runs in your browser -- paste DDL, toggle between interfaces and Zod, copy the output.",
+    a: "Yes, completely free with no signup. Everything runs in your browser, paste DDL, toggle between interfaces and Zod, copy the output.",
   },
   {
     q: "Is my SQL uploaded anywhere?",
@@ -43,11 +43,11 @@ const faqs = [
   },
   {
     q: "Which PostgreSQL features are supported?",
-    a: "Tables, columns with full type strings, primary keys, nullability, and defaults. Foreign keys shape the diagram tools but do not change the generated types -- relations are yours to model in your ORM.",
+    a: "Tables, columns with full type strings, primary keys, nullability, and defaults. Foreign keys shape the diagram tools but do not change the generated types, relations are yours to model in your ORM.",
   },
   {
     q: "Can I turn the result into an ER diagram?",
-    a: "Yes. Click Visualize this schema to open the same SQL in dbdiagramr as an interactive ER diagram -- handy for checking the relationships behind the types you just generated.",
+    a: "Yes. Click Visualize this schema to open the same SQL in dbdiagramr as an interactive ER diagram, handy for checking the relationships behind the types you just generated.",
   },
 ];
 
@@ -63,7 +63,7 @@ export default function SqlToTypescriptPage() {
     <ToolPageShell
       appName="SQL to TypeScript Types Generator"
       h1="SQL to TypeScript types generator"
-      intro="Paste PostgreSQL CREATE TABLE statements and get TypeScript interfaces or Zod validation schemas -- nullables, arrays, dates, and uuids mapped correctly."
+      intro="Paste PostgreSQL CREATE TABLE statements and get TypeScript interfaces or Zod validation schemas, nullables, arrays, dates, and uuids mapped correctly."
       current="/sql-to-typescript"
       siblings={["/sql-to-prisma", "/sql-formatter", "/sql-to-mermaid"]}
       faqs={faqs}

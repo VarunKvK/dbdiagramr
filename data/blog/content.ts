@@ -43,7 +43,7 @@ WHERE tc.constraint_type = 'FOREIGN KEY'
     <p>The honest limitation they all share: <strong>any IDE-based diagram is a snapshot</strong>. Nothing to share but an exported image, and it drifts the moment someone runs a migration.</p>
 
     <h2>3. Manual diagramming: draw.io, dbdiagram.io, DrawSQL</h2>
-    <p>Great for designing a schema you haven't built yet. dbdiagram.io and DrawSQL are excellent editors -- write DBML or drag tables, get a clean diagram.</p>
+    <p>Great for designing a schema you haven't built yet. dbdiagram.io and DrawSQL are excellent editors, write DBML or drag tables, get a clean diagram.</p>
     <p>The catch is <strong>drift</strong>. The diagram is a hand-made copy at one moment in time. The day someone adds a column or foreign key, the diagram is wrong. A wrong diagram is worse than none, because people trust it. Building it takes 30 minutes to an hour, and it's stale the moment a migration lands. Use these when you're <em>designing</em>. They struggle to <em>document a real schema over time</em>.</p>
 
     <h2>4. Generate from your migrations</h2>
@@ -53,18 +53,18 @@ WHERE tc.constraint_type = 'FOREIGN KEY'
 
     <h2>5. Paste a live connection string: the "always current in 10 seconds" option</h2>
     <p>Point a tool at the <strong>real database</strong> and let it introspect the schema itself. No schema code, no hand-arranging, nothing to keep in sync. The diagram <em>is</em> what's in your database right now.</p>
-    <p>That's what <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> does. You paste a PostgreSQL connection string and it queries <code>information_schema</code> for tables, columns, primary keys, and foreign keys, then renders an interactive ER diagram you can pan, zoom, drag, and export as SVG or PNG. Because it introspects the live database, there's no drift -- change a migration, paste the same string again, up-to-date in under 10 seconds.</p>
+    <p>That's what <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> does. You paste a PostgreSQL connection string and it queries <code>information_schema</code> for tables, columns, primary keys, and foreign keys, then renders an interactive ER diagram you can pan, zoom, drag, and export as SVG or PNG. Because it introspects the live database, there's no drift, change a migration, paste the same string again, up-to-date in under 10 seconds.</p>
     <p>Not sure what an ER diagram looks like yet? The <a href="https://www.dbdiagramr.space/schema">schema library</a> has live diagrams of Supabase, NextAuth.js, Laravel, and Django schemas you can explore before connecting your own database.</p>
 
     <h2>Why you should care about "stays current"</h2>
-    <p>Every method above the last one shares the same failure mode: the diagram is a snapshot, and keeping it current is your problem. Walk into any team that's been around a while and you'll find a "schema diagram" in a wiki from eight months ago. A wrong diagram is worse than none -- it's confidently wrong.</p>
+    <p>Every method above the last one shares the same failure mode: the diagram is a snapshot, and keeping it current is your problem. Walk into any team that's been around a while and you'll find a "schema diagram" in a wiki from eight months ago. A wrong diagram is worse than none, it's confidently wrong.</p>
     <p>The test that settles it: <strong>how much work does it take to make this picture true again?</strong> If the answer is "re-export from my IDE" or "drag the boxes by hand," humans will stop doing it and the diagram will lie to you.</p>
 
     <h2>FAQ</h2>
     <p><strong>What's the easiest way to generate an ER diagram from a Postgres database?</strong><br/>If you have a GUI client open, its built-in diagram is fastest. For a shareable diagram that matches your database <em>as it is right now</em>, a live-introspection tool is fastest because there's nothing to maintain.</p>
     <p><strong>Can I create a Postgres ERD without connecting to the live database?</strong><br/>Yes. Run <code>pg_dump --schema-only</code> and feed the DDL to a SQL-to-diagram tool, or parse migration files. Safer when you can't expose production credentials.</p>
     <p><strong>How do I keep a schema diagram up to date?</strong><br/>Manual tools require manual regeneration, so they drift. The reliable fix is introspection: regenerate straight from the live database or wire documentation generation into CI.</p>
-    <p><strong>Does pgAdmin make ER diagrams?</strong><br/>Yes. pgAdmin 4 includes an ERD tool -- right-click the database → <em>ERD For Database</em>, or <em>Tools → ERD Tool</em>. Free and built in, best on small-to-medium schemas.</p>
+    <p><strong>Does pgAdmin make ER diagrams?</strong><br/>Yes. pgAdmin 4 includes an ERD tool, right-click the database → <em>ERD For Database</em>, or <em>Tools → ERD Tool</em>. Free and built in, best on small-to-medium schemas.</p>
 
     <h2>How to choose</h2>
     <ul>
@@ -115,7 +115,7 @@ postgres://postgres.[project-ref]:[YOUR-PASSWORD]@aws-[REGION].pooler.supabase.c
 # Shared pooler transaction mode (the one most apps want)
 postgres://postgres.[project-ref]:[YOUR-PASSWORD]@aws-[REGION].pooler.supabase.com:6543/postgres</code></pre>
     <p><strong>The gotcha:</strong> direct connections run on <strong>IPv6</strong>. On an IPv4-only network you get <code>ENOTFOUND</code>, not a friendly error. The shared pooler is IPv4-only and fixes it. For serverless (Vercel, edge, Lambda) use <strong>transaction mode (port 6543)</strong>.</p>
-    <p>This is why tools like <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> ask for the <em>transaction pooler</em> URL -- otherwise the connection silently fails from IPv4-only hosts.</p>
+    <p>This is why tools like <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> ask for the <em>transaction pooler</em> URL, otherwise the connection silently fails from IPv4-only hosts.</p>
 
     <h2>Neon: pooled vs direct</h2>
     <pre><code># Pooled (through PgBouncer, use by default)
@@ -127,7 +127,7 @@ postgresql://user:pass@ep-cool-rain-123456.us-east-2.aws.neon.tech/neondb?sslmod
 
     <h2>Railway: the plain standard</h2>
     <pre><code>postgresql://postgres:[YOUR-PASSWORD]@[host].railway.app:5432/railway</code></pre>
-    <p>No pooler decision -- textbook format, easiest to read and to misplace a password in. Store in <code>DATABASE_URL</code>, never in code.</p>
+    <p>No pooler decision, textbook format, easiest to read and to misplace a password in. Store in <code>DATABASE_URL</code>, never in code.</p>
 
     <h2>All the formats in one table</h2>
     <table>
@@ -155,20 +155,20 @@ postgresql://user:pass@ep-cool-rain-123456.us-east-2.aws.neon.tech/neondb?sslmod
     <p><strong>What is a PostgreSQL connection string?</strong><br/>A single URL with everything needed to reach a Postgres database: protocol, username, password, host, port, and database name.</p>
     <p><strong>Should I use a direct connection or a pooler?</strong><br/>Persistent backend → direct is fine. Serverless/edge → use a pooler (Supabase transaction mode port 6543 or Neon <code>-pooler</code> host).</p>
     <p><strong>Why does my Supabase connection fail with ENOTFOUND?</strong><br/>You're using the direct string over IPv4, and Supabase's direct endpoint is IPv6. Switch to a shared pooler string.</p>
-    <p><strong>Is my connection string a secret?</strong><br/>Yes -- password in plain text. Keep in environment variables, rotate if leaked, only hand to tools that won't store it.</p>
+    <p><strong>Is my connection string a secret?</strong><br/>Yes, password in plain text. Keep in environment variables, rotate if leaked, only hand to tools that won't store it.</p>
   `,
   "supabase-auth-schema-explained": `
     <h2>The short version</h2>
-    <p>Supabase stores auth in a separate <code>auth</code> schema -- not your <code>public</code> schema. Every user has exactly <strong>one row in <code>auth.users</code></strong>, one or more rows in <strong><code>auth.identities</code></strong> (one per login provider), and can hold <strong>multiple active <code>auth.sessions</code></strong>, each backed by a <code>refresh_tokens</code> row. If you've seen tables you didn't create, these are the ones.</p>
+    <p>Supabase stores auth in a separate <code>auth</code> schema, not your <code>public</code> schema. Every user has exactly <strong>one row in <code>auth.users</code></strong>, one or more rows in <strong><code>auth.identities</code></strong> (one per login provider), and can hold <strong>multiple active <code>auth.sessions</code></strong>, each backed by a <code>refresh_tokens</code> row. If you've seen tables you didn't create, these are the ones.</p>
     <pre><code>auth.users 1───* auth.identities
 auth.users 1───* auth.sessions
 auth.sessions 1───* auth.refresh_tokens</code></pre>
 
     <h2>Why an <code>auth</code> schema at all</h2>
-    <p>Supabase keeps auth separate from your app's tables. Your <code>public</code> schema is where your models live; <code>auth</code> is locked down and managed by GoTrue. You read from it, you don't write to it. That separation is why your migrations never touch these tables -- and why introspecting a Supabase database shows a schema you didn't write.</p>
+    <p>Supabase keeps auth separate from your app's tables. Your <code>public</code> schema is where your models live; <code>auth</code> is locked down and managed by GoTrue. You read from it, you don't write to it. That separation is why your migrations never touch these tables, and why introspecting a Supabase database shows a schema you didn't write.</p>
 
     <h2>The four tables that matter</h2>
-    <p><strong><code>auth.users</code> -- one row per user.</strong></p>
+    <p><strong><code>auth.users</code>, one row per user.</strong></p>
     <table>
       <thead><tr><th>Column</th><th>What it holds</th></tr></thead>
       <tbody>
@@ -181,35 +181,35 @@ auth.sessions 1───* auth.refresh_tokens</code></pre>
         <tr><td><code>confirmed_at</code></td><td>When primary identity was confirmed</td></tr>
       </tbody>
     </table>
-    <p><strong><code>auth.identities</code> -- one row per login method.</strong> Email <strong>and</strong> GitHub = two rows. <code>provider_id</code> is the provider's identifier; <code>identity_data</code> is the raw claim payload. FK <code>user_id → users.id</code>.</p>
-    <p><strong><code>auth.sessions</code> -- a browser/token session.</strong> One per device roughly. <code>aal</code>, <code>user_agent</code>, <code>ip</code>, <code>not_after</code>, <code>factor_id</code> (MFA).</p>
-    <p><strong><code>auth.refresh_tokens</code> -- the long-lived token backing a session.</strong> Access tokens ~1h (JWT). Refresh tokens are long, with <code>revoked</code> flag and <code>parent</code> for token reuse detection.</p>
+    <p><strong><code>auth.identities</code>, one row per login method.</strong> Email <strong>and</strong> GitHub = two rows. <code>provider_id</code> is the provider's identifier; <code>identity_data</code> is the raw claim payload. FK <code>user_id → users.id</code>.</p>
+    <p><strong><code>auth.sessions</code>, a browser/token session.</strong> One per device roughly. <code>aal</code>, <code>user_agent</code>, <code>ip</code>, <code>not_after</code>, <code>factor_id</code> (MFA).</p>
+    <p><strong><code>auth.refresh_tokens</code>, the long-lived token backing a session.</strong> Access tokens ~1h (JWT). Refresh tokens are long, with <code>revoked</code> flag and <code>parent</code> for token reuse detection.</p>
 
     <h2>How they relate (the joins you'll actually write)</h2>
     <pre><code>select u.email, i.provider, s.id as session_id
 from auth.users u
 join auth.identities i on i.user_id = u.id
 join auth.sessions  s on s.user_id = u.id;</code></pre>
-    <p>The 80% case: "who is signed in, through which provider, on which sessions." Every relationship is a plain foreign key -- <code>identities.user_id</code>, <code>sessions.user_id</code>, <code>refresh_tokens.session_id</code> -- exactly what a diagram turns into readable arrows. Paste a read-only connection string into <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> to trace them visually.</p>
+    <p>The 80% case: "who is signed in, through which provider, on which sessions." Every relationship is a plain foreign key, <code>identities.user_id</code>, <code>sessions.user_id</code>, <code>refresh_tokens.session_id</code>, exactly what a diagram turns into readable arrows. Paste a read-only connection string into <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> to trace them visually.</p>
 
     <h2>What's usually NOT your business</h2>
-    <p><code>auth.instances</code>, <code>auth.audit_log_entries</code>, and <code>auth.schema_migrations</code> are Supabase bookkeeping. <code>audit_log_entries</code> records admin actions; <code>instances</code> is multi-tenancy plumbing. If a diagram shows them, ignore them -- your reads live in the other four.</p>
+    <p><code>auth.instances</code>, <code>auth.audit_log_entries</code>, and <code>auth.schema_migrations</code> are Supabase bookkeeping. <code>audit_log_entries</code> records admin actions; <code>instances</code> is multi-tenancy plumbing. If a diagram shows them, ignore them, your reads live in the other four.</p>
 
     <h2>Practical tips</h2>
     <ul>
       <li><strong>Never write to <code>auth</code> tables directly.</strong> Use the Supabase client / Admin API. Direct inserts create orphaned identities, unhashed passwords.</li>
-      <li><strong>Foreign-key joins work across schemas.</strong> <code>auth.users.id</code> is the same UUID you'd use in <code>public</code> -- join <code>public.profiles.user_id → auth.users.id</code>.</li>
+      <li><strong>Foreign-key joins work across schemas.</strong> <code>auth.users.id</code> is the same UUID you'd use in <code>public</code>, join <code>public.profiles.user_id → auth.users.id</code>.</li>
       <li><strong>A user with no identity row is a sign of trouble.</strong> Every normal user has at least one. Orphaned identities without a users row = import bug.</li>
       <li><strong>Sessions accumulate.</strong> Many sessions per user isn't a leak, it's devices and tabs.</li>
     </ul>
-    <p>See it live: the <a href="https://www.dbdiagramr.space/schema/supabase">Supabase auth schema diagram</a> was generated by introspecting a live database -- users, identities, sessions, and refresh_tokens with foreign keys rendered as relationships.</p>
+    <p>See it live: the <a href="https://www.dbdiagramr.space/schema/supabase">Supabase auth schema diagram</a> was generated by introspecting a live database, users, identities, sessions, and refresh_tokens with foreign keys rendered as relationships.</p>
 
     <h2>FAQ</h2>
-    <p><strong>Where is the Supabase auth schema?</strong><br/>In the <code>auth</code> schema, separate from <code>public</code> -- <code>auth.users</code>, <code>auth.identities</code>, <code>auth.sessions</code>, <code>auth.refresh_tokens</code>, plus internal tables.</p>
+    <p><strong>Where is the Supabase auth schema?</strong><br/>In the <code>auth</code> schema, separate from <code>public</code>, <code>auth.users</code>, <code>auth.identities</code>, <code>auth.sessions</code>, <code>auth.refresh_tokens</code>, plus internal tables.</p>
     <p><strong>What is <code>auth.users</code> used for?</strong><br/>Single source of truth for who can sign in. One row per user, with email/phone, password hash, metadata, and provider flags.</p>
     <p><strong>Why does one user have multiple identities?</strong><br/>Each login method is a separate <code>auth.identities</code> row. Email + GitHub + Google = three rows, all pointing at the same <code>users.id</code>.</p>
     <p><strong>What's the difference between a session and a refresh token?</strong><br/>Session is device/token context; refresh token is the long-lived credential that renews the short-lived JWT. One session maps to one refresh token chain.</p>
-    <p><strong>Can I join auth tables to my public tables?</strong><br/>Yes -- use <code>auth.users.id</code> as the join key with your <code>public.*</code> tables.</p>
+    <p><strong>Can I join auth tables to my public tables?</strong><br/>Yes, use <code>auth.users.id</code> as the join key with your <code>public.*</code> tables.</p>
   `,
   "what-is-an-er-diagram": `
     <h2>The short version</h2>
@@ -228,24 +228,24 @@ join auth.sessions  s on s.user_id = u.id;</code></pre>
     </table>
 
     <h2>The three relationship types</h2>
-    <p><strong>One-to-many (1:N)</strong> -- the most common. One user has many orders. The "many" side holds the foreign key: <code>orders.user_id → users.id</code>. Drawn as a line with a crow's foot (three prongs) on the many end.</p>
-    <p><strong>Many-to-many (M:N)</strong> -- via a join table. Users and groups need <code>user_groups(user_id, group_id)</code>. Django's <code>auth_user_groups</code> is a classic example. The join table has two foreign keys.</p>
-    <p><strong>One-to-one (1:1)</strong> -- rare, usually a vertical split. <code>users</code> and <code>profiles</code> where each user has exactly one profile. Enforced by a <code>UNIQUE</code> on the foreign key.</p>
+    <p><strong>One-to-many (1:N)</strong>, the most common. One user has many orders. The "many" side holds the foreign key: <code>orders.user_id → users.id</code>. Drawn as a line with a crow's foot (three prongs) on the many end.</p>
+    <p><strong>Many-to-many (M:N)</strong>, via a join table. Users and groups need <code>user_groups(user_id, group_id)</code>. Django's <code>auth_user_groups</code> is a classic example. The join table has two foreign keys.</p>
+    <p><strong>One-to-one (1:1)</strong>, rare, usually a vertical split. <code>users</code> and <code>profiles</code> where each user has exactly one profile. Enforced by a <code>UNIQUE</code> on the foreign key.</p>
 
     <h2>How to read an ER diagram in 60 seconds</h2>
     <ol>
-      <li><strong>Find the core entity.</strong> Usually <code>users</code> -- most lines point to it.</li>
+      <li><strong>Find the core entity.</strong> Usually <code>users</code>, most lines point to it.</li>
       <li><strong>Follow the FK lines.</strong> Each line is a <code>FOREIGN KEY</code> you could write as a <code>JOIN</code>.</li>
       <li><strong>Check cardinality.</strong> Crow's foot = many. No crow's foot = one.</li>
       <li><strong>Look for join tables.</strong> Two FKs, often just two columns + PK = M:N.</li>
       <li><strong>Read PKs first.</strong> The PK tells you what makes a row unique.</li>
     </ol>
-    <p>Example: In the <a href="https://www.dbdiagramr.space/schema/supabase">Supabase auth diagram</a>, <code>auth.users</code> is the core. Lines radiate to <code>identities</code> and <code>sessions</code> -- one user, many identities and many sessions. Each line is a foreign key you can follow with a query. Two more worked examples at different scales: the 11-table <a href="https://www.dbdiagramr.space/schema/chinook">Chinook music-store diagram</a> (note the composite-key join table <code>playlist_track</code>) and the 16-table <a href="https://www.dbdiagramr.space/schema/pagila">Pagila rental-store diagram</a> (note the partitioned <code>payment</code> table).</p>
-    <p>If you are choosing tooling rather than learning notation, compare the options in <a href="https://www.dbdiagramr.space/blog/database-schema-diagram-tool">5 database schema diagram tools</a> -- or skip straight to the <a href="https://www.dbdiagramr.space/postgres-er-diagram">PostgreSQL ER diagram tool</a> and read a live diagram.</p>
+    <p>Example: In the <a href="https://www.dbdiagramr.space/schema/supabase">Supabase auth diagram</a>, <code>auth.users</code> is the core. Lines radiate to <code>identities</code> and <code>sessions</code>, one user, many identities and many sessions. Each line is a foreign key you can follow with a query. Two more worked examples at different scales: the 11-table <a href="https://www.dbdiagramr.space/schema/chinook">Chinook music-store diagram</a> (note the composite-key join table <code>playlist_track</code>) and the 16-table <a href="https://www.dbdiagramr.space/schema/pagila">Pagila rental-store diagram</a> (note the partitioned <code>payment</code> table).</p>
+    <p>If you are choosing tooling rather than learning notation, compare the options in <a href="https://www.dbdiagramr.space/blog/database-schema-diagram-tool">5 database schema diagram tools</a>, or skip straight to the <a href="https://www.dbdiagramr.space/postgres-er-diagram">PostgreSQL ER diagram tool</a> and read a live diagram.</p>
 
     <h2>Why ER diagrams matter for PostgreSQL</h2>
-    <p>PostgreSQL doesn't show you relationships -- <code>\\d</code> shows one table at a time, <code>information_schema</code> is a wall of text. An ER diagram collapses that into one picture where you can see at a glance: which tables exist, how they connect, where the join tables are, and what you'd need to <code>JOIN</code> to answer a question.</p>
-    <p>Live-introspected diagrams (like <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a>) guarantee the picture matches production -- no drift, no hand-updating. Paste a connection string, get the truth.</p>
+    <p>PostgreSQL doesn't show you relationships, <code>\\d</code> shows one table at a time, <code>information_schema</code> is a wall of text. An ER diagram collapses that into one picture where you can see at a glance: which tables exist, how they connect, where the join tables are, and what you'd need to <code>JOIN</code> to answer a question.</p>
+    <p>Live-introspected diagrams (like <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a>) guarantee the picture matches production, no drift, no hand-updating. Paste a connection string, get the truth.</p>
 
     <h2>FAQ</h2>
     <p><strong>What is an ER diagram?</strong><br/>A visual map of a database: boxes are tables, rows are columns, lines are foreign key relationships with cardinality (one-to-many, etc.).</p>
@@ -293,15 +293,15 @@ where i.status != 'paid';</code></pre>
     <ul>
       <li><strong>Prices, not products, are what you bill.</strong> One product ("Pro Plan") can have many prices ($10/mo, $100/yr). Subscriptions reference prices, not products directly.</li>
       <li><strong>Subscription items allow multi-product subscriptions.</strong> One subscription can contain multiple prices (base + add-on) with independent quantities.</li>
-      <li><strong>Invoices are snapshots.</strong> <code>invoice_line_items</code> copies price and amount at invoice time -- even if the price later changes, the invoice stays truthful.</li>
+      <li><strong>Invoices are snapshots.</strong> <code>invoice_line_items</code> copies price and amount at invoice time, even if the price later changes, the invoice stays truthful.</li>
       <li><strong>Payment intents are the audit trail.</strong> Every charge attempt is a row, even failed ones. Join to invoices to see what was paid and what wasn't.</li>
     </ul>
-    <p>See it visually: the <a href="https://www.dbdiagramr.space/schema/stripe">Stripe billing schema diagram</a> renders all 9 tables with foreign keys as navigable relationships -- the same picture you'd get introspecting a live Stripe-synced database.</p>
+    <p>See it visually: the <a href="https://www.dbdiagramr.space/schema/stripe">Stripe billing schema diagram</a> renders all 9 tables with foreign keys as navigable relationships, the same picture you'd get introspecting a live Stripe-synced database.</p>
 
     <h2>FAQ</h2>
     <p><strong>What tables does a Stripe billing schema need?</strong><br/>9 tables: customers, products, prices, subscriptions, subscription_items, invoices, invoice_line_items, payment_methods, and payment_intents.</p>
     <p><strong>Should subscriptions reference products or prices?</strong><br/>Prices. A product is a catalog entry; a price is a purchasable variant (amount + interval). Subscriptions are composed of subscription_items that each reference a price.</p>
-    <p><strong>How does Stripe handle multiple products in one subscription?</strong><br/>Through <code>subscription_items</code> -- one row per price in the subscription, each with its own quantity. One subscription, many items.</p>
+    <p><strong>How does Stripe handle multiple products in one subscription?</strong><br/>Through <code>subscription_items</code>, one row per price in the subscription, each with its own quantity. One subscription, many items.</p>
     <p><strong>What's the difference between an invoice and a payment intent?</strong><br/>An invoice is a bill (what is owed). A payment intent is an attempt to collect it (what was charged, status, method). One invoice can have multiple payment intents (retries).</p>
   `,
   "ecommerce-database-schema-postgres": `
@@ -327,7 +327,7 @@ where i.status != 'paid';</code></pre>
     </table>
 
     <h2>The three flows</h2>
-    <p><strong>Browse → cart:</strong> Customer browses <code>products</code> (joined to <code>categories</code> and <code>product_images</code>), adds to <code>carts</code> via <code>cart_items</code>. Cart is mutable -- quantities change, items are removed.</p>
+    <p><strong>Browse → cart:</strong> Customer browses <code>products</code> (joined to <code>categories</code> and <code>product_images</code>), adds to <code>carts</code> via <code>cart_items</code>. Cart is mutable, quantities change, items are removed.</p>
     <p><strong>Cart → order:</strong> At checkout, cart items are <em>copied</em> into <code>order_items</code> as an immutable snapshot. Even if the product price later changes, the order preserves what was actually purchased. The <code>orders</code> row records total, addresses, and timestamps (<code>placed_at, paid_at, shipped_at</code>).</p>
     <p><strong>Order → payment → review:</strong> <code>payments</code> records each charge attempt against the order. After fulfillment, <code>reviews</code> lets the customer rate the product.</p>
     <pre><code>-- Order history with items and payment status
@@ -347,7 +347,7 @@ order by o.placed_at desc;</code></pre>
       <li><strong>Categories are self-referential.</strong> <code>categories.parent_id → categories.id</code> builds a tree (Electronics → Phones → Cases) without a separate hierarchy table.</li>
       <li><strong>Prices in cents as integers.</strong> Avoid floating-point rounding. <code>price_cents integer</code> with a <code>currency</code> column is the safe default.</li>
     </ul>
-    <p>Explore it: the <a href="https://www.dbdiagramr.space/schema/ecommerce">e-commerce schema diagram</a> renders all 11 tables with foreign keys you can hover to trace -- the same view you'd get introspecting a live store database.</p>
+    <p>Explore it: the <a href="https://www.dbdiagramr.space/schema/ecommerce">e-commerce schema diagram</a> renders all 11 tables with foreign keys you can hover to trace, the same view you'd get introspecting a live store database.</p>
 
     <h2>FAQ</h2>
     <p><strong>What tables does an e-commerce database need?</strong><br/>11 tables: customers, addresses, categories, products, product_images, carts, cart_items, orders, order_items, payments, and reviews.</p>
@@ -477,7 +477,7 @@ order by o.placed_at desc;</code></pre>
     </table>
 
     <h2>Optional tables</h2>
-    <p><code>sessions</code> -- created by <code>php artisan session:table</code>. <code>cache</code> -- created by <code>php artisan cache:table</code>. <code>jobs</code> -- created by <code>php artisan queue:table</code>. <code>batches</code> -- created by <code>php artisan queue:batches-table</code>. None are created by default.</p>
+    <p><code>sessions</code>, created by <code>php artisan session:table</code>. <code>cache</code>, created by <code>php artisan cache:table</code>. <code>jobs</code>, created by <code>php artisan queue:table</code>. <code>batches</code>, created by <code>php artisan queue:batches-table</code>. None are created by default.</p>
 
     <h2>FAQ</h2>
     <p><strong>Does Laravel create all these tables automatically?</strong><br/>No. Only <code>users</code>, <code>password_resets</code>, and <code>failed_jobs</code> are created by <code>php artisan migrate</code>.</p>
@@ -487,7 +487,7 @@ order by o.placed_at desc;</code></pre>
 
   "django-auth-schema-explained": `
     <h2>The short version</h2>
-    <p>Django's auth system is 9 tables: <code>auth_user</code>, <code>auth_group</code>, <code>auth_permission</code>, <code>django_content_type</code>, <code>django_admin_log</code>, and three join tables (<code>auth_user_groups</code>, <code>auth_user_user_permissions</code>, <code>auth_group_permissions</code>). The permission system is built on content types -- each model gets a default <code>add</code>, <code>change</code>, <code>delete</code>, and <code>view</code> permission. See the full interactive version in the <a href="https://www.dbdiagramr.space/schema/django">Django auth schema diagram</a>.</p>
+    <p>Django's auth system is 9 tables: <code>auth_user</code>, <code>auth_group</code>, <code>auth_permission</code>, <code>django_content_type</code>, <code>django_admin_log</code>, and three join tables (<code>auth_user_groups</code>, <code>auth_user_user_permissions</code>, <code>auth_group_permissions</code>). The permission system is built on content types, each model gets a default <code>add</code>, <code>change</code>, <code>delete</code>, and <code>view</code> permission. See the full interactive version in the <a href="https://www.dbdiagramr.space/schema/django">Django auth schema diagram</a>.</p>
 
     <h2>The core tables</h2>
     <h3>auth_user</h3>
@@ -532,13 +532,13 @@ order by o.placed_at desc;</code></pre>
     <p>A <strong>permission</strong> is tied to a <strong>content type</strong> (a model). <strong>Groups</strong> collect permissions. <strong>Users</strong> are added to groups to inherit their permissions. You can also assign permissions directly to users.</p>
 
     <h2>Which migration creates which tables</h2>
-    <p>The tables arrive in layers as you migrate. The <code>contenttypes</code> app migration creates <code>django_content_type</code> first -- every model in your project gets one row. Then the <code>auth</code> app's initial migration creates <code>auth_user</code>, <code>auth_group</code>, <code>auth_permission</code>, and the three join tables. The <code>admin</code> app adds <code>django_admin_log</code> last. If you only need users without groups, you still get all of them -- Django does not split the auth migrations.</p>
+    <p>The tables arrive in layers as you migrate. The <code>contenttypes</code> app migration creates <code>django_content_type</code> first, every model in your project gets one row. Then the <code>auth</code> app's initial migration creates <code>auth_user</code>, <code>auth_group</code>, <code>auth_permission</code>, and the three join tables. The <code>admin</code> app adds <code>django_admin_log</code> last. If you only need users without groups, you still get all of them, Django does not split the auth migrations.</p>
 
     <h2>The contenttypes trick</h2>
-    <p><code>django_content_type</code> is the clever bit: it maps (app_label, model) pairs to integer IDs, so permissions attach to <em>models</em> rather than tables. A permission row says "can change X" where X is a content type ID; the same mechanism powers generic foreign keys elsewhere in Django. This is why adding a new model and running migrations silently creates four new permission rows -- one per default action.</p>
+    <p><code>django_content_type</code> is the clever bit: it maps (app_label, model) pairs to integer IDs, so permissions attach to <em>models</em> rather than tables. A permission row says "can change X" where X is a content type ID; the same mechanism powers generic foreign keys elsewhere in Django. This is why adding a new model and running migrations silently creates four new permission rows, one per default action.</p>
 
     <h2>A permission check in one query</h2>
-    <p>To list everything user 42 can do, join through both paths -- group memberships and direct grants:</p>
+    <p>To list everything user 42 can do, join through both paths, group memberships and direct grants:</p>
     <pre><code>SELECT DISTINCT p.codename
 FROM auth_permission p
 JOIN django_content_type ct ON ct.id = p.content_type_id
@@ -546,10 +546,10 @@ LEFT JOIN auth_group_permissions gp ON gp.permission_id = p.id
 LEFT JOIN auth_user_groups ug ON ug.group_id = gp.group_id AND ug.user_id = 42
 LEFT JOIN auth_user_user_permissions up ON up.permission_id = p.id AND up.user_id = 42
 WHERE ug.user_id = 42 OR up.user_id = 42;</code></pre>
-    <p>Note the two join tables doing different jobs: <code>auth_user_groups</code> carries role-like membership, while <code>auth_user_user_permissions</code> carries one-off grants. Most RBAC designs -- see the <a href="https://www.dbdiagramr.space/schema/rbac">RBAC schema</a> -- separate these the same way.</p>
+    <p>Note the two join tables doing different jobs: <code>auth_user_groups</code> carries role-like membership, while <code>auth_user_user_permissions</code> carries one-off grants. Most RBAC designs, see the <a href="https://www.dbdiagramr.space/schema/rbac">RBAC schema</a>, separate these the same way.</p>
 
     <h2>FAQ</h2>
-    <p><strong>Does Django create all these tables automatically?</strong><br/>Yes. Running <code>python manage.py migrate</code> creates all auth tables -- contenttypes first, then auth, then admin.</p>
+    <p><strong>Does Django create all these tables automatically?</strong><br/>Yes. Running <code>python manage.py migrate</code> creates all auth tables, contenttypes first, then auth, then admin.</p>
     <p><strong>How is this different from NextAuth or Laravel auth?</strong><br/>Django's permissions attach to models via content types, which neither NextAuth nor Laravel do. Compare the <a href="https://www.dbdiagramr.space/blog/nextauth-auth-schema-explained">NextAuth schema</a> (OAuth accounts and sessions, no permissions) and the <a href="https://www.dbdiagramr.space/blog/laravel-database-schema-explained">Laravel schema</a> (sessions and jobs, no permission tables at all).</p>
     <p><strong>What's the difference between <code>is_superuser</code> and <code>is_staff</code>?</strong><br/><code>is_superuser</code> bypasses all permission checks. <code>is_staff</code> only controls access to the Django admin.</p>
     <p><strong>Can I use Django without the permission system?</strong><br/>Yes. Remove <code>django.contrib.auth</code> from <code>INSTALLED_APPS</code>.</p>
@@ -557,24 +557,24 @@ WHERE ug.user_id = 42 OR up.user_id = 42;</code></pre>
 
   "database-schema-documentation": `
     <h2>The short version</h2>
-    <p>Document your schema in three layers: (1) name things well so they're self-documenting, (2) add inline column comments for the non-obvious stuff, (3) generate a one-page visual diagram that shows the relationships. Skip the 40-page Confluence page -- nobody reads it.</p>
+    <p>Document your schema in three layers: (1) name things well so they're self-documenting, (2) add inline column comments for the non-obvious stuff, (3) generate a one-page visual diagram that shows the relationships. Skip the 40-page Confluence page, nobody reads it.</p>
 
     <h2>Layer 1: Name things well</h2>
     <ul>
-      <li><strong>Tables:</strong> plural nouns, snake_case -- <code>order_items</code>, not <code>OrderItems</code>.</li>
-      <li><strong>Foreign keys:</strong> <code>{table}_id</code> -- <code>user_id</code>, not <code>userId</code>.</li>
-      <li><strong>Booleans:</strong> prefix with <code>is_</code> or <code>has_</code> -- <code>is_active</code>, <code>has_paid</code>.</li>
+      <li><strong>Tables:</strong> plural nouns, snake_case, <code>order_items</code>, not <code>OrderItems</code>.</li>
+      <li><strong>Foreign keys:</strong> <code>{table}_id</code>, <code>user_id</code>, not <code>userId</code>.</li>
+      <li><strong>Booleans:</strong> prefix with <code>is_</code> or <code>has_</code>, <code>is_active</code>, <code>has_paid</code>.</li>
       <li><strong>Timestamps:</strong> <code>created_at</code> and <code>updated_at</code>.</li>
     </ul>
 
     <h2>Layer 2: Inline comments</h2>
     <p>PostgreSQL supports column-level comments. Use them for anything that isn't obvious from the name:</p>
     <pre><code>COMMENT ON COLUMN orders.status IS
-  'pending | confirmed | shipped | delivered | cancelled. Never delete orders -- set status to cancelled instead.';</code></pre>
+  'pending | confirmed | shipped | delivered | cancelled. Never delete orders, set status to cancelled instead.';</code></pre>
     <p><strong>What to comment:</strong> enum values, format requirements, business rules, deletion policies. <strong>What NOT to comment:</strong> <code>id</code>, <code>created_at</code>, obvious foreign keys.</p>
 
     <h2>Layer 3: Visual diagram</h2>
-    <p>A one-page ER diagram replaces 40 pages of documentation. Use <a href="https://www.dbdiagramr.space">dbdiagramr</a> -- paste your connection string, get a visual schema in seconds. Show table names, primary keys, foreign key relationships, and non-obvious column types.</p>
+    <p>A one-page ER diagram replaces 40 pages of documentation. Use <a href="https://www.dbdiagramr.space">dbdiagramr</a>, paste your connection string, get a visual schema in seconds. Show table names, primary keys, foreign key relationships, and non-obvious column types.</p>
 
     <h2>The one-page cheat sheet</h2>
     <p>Create a <code>SCHEMA.md</code> in your repo with table names, key columns, relationships, and a link to your visual diagram. Update it in the same PR that changes the schema.</p>
@@ -587,7 +587,7 @@ WHERE ug.user_id = 42 OR up.user_id = 42;</code></pre>
 
   "information-schema-vs-pg-catalog": `
     <h2>The short version</h2>
-    <p><code>information_schema</code> is the SQL-standard way to query metadata -- portable across databases, slower, limited to what the standard defines. <code>pg_catalog</code> is PostgreSQL-specific -- faster, more detailed, has everything. Use <code>information_schema</code> for simple cross-DB queries. Use <code>pg_catalog</code> when you need Postgres-specific details or performance.</p>
+    <p><code>information_schema</code> is the SQL-standard way to query metadata, portable across databases, slower, limited to what the standard defines. <code>pg_catalog</code> is PostgreSQL-specific, faster, more detailed, has everything. Use <code>information_schema</code> for simple cross-DB queries. Use <code>pg_catalog</code> when you need Postgres-specific details or performance.</p>
 
     <h2>Head-to-head comparison</h2>
     <table>
@@ -623,7 +623,7 @@ WHERE ug.user_id = 42 OR up.user_id = 42;</code></pre>
 
     <h2>The three fixes</h2>
     <h3>Fix 1: Generate from the live database</h3>
-    <p>Use <a href="https://www.dbdiagramr.space">dbdiagramr</a> -- paste your connection string, get a diagram in seconds. Your schema is always current.</p>
+    <p>Use <a href="https://www.dbdiagramr.space">dbdiagramr</a>, paste your connection string, get a diagram in seconds. Your schema is always current.</p>
 
     <h3>Fix 2: Generate in CI/CD</h3>
     <p>Add a schema diagram step to your CI pipeline. Run it on every push to <code>main</code>. The diagram is always one commit behind, but close enough.</p>
@@ -647,10 +647,10 @@ WHERE ug.user_id = 42 OR up.user_id = 42;</code></pre>
 
     <h2>The three connection strings</h2>
     <h3>Direct connection (port 5432)</h3>
-    <p>Full Postgres protocol support. Supports prepared statements, <code>SET</code> commands, <code>LISTEN/NOTIFY</code>. Uses IPv6 -- may fail locally.</p>
+    <p>Full Postgres protocol support. Supports prepared statements, <code>SET</code> commands, <code>LISTEN/NOTIFY</code>. Uses IPv6, may fail locally.</p>
 
     <h3>Transaction pooler (port 6543)</h3>
-    <p>Routes through Supabase's PgBouncer. IPv4-compatible -- works everywhere. <strong>Does NOT support</strong> prepared statements or <code>SET</code> commands. Best for most web apps.</p>
+    <p>Routes through Supabase's PgBouncer. IPv4-compatible, works everywhere. <strong>Does NOT support</strong> prepared statements or <code>SET</code> commands. Best for most web apps.</p>
 
     <h3>Session pooler (port 6543 + session_mode)</h3>
     <p>Same as transaction pooler but preserves session state. Supports <code>SET</code> but not prepared statements. Use if you need <code>SET search_path</code>.</p>
@@ -679,7 +679,7 @@ WHERE ug.user_id = 42 OR up.user_id = 42;</code></pre>
 
   "dbdiagram-tools-compared": `
     <h2>The short version</h2>
-    <p>dbdiagram.io is the original -- great for writing schemas in code (DBML), but no live database connection. DrawSQL is a paid desktop GUI with good auto-generation. dbdiagramr is free, runs in the browser, connects directly to Supabase/Neon/Railway, and generates diagrams from your live database in seconds.</p>
+    <p>dbdiagram.io is the original, great for writing schemas in code (DBML), but no live database connection. DrawSQL is a paid desktop GUI with good auto-generation. dbdiagramr is free, runs in the browser, connects directly to Supabase/Neon/Railway, and generates diagrams from your live database in seconds.</p>
 
     <h2>Feature comparison</h2>
     <table>
@@ -713,13 +713,13 @@ WHERE ug.user_id = 42 OR up.user_id = 42;</code></pre>
   "free-online-database-diagram-tool": `
     <h2>The short version</h2>
     <p>You need a database diagram. You don't want to pay for it, sign up for another account, or install anything. A free online database diagram tool should let you paste SQL or connect to your database and get a visual schema in seconds.</p>
-    <p>Most tools claim to be free, then hit you with table limits, export restrictions, or require an email before you can do anything. The one that actually works the way you expect is <a href="https://www.dbdiagramr.space">dbdiagramr</a> -- paste SQL or a PostgreSQL connection string, get an interactive ER diagram, export SVG/PNG. No signup, no limits, no catch.</p>
+    <p>Most tools claim to be free, then hit you with table limits, export restrictions, or require an email before you can do anything. The one that actually works the way you expect is <a href="https://www.dbdiagramr.space">dbdiagramr</a>, paste SQL or a PostgreSQL connection string, get an interactive ER diagram, export SVG/PNG. No signup, no limits, no catch.</p>
 
     <h2>What a good free database diagram tool should do</h2>
     <table>
       <thead><tr><th>Feature</th><th>Why it matters</th></tr></thead>
       <tbody>
-        <tr><td>Paste SQL directly</td><td>You already have the schema -- just show it</td></tr>
+        <tr><td>Paste SQL directly</td><td>You already have the schema, just show it</td></tr>
         <tr><td>Live database connection</td><td>See what's actually deployed, not what you think is deployed</td></tr>
         <tr><td>Interactive diagram</td><td>Pan, zoom, drag tables around</td></tr>
         <tr><td>Export SVG/PNG</td><td>Share with your team or drop in docs</td></tr>
@@ -731,13 +731,13 @@ WHERE ug.user_id = 42 OR up.user_id = 42;</code></pre>
     <h2>How to use dbdiagramr as your free database diagram tool</h2>
 
     <h3>Option 1: Paste SQL</h3>
-    <p>If you have a SQL dump or migration file, paste it directly into dbdiagramr and see your ER diagram appear instantly. Works with PostgreSQL CREATE TABLE statements, foreign keys, indexes -- the whole schema.</p>
+    <p>If you have a SQL dump or migration file, paste it directly into dbdiagramr and see your ER diagram appear instantly. Works with PostgreSQL CREATE TABLE statements, foreign keys, indexes, the whole schema.</p>
 
     <h3>Option 2: Connect to a live database</h3>
-    <p>If you have a PostgreSQL connection string, paste it into dbdiagramr. It queries <code>information_schema</code> for tables, columns, primary keys, and foreign keys, then renders an interactive ER diagram you can pan, zoom, drag, and export as SVG or PNG. Your SQL never leaves your browser -- the connection happens client-side.</p>
+    <p>If you have a PostgreSQL connection string, paste it into dbdiagramr. It queries <code>information_schema</code> for tables, columns, primary keys, and foreign keys, then renders an interactive ER diagram you can pan, zoom, drag, and export as SVG or PNG. Your SQL never leaves your browser, the connection happens client-side.</p>
 
     <h3>Option 3: Upload a file</h3>
-    <p>Drag and drop a <code>.sql</code> file or use the file picker. Same result -- instant diagram.</p>
+    <p>Drag and drop a <code>.sql</code> file or use the file picker. Same result, instant diagram.</p>
 
     <h2>Why most "free" database diagram tools aren't actually free</h2>
     <table>
@@ -749,7 +749,7 @@ WHERE ug.user_id = 42 OR up.user_id = 42;</code></pre>
         <tr><td>QuickDBD</td><td>Limited diagrams, watermark on exports</td></tr>
       </tbody>
     </table>
-    <p>dbdiagramr has none of these limits. Paste SQL, connect to your database, export as much as you want. The tool is open-source -- you can even self-host it.</p>
+    <p>dbdiagramr has none of these limits. Paste SQL, connect to your database, export as much as you want. The tool is open-source, you can even self-host it.</p>
 
     <h2>Real example: visualizing a Supabase schema</h2>
     <p>Supabase projects come with auth, storage, and realtime tables out of the box. Understanding how they connect requires a diagram.</p>
@@ -776,7 +776,7 @@ CREATE TABLE comments (
   body TEXT NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );</code></pre>
-    <p>In two seconds you see: <code>users</code> -- <code>posts</code> -- <code>comments</code> with all foreign key relationships drawn. Drag the boxes around, zoom in, export as PNG for your README.</p>
+    <p>In two seconds you see: <code>users</code>, <code>posts</code>, <code>comments</code> with all foreign key relationships drawn. Drag the boxes around, zoom in, export as PNG for your README.</p>
 
     <h2>When to use a free tool vs. a paid one</h2>
     <p><strong>Use a free tool when:</strong></p>
@@ -795,7 +795,7 @@ CREATE TABLE comments (
     <p>For 90% of database diagramming tasks, a free tool is enough.</p>
 
     <h2>FAQ</h2>
-    <p><strong>What's the best free online database diagram tool?</strong><br/>dbdiagramr is the best free option -- no table limits, no signup, open-source. Paste SQL or connect to a live PostgreSQL database.</p>
+    <p><strong>What's the best free online database diagram tool?</strong><br/>dbdiagramr is the best free option, no table limits, no signup, open-source. Paste SQL or connect to a live PostgreSQL database.</p>
     <p><strong>Can I create a database diagram without signing up?</strong><br/>Yes. dbdiagramr requires no account. Go to the site, paste SQL, get your diagram.</p>
     <p><strong>Does it work with PostgreSQL only?</strong><br/>Currently yes. PostgreSQL is the most common target for ER diagrams, and dbdiagramr specializes in it. SQL paste works with any PostgreSQL-compatible syntax.</p>
     <p><strong>Can I export the diagram?</strong><br/>Yes. Export as SVG or PNG with one click. No paid plan required.</p>
@@ -804,7 +804,7 @@ CREATE TABLE comments (
   "sql-to-schema-diagram-online": `
     <h2>The short version</h2>
     <p>You have SQL. You need a diagram. The fastest path from <code>CREATE TABLE</code> to a visual schema is a tool that parses SQL and renders an ER diagram on the spot.</p>
-    <p><a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> does exactly that -- paste your SQL, get an interactive diagram in seconds. No signup, no install, no export limits.</p>
+    <p><a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> does exactly that, paste your SQL, get an interactive diagram in seconds. No signup, no install, no export limits.</p>
 
     <h2>Why convert SQL to a schema diagram?</h2>
     <p>SQL is precise. Diagrams are comprehensible. When you're onboarding to a new codebase or explaining a schema to a non-technical stakeholder, a visual representation does something SQL can't: it shows relationships at a glance.</p>
@@ -885,7 +885,7 @@ CREATE TABLE posts (
   "database-schema-diagram-tool": `
     <h2>The short version</h2>
     <p>You need a database schema diagram tool that works with PostgreSQL. There are five practical options, each making a different tradeoff between speed, depth, and how current the diagram stays.</p>
-    <p>For most developers, the fastest path to a usable diagram is <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> -- paste SQL or connect to a live database, get an interactive ER diagram in seconds. No signup, no install, no limits.</p>
+    <p>For most developers, the fastest path to a usable diagram is <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a>, paste SQL or connect to a live database, get an interactive ER diagram in seconds. No signup, no install, no limits.</p>
 
     <h2>5 database schema diagram tools compared</h2>
     <table>
@@ -901,8 +901,8 @@ CREATE TABLE posts (
 
     <h2>1. psql: the zero-setup baseline</h2>
     <p>If you have PostgreSQL installed, you already have <code>psql</code>. It's not a diagram tool, but it shows schema structure:</p>
-    <pre><code>\\dt              -- list all tables
-\\d table_name    -- show one table's structure</code></pre>
+    <pre><code>\\dt             , list all tables
+\\d table_name   , show one table's structure</code></pre>
     <p>For relationships, query <code>information_schema</code> directly. The output is text, not a picture. Past a dozen tables you're reconstructing the graph in your head.</p>
 
     <h2>2. pgAdmin ERD: free and built in</h2>
@@ -913,7 +913,7 @@ CREATE TABLE posts (
     <h2>3. dbdiagram.io: the popular choice</h2>
     <p>dbdiagram.io is the most well-known database diagram tool. You write schema definitions in DBML (a custom markup language) and it renders an interactive diagram. Full head-to-head: <a href="https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr">dbdiagram.io vs dbdiagramr</a>.</p>
     <p><strong>Pros:</strong> Clean UI, good for designing new schemas, shareable links.</p>
-    <p><strong>Cons:</strong> Must learn DBML. Free tier limited to 10 tables. No live database connection -- the diagram is always a manual copy.</p>
+    <p><strong>Cons:</strong> Must learn DBML. Free tier limited to 10 tables. No live database connection, the diagram is always a manual copy.</p>
 
     <h2>4. DrawSQL: the desktop option</h2>
     <p>DrawSQL is a desktop app that connects to live databases and generates ER diagrams. Supports MySQL, PostgreSQL, SQL Server, and MariaDB. Full head-to-head: <a href="https://www.dbdiagramr.space/drawsql-vs-dbdiagramr">DrawSQL vs dbdiagramr</a>.</p>
@@ -921,7 +921,7 @@ CREATE TABLE posts (
     <p><strong>Cons:</strong> Paid for full features. Free tier limited to 10 diagrams.</p>
 
     <h2>5. dbdiagramr: paste SQL, get a diagram</h2>
-    <p><a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> takes a different approach: paste SQL or a PostgreSQL connection string, get an interactive ER diagram. No account, no install, no table limits. The same engine powers the <a href="https://www.dbdiagramr.space/tools">free tools page</a> (SQL formatter, schema health analyzer) and the <a href="https://www.dbdiagramr.space/schema">interactive schema library</a> -- real schemas like Chinook and Pagila you can explore before touching your own database.</p>
+    <p><a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> takes a different approach: paste SQL or a PostgreSQL connection string, get an interactive ER diagram. No account, no install, no table limits. The same engine powers the <a href="https://www.dbdiagramr.space/tools">free tools page</a> (SQL formatter, schema health analyzer) and the <a href="https://www.dbdiagramr.space/schema">interactive schema library</a>, real schemas like Chinook and Pagila you can explore before touching your own database.</p>
     <p>Because it introspects the live database, the diagram is always current. Change a migration, paste the same connection string again, up-to-date in under 10 seconds.</p>
     <p><strong>Pros:</strong> Free, no signup, no limits, live connection, SVG/PNG export, search tables/columns.</p>
     <p><strong>Cons:</strong> PostgreSQL only (for now).</p>
@@ -935,11 +935,11 @@ CREATE TABLE posts (
     </ul>
 
     <h2>Why "stays current" matters</h2>
-    <p>Every tool except dbdiagramr shares the same failure mode: the diagram is a snapshot. The day someone runs a migration, the diagram is wrong. A wrong diagram is worse than none -- it's confidently wrong.</p>
+    <p>Every tool except dbdiagramr shares the same failure mode: the diagram is a snapshot. The day someone runs a migration, the diagram is wrong. A wrong diagram is worse than none, it's confidently wrong.</p>
     <p>The test that settles it: <strong>how much work does it take to make this picture true again?</strong> If the answer is "re-export" or "drag boxes by hand," humans will stop doing it and the diagram will lie to you.</p>
 
     <h2>FAQ</h2>
-    <p><strong>What's the best database schema diagram tool for PostgreSQL?</strong><br/>For understanding an existing database, dbdiagramr is the fastest -- paste SQL or connect to a live database, no signup required.</p>
+    <p><strong>What's the best database schema diagram tool for PostgreSQL?</strong><br/>For understanding an existing database, dbdiagramr is the fastest, paste SQL or connect to a live database, no signup required.</p>
     <p><strong>Can I use dbdiagram.io without learning DBML?</strong><br/>Not really. DBML is the input format. If you prefer raw SQL, dbdiagramr accepts it directly.</p>
     <p><strong>Is pgAdmin's ERD tool good enough?</strong><br/>For small schemas and quick inspection, yes. For anything you need to share or keep current, use a dedicated tool.</p>
     <p><strong>Does DrawSQL support live PostgreSQL connections?</strong><br/>Yes, but only on paid plans. The free tier is limited to 10 diagrams.</p>
@@ -952,7 +952,7 @@ CREATE TABLE posts (
     <h2>The 7 checks, in priority order</h2>
 
     <h3>1. Every table needs a primary key</h3>
-    <p>No primary key means no reliable row identity, painful replication, and ORMs that misbehave. This is the one error-level check — fix it before anything else.</p>
+    <p>No primary key means no reliable row identity, painful replication, and ORMs that misbehave. This is the one error-level check. Fix it before anything else.</p>
     <pre><code>-- bad: no way to address a single row
 CREATE TABLE events (
   name TEXT,
@@ -996,12 +996,12 @@ CREATE TABLE events (
 
     <h2>FAQ</h2>
     <p><strong>How often should I audit my schema?</strong><br/>On every migration that adds tables or foreign keys, plus a full pass quarterly. The automated check takes a minute.</p>
-    <p><strong>Does the analyzer see my data?</strong><br/>No. It reads table and column definitions only, and it runs entirely in your browser — your SQL is never uploaded.</p>
-    <p><strong>What score should I aim for?</strong><br/>90+ (grade A) for production schemas. Anything below 60 almost always means missing primary keys — fix those first.</p>
+    <p><strong>Does the analyzer see my data?</strong><br/>No. It reads table and column definitions only, and it runs entirely in your browser. Your SQL is never uploaded.</p>
+    <p><strong>What score should I aim for?</strong><br/>90+ (grade A) for production schemas. Anything below 60 almost always means missing primary keys. Fix those first.</p>
   `,
   "how-to-format-sql-postgres": `
     <h2>The short version</h2>
-    <p>Unformatted SQL — a 400-character single line from your logs, an ORM dump with random indentation — slows down everyone who reads it. Formatting is a solved problem: paste it into a formatter, pick a style, move on.</p>
+    <p>Unformatted SQL (a 400-character single line from your logs, an ORM dump with random indentation) slows down everyone who reads it. Formatting is a solved problem: paste it into a formatter, pick a style, move on.</p>
     <p><a href="https://www.dbdiagramr.space/sql-formatter">dbdiagramr's free SQL formatter</a> formats PostgreSQL in your browser. Uppercase or lowercase keywords, 2 or 4 space indent, copy or download. Nothing is uploaded.</p>
 
     <h2>What "formatted" actually means</h2>
@@ -1025,24 +1025,24 @@ LIMIT
     <p>Same query. The second version shows the misplaced JOIN or wrong GROUP BY in seconds; the first hides it.</p>
 
     <h2>Uppercase vs lowercase keywords</h2>
-    <p>There is no technical difference — Postgres parses both identically. It is purely culture:</p>
+    <p>There is no technical difference. Postgres parses both identically. It is purely culture:</p>
     <ul>
-      <li><strong>UPPERCASE</strong> — traditional DBA style, SQL Server and Oracle shops, certification materials. Keywords visually pop against table names.</li>
-      <li><strong>lowercase</strong> — modern analytics style (dbt, Postgres-first teams). Less shouting, easier to type.</li>
+      <li><strong>UPPERCASE</strong>: traditional DBA style, SQL Server and Oracle shops, certification materials. Keywords visually pop against table names.</li>
+      <li><strong>lowercase</strong>: modern analytics style (dbt, Postgres-first teams). Less shouting, easier to type.</li>
     </ul>
     <p>Pick the one that matches your codebase and enforce it with a formatter, not a style doc nobody reads.</p>
 
     <h2>Where formatting pays off most</h2>
     <ul>
-      <li><strong>Migration PRs</strong> — formatted DDL diffs review in minutes; single-line dumps review never.</li>
-      <li><strong>Log triage</strong> — paste the slow query from pg_stat_statements or your app logs and read it.</li>
-      <li><strong>Onboarding</strong> — new hires can read the schema migrations as documentation.</li>
-      <li><strong>Before diagramming</strong> — clean SQL is easier to sanity-check before you <a href="https://www.dbdiagramr.space/visualize">visualize it as an ER diagram</a>.</li>
+      <li><strong>Migration PRs</strong>: formatted DDL diffs review in minutes; single-line dumps review never.</li>
+      <li><strong>Log triage</strong>: paste the slow query from pg_stat_statements or your app logs and read it.</li>
+      <li><strong>Onboarding</strong>: new hires can read the schema migrations as documentation.</li>
+      <li><strong>Before diagramming</strong>: clean SQL is easier to sanity-check before you <a href="https://www.dbdiagramr.space/visualize">visualize it as an ER diagram</a>.</li>
     </ul>
 
     <h2>FAQ</h2>
     <p><strong>Does formatting change what my query does?</strong><br/>No. A formatter only changes whitespace and keyword casing. Same semantics, better manners.</p>
-    <p><strong>Can I format SELECT queries or only DDL?</strong><br/>Both — SELECTs, CTEs, JOINs, migrations, anything valid PostgreSQL.</p>
-    <p><strong>Is my SQL sent to a server?</strong><br/>Not with dbdiagramr's formatter — it runs entirely in your browser.</p>
+    <p><strong>Can I format SELECT queries or only DDL?</strong><br/>Both: SELECTs, CTEs, JOINs, migrations, anything valid PostgreSQL.</p>
+    <p><strong>Is my SQL sent to a server?</strong><br/>Not with dbdiagramr's formatter. It runs entirely in your browser.</p>
   `,
 };

@@ -7,8 +7,15 @@
     text-wrap: balance;
   }
   .dot-grid {
-    background-image: radial-gradient(circle, #d4d4d4 1px, transparent 1px);
-    background-size: 24px 24px;
+    background-image: radial-gradient(circle, #bfd8b2 1.2px, transparent 1.2px);
+    background-size: 22px 22px;
+  }
+  .tnum {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Passive embedded previews (hero): never trap page scroll, incl. touch. */
+  .heropreview .react-flow__pane {
+    touch-action: pan-y !important;
   }
 }
 
@@ -18,24 +25,24 @@
     --font-sans: var(--font-sans);
   }
   :root {
-    --background: oklch(1 0 0);
-    --foreground: oklch(0.145 0 0);
+    --background: oklch(0.96 0.03 145);
+    --foreground: oklch(0.25 0.03 145);
     --card: oklch(1 0 0);
-    --card-foreground: oklch(0.145 0 0);
+    --card-foreground: oklch(0.25 0.03 145);
     --popover: oklch(1 0 0);
-    --popover-foreground: oklch(0.145 0 0);
-    --primary: oklch(0.205 0 0);
-    --primary-foreground: oklch(0.985 0 0);
-    --secondary: oklch(0.97 0 0);
-    --secondary-foreground: oklch(0.205 0 0);
-    --muted: oklch(0.97 0 0);
-    --muted-foreground: oklch(0.556 0 0);
-    --accent: oklch(0.97 0 0);
-    --accent-foreground: oklch(0.205 0 0);
+    --popover-foreground: oklch(0.25 0.03 145);
+    --primary: oklch(0.5 0.14 145);
+    --primary-foreground: oklch(0.99 0.01 145);
+    --secondary: oklch(0.93 0.04 145);
+    --secondary-foreground: oklch(0.3 0.06 145);
+    --muted: oklch(0.93 0.04 145);
+    --muted-foreground: oklch(0.48 0.06 145);
+    --accent: oklch(0.9 0.05 145);
+    --accent-foreground: oklch(0.5 0.14 145);
     --destructive: oklch(0.577 0.245 27.325);
-    --border: oklch(0.922 0 0);
-    --input: oklch(0.922 0 0);
-    --ring: oklch(0.708 0 0);
+    --border: oklch(0.86 0.05 145);
+    --input: oklch(0.86 0.05 145);
+    --ring: oklch(0.5 0.14 145);
     --chart-1: oklch(0.87 0 0);
     --chart-2: oklch(0.556 0 0);
     --chart-3: oklch(0.439 0 0);
@@ -89,8 +96,26 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-variant-numeric: tabular-nums;
   }
   html {
     @apply font-sans;
+  }
+  ::selection {
+    background: #d9ead3;
+  }
+  :focus-visible {
+    outline: 2px solid #3d7e16;
+    outline-offset: 2px;
+    border-radius: 4px;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
   }
 }

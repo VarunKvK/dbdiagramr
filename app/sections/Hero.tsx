@@ -2,12 +2,16 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { MacWindow } from "@/components/ui/mac-window";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
 import { ECOMMERCE_SQL, SUPABASE_SQL } from "@/lib/sql/pgDumpSamples";
 
 type ActiveFile = "ecommerce" | "sample";
+
+const files: { id: ActiveFile; label: string }[] = [
+  { id: "ecommerce", label: "ecommerce.sql" },
+  { id: "sample", label: "sample.sql" },
+];
 
 export default function Hero() {
   const router = useRouter();
@@ -24,83 +28,79 @@ export default function Hero() {
   }, []);
 
   const activeSchema = activeFile === "ecommerce" ? schemas?.ecommerce ?? null : schemas?.supabase ?? null;
+  const tableCount = activeSchema?.tables.length ?? 0;
 
   return (
-    <section className="bg-cream pt-[400px]">
+    <section className="bg-cream pb-16 pt-28 md:pt-36">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <h1 className="text-5xl font-medium leading-tight text-ink md:text-6xl lg:pr-[90px]">
-          Stop drawing your{" "}
-          <span className="underline decoration-2 underline-offset-4 font-[family-name:var(--font-carattere)] text-[1.15em] font-normal">
-            database
-          </span>{" "}
-          by hand
-        </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-relaxed text-muted md:text-xl">
-            Paste SQL or connect to your database. See tables, columns, and
-            foreign keys as an interactive diagram in seconds.
-        </p>
-        <div className="mt-10 flex flex-wrap items-center gap-6">
-          <button
-            type="button"
-            onClick={() => router.push("/visualize")}
-            className="rounded-lg bg-[#4F39F6] px-8 py-3 font-medium text-white transition-colors hover:bg-[#4338CA]"
-          >
-            Try it free
-          </button>
-          <a
-            href="/schema"
-            className="text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500"
-          >
-            Browse popular database schemas →
-          </a>
-        </div>
-      </div>
-
-      <div className="mx-auto max-w-7xl px-6 pb-24 pt-16 lg:px-8">
-        <MacWindow url="dbdiagramr.space/visualize">
-          <div className="flex gap-2 border-b border-border bg-white px-3 py-3">
+        <div className="mx-auto max-w-4xl text-center">
+          <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted">
+            PostgreSQL ER diagrams · free, no signup
+          </p>
+          <h1 className="mt-6 text-5xl font-semibold leading-[1.02] tracking-tight text-ink md:text-7xl">
+            Paste SQL. See Schema. <span className="text-accent">Ship Faster.</span>
+          </h1>
+          <p className="mx-auto mt-6 max-w-xl text-lg font-medium leading-relaxed text-muted md:text-xl">
+            The free PostgreSQL ER diagram tool where you paste SQL and see
+            your schema instantly.
+          </p>
+          <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
             <button
               type="button"
               onClick={() => router.push("/visualize")}
-              className="rounded-full border border-border bg-surface px-3 py-1 text-xs font-mono font-medium text-muted transition-colors hover:bg-white hover:text-ink"
+              className="rounded-[10px] bg-accent px-6 py-2.5 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
             >
-              schema.sql
+              Create Your Diagram
             </button>
-            <button
-              type="button"
-              onClick={() => setActiveFile("ecommerce")}
-              aria-pressed={activeFile === "ecommerce"}
-              className={`rounded-full border px-3 py-1 text-xs font-mono font-medium transition-colors ${
-                activeFile === "ecommerce"
-                  ? "border-ink bg-ink text-white shadow"
-                  : "border-border bg-surface text-muted hover:bg-white hover:text-ink"
-              }`}
+            <a
+              href="#demo"
+              className="rounded-[10px] border border-accent px-6 py-2.5 text-xs font-medium text-accent transition-colors hover:bg-accent-soft"
             >
-              ecommerce.sql
-            </button>
-            <button
-              type="button"
-              onClick={() => setActiveFile("sample")}
-              aria-pressed={activeFile === "sample"}
-              className={`rounded-full border px-3 py-1 text-xs font-mono font-medium transition-colors ${
-                activeFile === "sample"
-                  ? "border-ink bg-ink text-white shadow"
-                  : "border-border bg-surface text-muted hover:bg-white hover:text-ink"
-              }`}
-            >
-              sample.sql
-            </button>
+              Watch 30s Demo
+            </a>
           </div>
-          <div className="h-[500px]">
+        </div>
+
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-3">
+          <div className="flex flex-wrap gap-2">
+            {files.map((f) => (
+              <button
+                key={f.id}
+                type="button"
+                onClick={() => setActiveFile(f.id)}
+                aria-pressed={activeFile === f.id}
+                className={`rounded-[20px] px-4 py-1.5 font-mono text-xs font-medium transition-colors ${
+                  activeFile === f.id
+                    ? "bg-accent text-white"
+                    : "border border-accent text-accent hover:bg-accent-soft"
+                }`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+          <p className="font-mono text-xs text-muted">
+            <span className="font-medium text-ink">{tableCount} tables</span>
+            {" · "}live preview · hover a table to trace
+          </p>
+        </div>
+
+        <div className="mt-4 overflow-hidden rounded-[20px] border border-border bg-surface shadow-lg">
+          <div className="h-[480px] md:h-[600px]">
             {activeSchema ? (
-              <SchemaDiagram schema={activeSchema} className="h-full w-full" />
+              <SchemaDiagram
+                schema={activeSchema}
+                className="heropreview h-full w-full"
+                passive
+                minimal
+              />
             ) : (
               <div className="flex h-full items-center justify-center text-sm text-muted">
                 Loading preview...
               </div>
             )}
           </div>
-        </MacWindow>
+        </div>
       </div>
     </section>
   );

@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/app/sections/Footer";
+import { MetaPill } from "@/components/ui/pills";
 import { getAllPosts } from "@/data/blog/posts";
 
 export const metadata: Metadata = {
-  title: "Blog — PostgreSQL Schema Guides & ER Diagram Tutorials",
+  title: "Blog | PostgreSQL Schema Guides & ER Diagram Tutorials",
   description:
-    "Guides on PostgreSQL schemas, ER diagrams, and database visualization — from connection strings to Stripe and Supabase schema breakdowns.",
+    "Guides on PostgreSQL schemas, ER diagrams, and database visualization, from connection strings to Stripe and Supabase schema breakdowns.",
   alternates: {
     canonical: "https://www.dbdiagramr.space/blog",
   },
@@ -21,7 +22,7 @@ export default function BlogHubPage() {
       {
         "@type": "CollectionPage",
         "@id": "https://www.dbdiagramr.space/blog",
-        name: "dbdiagramr Blog — PostgreSQL Schema Guides",
+        name: "dbdiagramr Blog | PostgreSQL Schema Guides",
         description:
           "Guides on PostgreSQL schemas, ER diagrams, connection strings, and database visualization.",
         url: "https://www.dbdiagramr.space/blog",
@@ -61,80 +62,83 @@ export default function BlogHubPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto max-w-4xl px-4 pb-16 pt-24">
+      <div className="mx-auto max-w-6xl px-4 pb-16 pt-24">
         <div className="mb-12 text-center">
-          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+          <span className="inline-block rounded-[20px] border border-accent px-3 py-1 font-mono text-xs font-medium text-accent">
             Blog
           </span>
-          <h1 className="mt-4 text-4xl font-medium text-ink md:text-5xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-ink md:text-5xl">
             PostgreSQL schema guides
           </h1>
-          <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
+          <p className="mx-auto mt-4 max-w-2xl text-lg font-medium text-muted">
             Practical guides on ER diagrams, connection strings, and the real
-            schemas behind Supabase, Stripe, and modern e-commerce — all
+            schemas behind Supabase, Stripe, and modern e-commerce, all
             grounded in live PostgreSQL introspection.
           </p>
         </div>
 
-        <div className="space-y-6">
-          {posts.map((post) => (
+        <div className="grid gap-5 md:grid-cols-2">
+          {posts.map((post, i) => (
             <article
               key={post.slug}
-              className="group rounded-2xl bg-white p-6 shadow-sm ring-1 ring-black/5 transition-all hover:-translate-y-0.5 hover:shadow-md md:p-8"
+              className={`group flex flex-col rounded-[20px] bg-ink p-6 text-white transition-colors hover:bg-pine ${
+                i === 0 ? "md:col-span-2" : ""
+              }`}
             >
-              <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-                <time dateTime={post.date}>{post.date}</time>
-                <span>·</span>
-                <span>{post.readingMinutes} min</span>
-                <span>·</span>
-                <div className="flex gap-1.5">
-                  {post.tags.map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-full bg-[#fafafa] px-2 py-0.5 text-xs font-medium ring-1 ring-black/5"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <MetaPill>{post.date}</MetaPill>
+                <MetaPill>{post.readingMinutes} min</MetaPill>
+                {post.tags.slice(0, 2).map((tag) => (
+                  <MetaPill key={tag}>#{tag}</MetaPill>
+                ))}
               </div>
 
-              <h2 className="mt-3 text-xl font-medium leading-tight text-ink group-hover:text-indigo-600 md:text-2xl">
-                <Link href={`/blog/${post.slug}`} className="hover:underline">
+              <h2 className="mt-4 text-xl font-semibold leading-tight tracking-tight md:text-2xl">
+                <Link href={`/blog/${post.slug}`}>
                   {post.title}
                 </Link>
               </h2>
 
-              <p className="mt-2 leading-relaxed text-muted">
+              <p className="mt-2 text-sm font-medium leading-relaxed text-white/60">
                 {post.description}
               </p>
 
-              <div className="mt-4">
+              <div className="mt-auto pt-5">
                 <Link
                   href={`/blog/${post.slug}`}
-                  className="text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500"
+                  className="inline-block rounded-[20px] bg-accent px-4 py-1.5 font-mono text-xs font-medium text-white transition-colors hover:bg-accent-hover"
                 >
-                  Read article →
+                  Read More
                 </Link>
               </div>
             </article>
           ))}
         </div>
 
-        <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">
-          <h2 className="text-2xl font-medium text-white">
+        <section className="mt-16 rounded-[20px] bg-ink px-8 py-12 text-center">
+          <h2 className="text-2xl font-semibold text-white">
             Want to see your own schema?
           </h2>
-          <p className="mx-auto mt-3 max-w-xl text-white/70">
+          <p className="mx-auto mt-3 max-w-xl font-medium text-white/70">
             Paste a PostgreSQL connection string and get an interactive ER
             diagram in under 10 seconds. No signup required.
           </p>
-          <a
-            href="/visualize"
-            className="mt-6 inline-block rounded-lg bg-white px-8 py-3 font-medium text-ink transition-colors hover:bg-indigo-100"
-          >
-            Try it free →
-          </a>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="/visualize"
+              className="inline-block rounded-[10px] bg-accent px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
+            >
+              Try it free →
+            </a>
+            <a
+              href="https://github.com/VarunKvK/dbdiagramr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block rounded-[10px] border border-white/40 px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-white/10"
+            >
+              View on GitHub
+            </a>
+          </div>
         </section>
       </div>
       <Footer />

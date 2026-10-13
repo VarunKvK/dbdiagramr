@@ -5,7 +5,7 @@ import RelatedTools from "@/app/sections/RelatedTools";
 import SqlFormatter from "@/components/SqlFormatter";
 
 export const metadata: Metadata = {
-  title: "Free SQL Formatter — Format & Beautify PostgreSQL Online",
+  title: "Free SQL Formatter | Format & Beautify PostgreSQL Online",
   description:
     "Paste messy SQL and get clean, consistently formatted PostgreSQL in seconds. Uppercase keywords, smart indenting, free, no signup, private.",
   keywords:
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     canonical: "https://www.dbdiagramr.space/sql-formatter",
   },
   openGraph: {
-    title: "Free SQL Formatter — Format & Beautify PostgreSQL Online",
+    title: "Free SQL Formatter | Format & Beautify PostgreSQL Online",
     description:
       "Paste messy SQL and get clean, formatted PostgreSQL in seconds. No signup required.",
     type: "website",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free SQL Formatter — Format & Beautify PostgreSQL Online",
+    title: "Free SQL Formatter | Format & Beautify PostgreSQL Online",
     description:
       "Paste messy SQL and get clean, formatted PostgreSQL in seconds.",
   },
@@ -31,7 +31,7 @@ export const metadata: Metadata = {
 const faqs = [
   {
     q: "What does the SQL formatter do?",
-    a: "It takes messy SQL — single-line queries from logs, ORM output, or hand-written DDL — and re-indents it with consistent keyword casing and line breaks. The meaning of your query never changes, only the layout.",
+    a: "It takes messy SQL (single-line queries from logs, ORM output, or hand-written DDL) and re-indents it with consistent keyword casing and line breaks. The meaning of your query never changes, only the layout.",
   },
   {
     q: "Is my SQL private?",
@@ -43,14 +43,14 @@ const faqs = [
   },
   {
     q: "Can it format SELECT queries or only CREATE TABLE?",
-    a: "Both. SELECTs, JOINs, CTEs, DDL, migrations — anything valid PostgreSQL formats correctly.",
+    a: "Both. SELECTs, JOINs, CTEs, DDL, migrations: anything valid PostgreSQL formats correctly."
   },
   {
     q: "Should keywords be uppercase or lowercase?",
-    a: "There is no technical difference — Postgres is case-insensitive for keywords. UPPERCASE is the traditional DBA style; lowercase matches modern dbt-style analytics codebases. Pick one and enforce it. The formatter supports both plus preserve.",
+    a: "There is no technical difference. Postgres is case-insensitive for keywords. UPPERCASE is the traditional DBA style; lowercase matches modern dbt-style analytics codebases. Pick one and enforce it. The formatter supports both plus preserve.",
   },
   {
-    q: "I formatted my schema SQL — what next?",
+    q: "I formatted my schema SQL. What next?",
     a: "Visualize it as an interactive ER diagram, or run it through the schema health analyzer to catch missing keys and slow joins before you ship.",
   },
 ];
@@ -61,7 +61,7 @@ const jsonLd = {
     {
       "@type": "Article",
       "@id": "https://www.dbdiagramr.space/sql-formatter#article",
-      headline: "Free SQL Formatter -- Format & Beautify PostgreSQL Online",
+      headline: "Free SQL Formatter | Format & Beautify PostgreSQL Online",
       description:
         "Paste messy SQL and get clean, consistently formatted PostgreSQL in seconds.",
       datePublished: "2026-09-25",
@@ -130,16 +130,16 @@ export default function SqlFormatterPage() {
       <div className="mx-auto max-w-6xl px-4 pb-16 pt-24">
         <Link
           href="/tools"
-          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500"
+          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-accent-hover"
         >
           &larr; All tools
         </Link>
 
         <div className="mb-10">
-          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+          <span className="inline-block rounded-[20px] border border-accent bg-accent-soft px-3 py-1 text-xs font-medium text-accent">
             Free tool
           </span>
-          <h1 className="mt-4 text-4xl font-medium text-ink md:text-5xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-ink md:text-5xl">
             SQL Formatter
           </h1>
           <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted">
@@ -152,28 +152,28 @@ export default function SqlFormatterPage() {
         <SqlFormatter />
 
         <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
+          <h2 className="mb-4 text-2xl font-semibold tracking-tight text-ink">
             Why format your SQL
           </h2>
-          <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
             <ul className="list-disc space-y-2 pl-5 leading-relaxed text-muted">
               <li>
-                <strong className="text-ink">Readable diffs</strong> — formatted
+                <strong className="text-ink">Readable diffs</strong>: formatted
                 migrations produce clean pull-request diffs instead of
                 single-line noise
               </li>
               <li>
-                <strong className="text-ink">Faster debugging</strong> — a
+                <strong className="text-ink">Faster debugging</strong>: a
                 misplaced JOIN or WHERE is obvious when every clause starts on
                 its own line
               </li>
               <li>
-                <strong className="text-ink">Team consistency</strong> — one
+                <strong className="text-ink">Team consistency</strong>: one
                 style for every query, enforced in seconds rather than by
                 convention docs nobody reads
               </li>
               <li>
-                <strong className="text-ink">Log triage</strong> — paste a
+                <strong className="text-ink">Log triage</strong>: paste a
                 400-character query from your app logs and actually read it
               </li>
             </ul>
@@ -181,14 +181,14 @@ export default function SqlFormatterPage() {
         </section>
 
         <section className="mt-16">
-          <h2 className="mb-6 text-2xl font-medium text-ink">
+          <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">
             Frequently asked questions
           </h2>
           <div className="grid gap-4">
             {faqs.map((faq) => (
               <div
                 key={faq.q}
-                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5"
+                className="rounded-[20px] border border-border bg-white p-6 shadow-sm"
               >
                 <h3 className="text-lg font-medium text-ink">{faq.q}</h3>
                 <p className="mt-2 leading-relaxed text-muted">{faq.a}</p>
@@ -199,8 +199,8 @@ export default function SqlFormatterPage() {
 
         <RelatedTools current="/sql-formatter" />
 
-        <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">
-          <h2 className="text-2xl font-medium text-white">
+        <section className="mt-16 rounded-[20px] bg-ink px-8 py-12 text-center">
+          <h2 className="text-2xl font-semibold text-white">
             Formatted your schema? See it as a diagram
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-white/70">
@@ -209,7 +209,7 @@ export default function SqlFormatterPage() {
           </p>
           <a
             href="/visualize"
-            className="mt-6 inline-block rounded-lg bg-white px-8 py-3 font-medium text-ink transition-colors hover:bg-indigo-100"
+            className="mt-6 inline-block rounded-[10px] bg-accent px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
           >
             Try it free &rarr;
           </a>

@@ -16,12 +16,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/dbdiagram-io-vs-dbdiagramr": "2026-09-17",
     "/drawsql-vs-dbdiagramr": "2026-09-28",
     "/postgres-er-diagram": "2026-09-28",
-    "/supabase-schema-diagram": "2026-09-28",
-    "/free-schema-generator": "2026-09-28",
-    "/database-diagram-online": "2026-09-28",
-    "/postgres-schema-visualizer": "2026-09-28",
     "/database-schema-analyzer": "2026-09-25",
-    "/tools": "2026-09-28",
+    "/tools": "2026-10-10",
     "/sql-formatter": "2026-09-25",
     "/csv-to-sql": "2026-09-28",
     "/json-to-sql": "2026-09-28",
@@ -30,6 +26,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/sql-to-typescript": "2026-09-28",
     "/sql-to-prisma": "2026-09-28",
     "/postgres-connection-string": "2026-09-28",
+    "/sql-schema-diff": "2026-10-10",
+    "/dbml-to-sql": "2026-10-10",
+    "/prisma-erd-generator": "2026-10-10",
   };
 
   const schemaUrls = getAllSchemaEntries().map((entry) => ({
@@ -96,30 +95,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.8,
     },
     {
-      url: `${base}/supabase-schema-diagram`,
-      lastModified: staticLastmod["/supabase-schema-diagram"],
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${base}/free-schema-generator`,
-      lastModified: staticLastmod["/free-schema-generator"],
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${base}/database-diagram-online`,
-      lastModified: staticLastmod["/database-diagram-online"],
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
-      url: `${base}/postgres-schema-visualizer`,
-      lastModified: staticLastmod["/postgres-schema-visualizer"],
-      changeFrequency: "monthly",
-      priority: 0.8,
-    },
-    {
       url: `${base}/database-schema-analyzer`,
       lastModified: staticLastmod["/database-schema-analyzer"],
       changeFrequency: "monthly",
@@ -176,6 +151,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${base}/postgres-connection-string`,
       lastModified: staticLastmod["/postgres-connection-string"],
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${base}/sql-schema-diff`,
+      lastModified: staticLastmod["/sql-schema-diff"],
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${base}/dbml-to-sql`,
+      lastModified: staticLastmod["/dbml-to-sql"],
+      changeFrequency: "monthly",
+      priority: 0.8,
+    },
+    {
+      url: `${base}/prisma-erd-generator`,
+      lastModified: staticLastmod["/prisma-erd-generator"],
       changeFrequency: "monthly",
       priority: 0.8,
     },

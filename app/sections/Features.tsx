@@ -1,51 +1,74 @@
-import { Code, MousePointer, Download } from "lucide-react";
+import { Code, Search, Download, Plug } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const features = [
   {
     icon: Code,
-    title: "Paste SQL or Connect",
+    title: "Instant Import",
     description:
-      "Two ways to generate a diagram. Paste CREATE TABLE statements for a quick preview, or connect to your live database for the full schema.",
+      "Paste SQL or connect to a live PostgreSQL database. See your entire schema as an interactive diagram in seconds.",
+    dark: true,
   },
   {
-    icon: MousePointer,
-    title: "Interactive diagram",
+    icon: Search,
+    title: "Search & Navigate",
     description:
-      "Pan, zoom, and hover to trace foreign key relationships. See exactly how your tables connect at a glance.",
+      "Press / to find any table, column, or type instantly, even in databases with 50+ tables.",
+    dark: false,
   },
   {
     icon: Download,
-    title: "Export anywhere",
+    title: "Export Anywhere",
     description:
-      "Download as SVG or PNG, or share an interactive link with your team. Your data stays private.",
+      "Download as SVG, PNG, or shareable link. Embed diagrams in docs, READMEs, or presentations.",
+    dark: true,
+  },
+  {
+    icon: Plug,
+    title: "Live Connection",
+    description:
+      "Connect directly to your PostgreSQL database. Tables, columns, and foreign keys with no manual SQL required.",
+    dark: false,
   },
 ];
 
 export default function Features() {
   return (
-    <section className="bg-cream pb-24 pt-[120px]">
+    <section className="bg-cream py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <h2 className="mb-4 text-3xl font-medium text-ink md:text-4xl">
-          Everything you need
-        </h2>
-        <p className="mb-16 max-w-2xl text-lg text-muted">
-          No complex setup. No enterprise sales. Just your database, visualized.
-        </p>
-        <div className="grid gap-8 md:grid-cols-3">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted">
+            What it does
+          </p>
+          <h2 className="mt-4 text-4xl font-semibold leading-[1.05] tracking-tight text-ink md:text-6xl">
+            Your database, <span className="text-accent">diagrammed.</span>
+          </h2>
+        </div>
+        <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {features.map((f) => {
             const Icon = f.icon;
             return (
               <div
                 key={f.title}
-                className="flex flex-col rounded-2xl bg-white p-8 pt-14"
+                className={cn(
+                  "flex min-h-[280px] flex-col justify-end rounded-[20px] p-6",
+                  f.dark ? "bg-ink text-white" : "bg-accent-soft text-ink"
+                )}
               >
-                <div className="mb-8 flex h-32 items-end">
-                  <Icon size={32} className="text-indigo-600" />
-                </div>
-                <h3 className="text-xl font-medium text-ink">
+                <Icon
+                  size={28}
+                  strokeWidth={2}
+                  className={f.dark ? "text-punch" : "text-accent"}
+                />
+                <h3 className="mt-6 text-2xl font-semibold tracking-tight">
                   {f.title}
                 </h3>
-                <p className="mt-3 text-sm leading-relaxed text-muted">
+                <p
+                  className={cn(
+                    "mt-2 text-sm font-medium leading-relaxed",
+                    f.dark ? "text-white/70" : "text-muted"
+                  )}
+                >
                   {f.description}
                 </p>
               </div>

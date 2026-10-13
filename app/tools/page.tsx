@@ -3,7 +3,7 @@ import Link from "next/link";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "Free Database Tools -- ER Diagrams, Converters & Validators",
+  title: "Free Database Tools | ER Diagrams, Converters & Validators",
   description:
     "Every free dbdiagramr tool in one place: ER diagrams, SQL validator, CSV/JSON to SQL, SQL to Prisma/TypeScript/Mermaid, connection string builder. No signup.",
   keywords:
@@ -12,7 +12,7 @@ export const metadata: Metadata = {
     canonical: "https://www.dbdiagramr.space/tools",
   },
   openGraph: {
-    title: "Free Database Tools -- ER Diagrams, Converters & Validators",
+    title: "Free Database Tools | ER Diagrams, Converters & Validators",
     description:
       "Every free dbdiagramr tool in one place: ER diagrams, SQL validator, CSV/JSON to SQL, SQL to Prisma/TypeScript/Mermaid. No signup.",
     type: "website",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free Database Tools -- ER Diagrams, Converters & Validators",
+    title: "Free Database Tools | ER Diagrams, Converters & Validators",
     description:
       "Every free dbdiagramr tool in one place: ER diagrams, SQL validator, CSV/JSON to SQL, SQL to Prisma/TypeScript/Mermaid. No signup.",
   },
@@ -38,36 +38,8 @@ const tools = [
     href: "/database-schema-analyzer",
     name: "Schema Health Analyzer",
     description:
-      "Paste SQL and get a graded schema health report: missing keys, unindexed foreign keys, naming drift — each with a fix.",
+      "Paste SQL and get a graded schema health report: missing keys, unindexed foreign keys, naming drift, each with a fix.",
     tags: ["Health check", "Graded report", "New"],
-  },
-  {
-    href: "/supabase-schema-diagram",
-    name: "Supabase Schema Diagram",
-    description:
-      "Visualize your Supabase database — auth, storage, and your own tables with every foreign key drawn.",
-    tags: ["Supabase", "ER diagram"],
-  },
-  {
-    href: "/free-schema-generator",
-    name: "Free Schema Generator",
-    description:
-      "Turn any PostgreSQL SQL dump into a clean schema diagram. Free, instant, no account needed.",
-    tags: ["SQL to diagram", "Free"],
-  },
-  {
-    href: "/database-diagram-online",
-    name: "Database Diagram Online",
-    description:
-      "Create a database diagram online without installing anything. Paste SQL, drag tables, export PNG or SVG.",
-    tags: ["Online", "No install"],
-  },
-  {
-    href: "/postgres-schema-visualizer",
-    name: "Schema Visualizer",
-    description:
-      "Explore your PostgreSQL structure at a glance — tables, columns, types, and relationships in one view.",
-    tags: ["Visualizer", "PostgreSQL"],
   },
   {
     href: "/sql-formatter",
@@ -125,6 +97,27 @@ const tools = [
       "Build or decode PostgreSQL URIs with Supabase, Neon, and Railway presets. Passwords stay local.",
     tags: ["PostgreSQL", "Connection", "New"],
   },
+  {
+    href: "/sql-schema-diff",
+    name: "Schema Diff",
+    description:
+      "Paste two schema versions and get the structural diff plus the ALTER statements to migrate.",
+    tags: ["Diff", "Migrations", "New"],
+  },
+  {
+    href: "/dbml-to-sql",
+    name: "DBML to SQL",
+    description:
+      "Convert DBML Tables and Refs to PostgreSQL DDL, or SQL back to DBML, in one click.",
+    tags: ["Converter", "DBML", "New"],
+  },
+  {
+    href: "/prisma-erd-generator",
+    name: "Prisma ERD",
+    description:
+      "Paste schema.prisma and see every model and relation as an interactive ER diagram. No install.",
+    tags: ["Prisma", "ER diagram", "New"],
+  },
 ];
 
 const jsonLd = {
@@ -135,7 +128,7 @@ const jsonLd = {
       "@id": "https://www.dbdiagramr.space/tools",
       name: "dbdiagramr Free Database Tools",
       description:
-        "Free database tools: PostgreSQL ER diagrams, schema health analyzer, Supabase visualizer, and SQL-to-diagram generators.",
+        "Free database tools: PostgreSQL ER diagrams, schema health analyzer, SQL converters, and validators.",
       url: "https://www.dbdiagramr.space/tools",
       mainEntity: {
         "@type": "ItemList",
@@ -176,14 +169,14 @@ export default function ToolsPage() {
       />
       <div className="mx-auto max-w-6xl px-4 pb-16 pt-24">
         <div className="mb-12 text-center">
-          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+          <span className="inline-block rounded-[20px] border border-accent bg-accent-soft px-3 py-1 font-mono text-xs font-medium text-accent">
             Free tools
           </span>
-          <h1 className="mt-4 text-4xl font-medium text-ink md:text-5xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-ink md:text-5xl">
             Free database tools
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
-            Every dbdiagramr tool in one place. Pick what you need — diagrams,
+            Every dbdiagramr tool in one place. Pick what you need: diagrams,
             health checks, generators. All free, no signup, private by default.
           </p>
         </div>
@@ -193,45 +186,55 @@ export default function ToolsPage() {
             <Link
               key={tool.href}
               href={tool.href}
-              className="group rounded-2xl bg-white p-8 shadow-sm ring-1 ring-black/5 transition-all hover:-translate-y-1 hover:shadow-lg"
+              className="group rounded-[20px] bg-pine p-8 shadow-sm transition-colors hover:bg-ink"
             >
-              <h2 className="text-2xl font-medium text-ink group-hover:text-indigo-600">
+              <h2 className="text-2xl font-semibold tracking-tight text-white">
                 {tool.name}
               </h2>
-              <p className="mt-3 leading-relaxed text-muted">
+              <p className="mt-3 leading-relaxed text-white/70">
                 {tool.description}
               </p>
               <div className="mt-5 flex flex-wrap gap-2">
                 {tool.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full bg-[#fafafa] px-3 py-1 text-xs font-medium text-muted ring-1 ring-black/5"
+                    className="rounded-[20px] border border-punch px-3 py-1 font-mono text-xs font-medium text-punch"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
-              <div className="mt-6 text-sm font-medium text-indigo-600 transition-colors group-hover:text-indigo-500">
-                Open tool →
+              <div className="mt-6 text-xs font-medium text-white">
+                Open tool <span className="text-punch">→</span>
               </div>
             </Link>
           ))}
         </div>
 
-        <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">
-          <h2 className="text-2xl font-medium text-white">
+        <section className="mt-16 rounded-[20px] bg-ink px-8 py-12 text-center">
+          <h2 className="text-2xl font-semibold text-white">
             Just want to see your database?
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-white/70">
             Paste a PostgreSQL connection string and get an interactive ER
             diagram in under 10 seconds. No signup, no setup.
           </p>
-          <a
-            href="/visualize"
-            className="mt-6 inline-block rounded-lg bg-white px-8 py-3 font-medium text-ink transition-colors hover:bg-indigo-100"
-          >
-            Try it free →
-          </a>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="/visualize"
+              className="inline-block rounded-[10px] bg-accent px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
+            >
+              Try it free →
+            </a>
+            <a
+              href="https://github.com/VarunKvK/dbdiagramr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block rounded-[10px] border border-white/40 px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-white/10"
+            >
+              View on GitHub
+            </a>
+          </div>
         </section>
       </div>
       <Footer />

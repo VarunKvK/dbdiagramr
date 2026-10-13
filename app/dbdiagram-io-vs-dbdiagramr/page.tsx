@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "dbdiagram.io vs dbdiagramr -- Compared (2026)",
+  title: "dbdiagram.io vs dbdiagramr | Compared (2026)",
   description:
     "dbdiagram.io vs dbdiagramr: DBML code-first diagram design vs instant visualization from a live PostgreSQL connection string. Feature-by-feature comparison with FAQs.",
   alternates: {
@@ -167,16 +167,16 @@ export default function DbDiagramIoVsPage() {
       <div className="mx-auto max-w-5xl px-4 pb-16 pt-24">
         <a
           href="/alternatives"
-          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500"
+          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-accent-hover"
         >
           ← All alternatives
         </a>
 
         <div className="mb-10">
-          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+          <span className="inline-block rounded-[20px] border border-accent bg-accent-soft px-3 py-1 text-xs font-medium text-accent">
             Comparison
           </span>
-          <h1 className="mt-4 text-4xl font-medium text-ink md:text-5xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-ink md:text-5xl">
             dbdiagram.io vs dbdiagramr
           </h1>
           <p className="mt-4 text-lg leading-relaxed text-muted">
@@ -191,14 +191,14 @@ export default function DbDiagramIoVsPage() {
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+        <div className="overflow-hidden rounded-[20px] border border-border bg-white shadow-sm">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border bg-[#fafafa] text-left">
+              <tr className="border-b border-border bg-surface text-left">
                 <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted">
                   Feature
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-indigo-600">
+                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-accent">
                   dbdiagramr
                 </th>
                 <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted">
@@ -215,10 +215,10 @@ export default function DbDiagramIoVsPage() {
         </div>
 
         <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
+          <h2 className="mb-4 text-2xl font-semibold tracking-tight text-ink">
             When to choose dbdiagramr
           </h2>
-          <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
             <ul className="list-disc space-y-2 pl-5 leading-relaxed text-muted">
               <li>
                 You have a live PostgreSQL database (Supabase, Neon, Railway)
@@ -237,10 +237,10 @@ export default function DbDiagramIoVsPage() {
         </section>
 
         <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
+          <h2 className="mb-4 text-2xl font-semibold tracking-tight text-ink">
             When to choose dbdiagram.io
           </h2>
-          <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
             <ul className="list-disc space-y-2 pl-5 leading-relaxed text-muted">
               <li>
                 You are designing a brand-new schema from scratch and want to
@@ -259,11 +259,11 @@ export default function DbDiagramIoVsPage() {
         </section>
 
         <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
+          <h2 className="mb-4 text-2xl font-semibold tracking-tight text-ink">
             Feature-by-feature breakdown
           </h2>
           <div className="space-y-4">
-            <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
               <h3 className="font-medium text-ink">Diagram creation</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">
                 <strong>dbdiagram.io:</strong> You write DBML code describing tables and relationships. The tool renders a diagram from your code. You need to learn DBML syntax first.
@@ -272,7 +272,7 @@ export default function DbDiagramIoVsPage() {
                 <strong>dbdiagramr:</strong> Paste SQL or a PostgreSQL connection string. The tool parses your schema and renders a diagram automatically. No new syntax to learn.
               </p>
             </div>
-            <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
               <h3 className="font-medium text-ink">Keeping diagrams current</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">
                 <strong>dbdiagram.io:</strong> Your diagram is a DBML file you maintain. When your database changes, you must update the DBML manually or the diagram drifts out of date.
@@ -281,7 +281,7 @@ export default function DbDiagramIoVsPage() {
                 <strong>dbdiagramr:</strong> The diagram reads your live database. Change a migration, paste the same connection string again, up-to-date in seconds. No drift.
               </p>
             </div>
-            <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
               <h3 className="font-medium text-ink">Pricing</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">
                 <strong>dbdiagram.io:</strong> Free tier limited to 10 diagrams, all public. Pro at $14/month removes limits and makes diagrams private.
@@ -290,7 +290,7 @@ export default function DbDiagramIoVsPage() {
                 <strong>dbdiagramr:</strong> Free tier includes 5 diagrams/month, all private. Pro at $8/month for unlimited diagrams. No credit card required.
               </p>
             </div>
-            <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+            <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
               <h3 className="font-medium text-ink">Privacy</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">
                 <strong>dbdiagram.io:</strong> Free diagrams are public by default. Anyone with the link can view them.
@@ -302,7 +302,7 @@ export default function DbDiagramIoVsPage() {
           </div>
         </section>
 
-        <section className="mt-16 rounded-xl bg-indigo-50 p-8">
+        <section className="mt-16 rounded-[20px] bg-accent-soft p-8">
           <h2 className="text-2xl font-medium text-ink">
             Verdict
           </h2>
@@ -318,14 +318,14 @@ export default function DbDiagramIoVsPage() {
         </section>
 
         <section className="mt-16">
-          <h2 className="mb-6 text-2xl font-medium text-ink">
+          <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">
             Frequently asked questions
           </h2>
           <div className="grid gap-4">
             {faqs.map((faq) => (
               <div
                 key={faq.q}
-                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5"
+                className="rounded-[20px] border border-border bg-white p-6 shadow-sm"
               >
                 <h3 className="text-lg font-medium text-ink">{faq.q}</h3>
                 <p className="mt-2 leading-relaxed text-muted">{faq.a}</p>
@@ -334,8 +334,8 @@ export default function DbDiagramIoVsPage() {
           </div>
         </section>
 
-        <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">
-          <h2 className="text-2xl font-medium text-white">
+        <section className="mt-16 rounded-[20px] bg-ink px-8 py-12 text-center">
+          <h2 className="text-2xl font-semibold text-white">
             Visualize your own database
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-white/70">
@@ -344,7 +344,7 @@ export default function DbDiagramIoVsPage() {
           </p>
           <a
             href="/visualize"
-            className="mt-6 inline-block rounded-lg bg-white px-8 py-3 font-medium text-ink transition-colors hover:bg-indigo-100"
+            className="mt-6 inline-block rounded-[10px] bg-accent px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
           >
             Try it free →
           </a>

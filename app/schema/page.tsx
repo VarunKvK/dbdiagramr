@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { getAllSchemaEntries } from "@/data/schemas/registry";
 import { generateDiagramSVG } from "@/lib/diagram";
 import Footer from "@/app/sections/Footer";
+import SchemaGrid from "@/app/schema/SchemaGrid";
 
 export const metadata: Metadata = {
   title: "Popular Database Schema Diagrams & ERDs",
@@ -62,53 +62,30 @@ export default function SchemaHubPage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <div className="mx-auto max-w-7xl px-6 pb-16 pt-[30rem] lg:px-8">
+      <div className="mx-auto max-w-7xl px-6 pb-16 pt-24 lg:px-8">
         <div className="mb-12">
-          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+          <span className="inline-block rounded-[20px] border border-accent px-3 py-1 font-mono text-xs font-medium text-accent">
             Schema Library
           </span>
-          <h1 className="mt-4 text-4xl font-medium text-ink md:text-5xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-ink md:text-5xl">
             Popular database schema diagrams
           </h1>
-          <p className="mt-4 max-w-4xl text-lg text-muted">
+          <p className="mt-4 max-w-4xl text-lg font-medium text-muted">
             Explore the real database schemas behind popular projects. Every
             diagram shows tables, columns, primary keys, and foreign key
-            relationships - rendered from official migrations and docs.
+            relationships, rendered from official migrations and docs.
           </p>
         </div>
 
-        <div className="grid gap-10 md:grid-cols-2">
-          {entries.map((entry) => {
-            const svg = generateDiagramSVG(entry.schema);
-            return (
-              <Link
-                key={entry.slug}
-                href={`/schema/${entry.slug}`}
-                className="group bg-white p-4 rounded-2xl transition-all hover:-translate-y-1 hover:shadow-sm"
-              >
-                <div className="relative min-h-[400px] overflow-hidden rounded-2xl bg-[#1a1a1a] shadow-sm ring-1 ring-black/5 transition-all group-hover:-translate-y-1 group-hover:shadow-lg">
-                  <div
-                    className="absolute inset-0"
-                    dangerouslySetInnerHTML={{ __html: svg }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                  <div className="absolute inset-0 flex flex-col items-center justify-center opacity-30 transition-opacity group-hover:opacity-100">
-                    <h2 className="text-4xl font-medium text-white">
-                      {entry.name}
-                      <span className="text-indigo-500">.</span>
-                    </h2>
-                  </div>
-                </div>
-                <div className="mt-4">
-                  <h3 className="text-2xl font-medium text-ink">
-                    {entry.name}
-                  </h3>
-                  <p className="mt-1 text-muted">{entry.title}</p>
-                </div>
-              </Link>
-            );
-          })}
-        </div>
+        <SchemaGrid
+          entries={entries.map((entry) => ({
+            slug: entry.slug,
+            name: entry.name,
+            title: entry.title,
+            tableCount: entry.schema.tables.length,
+            svg: generateDiagramSVG(entry.schema),
+          }))}
+        />
       </div>
       <Footer />
     </main>

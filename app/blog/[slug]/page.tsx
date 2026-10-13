@@ -131,7 +131,7 @@ export default function BlogPostPage({
       <div className="mx-auto max-w-3xl px-4 pb-16 pt-24">
         <Link
           href="/blog"
-          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 hover:text-indigo-500"
+          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-accent hover:text-accent-hover"
         >
           ← All posts
         </Link>
@@ -145,7 +145,7 @@ export default function BlogPostPage({
               {post.tags.map((tag) => (
                 <span
                   key={tag}
-                  className="rounded-full bg-indigo-50 px-2 py-0.5 text-xs font-medium text-indigo-600"
+                  className="rounded-[20px] border border-accent bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent"
                 >
                   #{tag}
                 </span>
@@ -161,12 +161,12 @@ export default function BlogPostPage({
         </div>
 
         <article
-          className="max-w-none leading-relaxed text-muted [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-medium [&_h2]:text-ink [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-medium [&_h3]:text-ink [&_p]:mt-4 [&_p]:leading-relaxed [&_p]:text-muted [&_a]:text-indigo-600 [&_a]:underline [&_a]:decoration-indigo-200 hover:[&_a]:text-indigo-500 [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mt-1.5 [&_strong]:font-semibold [&_strong]:text-ink [&_table]:mt-6 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm [&_th]:border [&_th]:border-border [&_th]:bg-[#fafafa] [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-medium [&_th]:text-ink [&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2 [&_td]:text-muted [&_pre]:mt-6 [&_pre]:overflow-x-auto [&_pre]:rounded-xl [&_pre]:bg-[#1a1a1a] [&_pre]:p-4 [&_pre]:text-sm [&_pre]:text-[#e5e5e5] [&_code]:rounded [&_code]:bg-black/5 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_code]:text-ink [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-[#e5e5e5]"
+          className="max-w-none leading-relaxed text-muted [&_h2]:mt-10 [&_h2]:text-2xl [&_h2]:font-medium [&_h2]:text-ink [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-medium [&_h3]:text-ink [&_p]:mt-4 [&_p]:leading-relaxed [&_p]:text-muted [&_a]:text-accent [&_a]:underline [&_a]:decoration-accent/40 hover:[&_a]:text-accent-hover [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mt-1.5 [&_strong]:font-semibold [&_strong]:text-ink [&_table]:mt-6 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm [&_th]:border [&_th]:border-border [&_th]:bg-surface [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-medium [&_th]:text-ink [&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2 [&_td]:text-muted [&_pre]:mt-6 [&_pre]:overflow-x-auto [&_pre]:rounded-[10px] [&_pre]:bg-ink [&_pre]:p-4 [&_pre]:text-sm [&_pre]:text-white/85 [&_code]:rounded [&_code]:bg-black/5 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_code]:text-ink [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-white/85"
           dangerouslySetInnerHTML={{ __html: body }}
         />
 
-        <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">
-          <h2 className="text-2xl font-medium text-white">
+        <section className="mt-16 rounded-[20px] bg-ink px-8 py-12 text-center">
+          <h2 className="text-2xl font-semibold text-white">
             Visualize your own database
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-white/70">
@@ -176,13 +176,13 @@ export default function BlogPostPage({
           <div className="mt-6 flex flex-wrap justify-center gap-3">
             <a
               href="/visualize"
-              className="inline-block rounded-lg bg-white px-8 py-3 font-medium text-ink transition-colors hover:bg-indigo-100"
+              className="inline-block rounded-[10px] bg-accent px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
             >
               Try it free →
             </a>
             <a
               href="/schema"
-              className="inline-block rounded-lg border border-white/20 px-8 py-3 font-medium text-white transition-colors hover:bg-white/10"
+              className="inline-block rounded-[10px] border border-white/40 px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-white/10"
             >
               Browse schemas
             </a>
@@ -191,7 +191,7 @@ export default function BlogPostPage({
 
         {relatedPosts.length > 0 && (
           <section className="mt-12">
-            <h2 className="mb-4 text-xl font-medium text-ink">
+            <h2 className="mb-4 text-xl font-semibold text-ink">
               Related guides
             </h2>
             <div className="grid gap-4">
@@ -199,9 +199,9 @@ export default function BlogPostPage({
                 <Link
                   key={rel.slug}
                   href={`/blog/${rel.slug}`}
-                  className="block rounded-xl bg-white p-5 shadow-sm ring-1 ring-black/5 transition-all hover:-translate-y-0.5 hover:shadow-md"
+                  className="block rounded-[20px] border border-border bg-white p-5 shadow-sm transition-colors hover:shadow-md"
                 >
-                  <div className="text-sm font-medium text-ink hover:text-indigo-600">
+                  <div className="text-sm font-medium text-ink hover:text-accent">
                     {rel.title}
                   </div>
                   <div className="mt-1 line-clamp-2 text-sm text-muted">
@@ -213,21 +213,15 @@ export default function BlogPostPage({
           </section>
         )}
 
-        <section className="mt-8 rounded-xl bg-white p-5 shadow-sm ring-1 ring-black/5">
+        <section className="mt-8 rounded-[20px] border border-border bg-white p-5 shadow-sm">
           <h2 className="text-sm font-medium uppercase tracking-wider text-muted">
             Try it on your database
           </h2>
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
-            <Link href="/postgres-er-diagram" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link href="/postgres-er-diagram" className="font-medium text-accent hover:text-accent-hover">
               PostgreSQL ER Diagram →
             </Link>
-            <Link href="/supabase-schema-diagram" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Supabase Schema Diagram →
-            </Link>
-            <Link href="/free-schema-generator" className="font-medium text-indigo-600 hover:text-indigo-500">
-              Free Schema Generator →
-            </Link>
-            <Link href="/database-schema-analyzer" className="font-medium text-indigo-600 hover:text-indigo-500">
+            <Link href="/database-schema-analyzer" className="font-medium text-accent hover:text-accent-hover">
               Schema Health Analyzer →
             </Link>
           </div>
@@ -238,12 +232,12 @@ export default function BlogPostPage({
             href="https://github.com/VarunKvK/dbdiagramr"
             target="_blank"
             rel="noopener noreferrer"
-            className="font-medium text-indigo-600 hover:text-indigo-500"
+            className="font-medium text-accent hover:text-accent-hover"
           >
             Star on GitHub
           </a>
           {" · "}
-          <a href="/blog" className="font-medium text-indigo-600 hover:text-indigo-500">
+          <a href="/blog" className="font-medium text-accent hover:text-accent-hover">
             More guides →
           </a>
         </div>

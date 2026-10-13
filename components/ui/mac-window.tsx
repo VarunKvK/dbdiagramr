@@ -10,18 +10,18 @@ export function MacWindow({ children, url, className }: MacWindowProps) {
   return (
     <div
       className={cn(
-        "overflow-hidden rounded-2xl border border-border bg-white shadow-sm",
+        "overflow-hidden rounded-[20px] border border-border bg-white shadow-lg",
         className
       )}
     >
       <div className="flex h-11 items-center justify-between border-b border-border bg-surface px-4">
         <div className="flex items-center gap-2">
-          <span className="h-3 w-3 rounded-full bg-[#ff5f57] ring-1 ring-black/5" />
-          <span className="h-3 w-3 rounded-full bg-[#febc2e] ring-1 ring-black/5" />
-          <span className="h-3 w-3 rounded-full bg-[#28c840] ring-1 ring-black/5" />
+          <span className="h-3 w-3 rounded-full bg-[#ff5f57]" />
+          <span className="h-3 w-3 rounded-full bg-[#febc2e]" />
+          <span className="h-3 w-3 rounded-full bg-[#28c840]" />
         </div>
         {url && (
-          <div className="rounded-full border border-border bg-white px-3 py-1 text-xs text-muted">
+          <div className="rounded-full border border-border bg-white px-3 py-1 font-mono text-xs font-medium text-muted">
             {url}
           </div>
         )}

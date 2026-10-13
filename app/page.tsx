@@ -1,9 +1,9 @@
 import Hero from "@/app/sections/Hero";
-import About from "@/app/sections/About";
 import ProductShowcase from "@/app/sections/ProductShowcase";
-import TwoWaysToUse from "@/app/sections/TwoWaysToUse";
 import Features from "@/app/sections/Features";
+import About from "@/app/sections/About";
 import Comparison from "@/app/sections/Comparison";
+import CtaBand from "@/app/sections/CtaBand";
 import BlogTeaser from "@/app/sections/BlogTeaser";
 import Footer from "@/app/sections/Footer";
 
@@ -48,24 +48,19 @@ export default function Home() {
       <div id="hero" className="scroll-mt-16">
         <Hero />
       </div>
-      <div className="scroll-mt-16">
-        <About />
-      </div>
-      <div id="features" className="scroll-mt-16">
+      <div id="demo" className="scroll-mt-16">
         <ProductShowcase />
       </div>
-      <div id="two-ways" className="scroll-mt-16">
-        <TwoWaysToUse />
-      </div>
-      <div id="features-summary" className="scroll-mt-16">
+      <div id="features" className="scroll-mt-16">
         <Features />
+      </div>
+      <div className="scroll-mt-16">
+        <About />
       </div>
       <div id="comparison" className="scroll-mt-16">
         <Comparison />
       </div>
-      {/* <div id="pricing" className="scroll-mt-16">
-        <Pricing />
-      </div> */}
+      <CtaBand />
       <BlogTeaser />
       <Footer />
     </main>

@@ -98,15 +98,15 @@ export default function SqlValidator() {
 
   return (
     <div>
-      <div className="overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5">
+      <div className="overflow-hidden rounded-[20px] border border-border bg-white shadow-sm">
         <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
           <span className="font-mono text-xs font-medium text-muted">
-            query.sql
+            query.sql{input.trim() && ` · ${input.split("\n").length} ${input.split("\n").length === 1 ? "line" : "lines"}`}
           </span>
           <div className="flex items-center gap-2">
             {wasmFailed ? (
               <span className="font-mono text-xs text-red-500">
-                Parser failed to load — check connection and reload
+                Parser failed to load. Check connection and reload
               </span>
             ) : !wasmReady ? (
               <span className="font-mono text-xs text-muted">
@@ -133,23 +133,24 @@ export default function SqlValidator() {
           onChange={(e) => setInput(e.target.value)}
           placeholder="Paste PostgreSQL here to check its syntax…"
           spellCheck={false}
+          aria-label="SQL to validate"
           className="h-[300px] w-full resize-none bg-white p-4 font-mono text-base leading-relaxed text-ink outline-none placeholder:text-muted/60 md:text-sm"
         />
       </div>
 
-      <div className="mt-4 min-h-[120px] overflow-hidden rounded-2xl bg-[#1a1a1a] p-5 shadow-sm ring-1 ring-black/5">
+      <div className="mt-4 min-h-[120px] overflow-hidden rounded-[20px] bg-ink p-5 shadow-lg">
         {status.kind === "idle" && (
-          <p className="font-mono text-sm text-[#666]">
+          <p className="font-mono text-sm text-white/40">
             Validation results appear here…
           </p>
         )}
         {status.kind === "loading" && (
-          <p className="font-mono text-sm text-[#999]">Checking…</p>
+          <p className="font-mono text-sm text-white/50">Checking…</p>
         )}
         {status.kind === "valid" && (
           <div>
             <p className="font-mono text-sm font-medium text-emerald-400">
-              ✓ Valid PostgreSQL — {status.statements}{" "}
+              ✓ Valid PostgreSQL: {status.statements}{" "}
               {status.statements === 1 ? "statement" : "statements"}, no syntax
               errors.
             </p>
@@ -157,7 +158,7 @@ export default function SqlValidator() {
               <button
                 type="button"
                 onClick={() => goVisualizeWithSql(input)}
-                className="mt-4 min-h-[44px] rounded-lg bg-white px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-indigo-100"
+                className="mt-4 min-h-[44px] rounded-[10px] border border-border bg-white px-4 py-2 text-sm font-medium text-ink transition-colors hover:bg-accent-soft"
               >
                 Visualize this schema →
               </button>
@@ -169,12 +170,12 @@ export default function SqlValidator() {
             <p className="font-mono text-sm font-medium text-red-400">
               ✗ {status.message}
             </p>
-            <p className="mt-1 font-mono text-xs text-[#999]">
+            <p className="mt-1 font-mono text-xs text-white/50">
               Line {status.line}, column {status.column}
             </p>
             {errorLine !== null && (
-              <div className="mt-3 overflow-x-auto rounded-lg bg-black/40 p-3">
-                <pre className="font-mono text-sm leading-relaxed text-[#e5e5e5]">
+              <div className="mt-3 overflow-x-auto rounded-[10px] bg-black/40 p-3">
+                <pre className="font-mono text-sm leading-relaxed text-white/85">
                   {errorLine || " "}
                 </pre>
                 <pre className="font-mono text-sm leading-relaxed text-red-400" aria-hidden="true">

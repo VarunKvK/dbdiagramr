@@ -6,28 +6,28 @@ import { ClipboardPaste, Plug, Search, Eye } from "lucide-react";
 
 const slides = [
   {
-    image: "/Product Design/PasteSQL.png",
+    image: "/product/paste-sql.webp",
     title: "Paste SQL, get diagram",
     icon: ClipboardPaste,
     description:
       "Paste any CREATE TABLE statement and watch your schema render as an interactive ER diagram in real time. No setup, no account required.",
   },
   {
-    image: "/Product Design/ConnectionString.png",
+    image: "/product/connect-database.webp",
     title: "Connect to live DB",
     icon: Plug,
     description:
       "Drop in a PostgreSQL connection string and dbdiagramr introspects your live database, pulling tables, columns, keys, and constraints automatically.",
   },
   {
-    image: "/Product Design/Search&Filter.png",
+    image: "/product/search-filter.webp",
     title: "Search & filter",
     icon: Search,
     description:
-      "Press / or \u2318K to search across tables, columns, and types. Instantly find any part of your schema, even in large databases with 50+ tables.",
+      "Press / or ⌘K to search across tables, columns, and types. Instantly find any part of your schema, even in large databases with 50+ tables.",
   },
   {
-    image: "/Product Design/Hover&Trace.png",
+    image: "/product/hover-trace.webp",
     title: "Hover to trace relationships",
     icon: Eye,
     description:
@@ -52,15 +52,22 @@ export default function ProductShowcase() {
   }, [paused, next]);
 
   return (
-    <section className="bg-cream pb-24 pt-[120px]">
+    <section className="bg-cream py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
-        <h2 className="mb-12 text-3xl font-medium text-ink md:text-4xl">
-          What DBdiagramr does
-          <span className="ml-0.5 text-indigo-600">.</span>
-        </h2>
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted">
+            Live demo
+          </p>
+          <h2 className="mt-4 text-4xl font-semibold leading-[1.05] tracking-tight text-ink md:text-6xl">
+            Watch it <span className="text-accent">work.</span>
+          </h2>
+          <p className="mx-auto mt-6 max-w-xl text-base font-medium leading-relaxed text-muted md:text-lg">
+            Four moves. That is the whole product.
+          </p>
+        </div>
 
           <div
-            className="relative aspect-[1640/896] w-full"
+            className="relative mt-12 aspect-[5760/2904] w-full overflow-hidden rounded-[20px] border-2 border-border bg-white"
             onMouseEnter={() => setPaused(true)}
             onMouseLeave={() => setPaused(false)}
           >
@@ -71,7 +78,7 @@ export default function ProductShowcase() {
                 alt={slide.title}
                 fill
                 sizes="(max-width: 768px) 100vw, 72rem"
-                className={`object-contain transition-opacity duration-500 inset-shadow-2xs rounded-lg ${
+                className={`object-cover transition-opacity duration-150 ${
                   i === active ? "opacity-100" : "opacity-0"
                 }`}
                 priority={i === 0}
@@ -79,7 +86,7 @@ export default function ProductShowcase() {
             ))}
           </div>
 
-        <div className="mt-10 grid grid-cols-2 gap-6 md:grid-cols-4">
+        <div className="mt-12 grid grid-cols-2 gap-6 md:grid-cols-4">
           {slides.map((slide, i) => {
             const Icon = slide.icon;
             const isActive = i === active;
@@ -87,26 +94,30 @@ export default function ProductShowcase() {
               <button
                 key={slide.title}
                 onClick={() => setActive(i)}
-                className={`group flex flex-col items-start text-left transition-opacity duration-300 ${
+                aria-pressed={isActive}
+                className={`group flex flex-col items-center text-center transition-opacity duration-150 ${
                   isActive ? "opacity-100" : "opacity-50 hover:opacity-75"
                 }`}
               >
-                <span className="mb-3 flex items-center gap-2">
+                <span className="font-mono text-xs font-medium text-accent">
+                  0{i + 1}
+                </span>
+                <span className="mt-2 flex items-center gap-2">
                   <Icon
                     size={18}
                     className={`${
-                      isActive ? "text-indigo-600" : "text-muted"
-                    } transition-colors duration-300`}
+                      isActive ? "text-accent" : "text-muted"
+                    } transition-colors duration-150`}
                   />
                   <span
                     className={`text-sm font-medium ${
                       isActive ? "text-ink" : "text-muted"
-                    } transition-colors duration-300`}
+                    } transition-colors duration-150`}
                   >
                     {slide.title}
                   </span>
                 </span>
-                <span className="text-sm leading-relaxed text-muted">
+                <span className="mt-2 text-sm leading-relaxed text-muted">
                   {slide.description}
                 </span>
               </button>
@@ -119,10 +130,10 @@ export default function ProductShowcase() {
             <button
               key={i}
               onClick={() => setActive(i)}
-              className={`h-2 rounded-full transition-all duration-300 ${
+              className={`h-2.5 rounded-full transition-all duration-150 ${
                 i === active
-                  ? "w-6 bg-indigo-600"
-                  : "w-2 bg-indigo-200 hover:bg-indigo-300"
+                  ? "w-7 bg-accent"
+                  : "w-2.5 bg-accent/30 hover:bg-accent/60"
               }`}
               aria-label={`Go to slide ${i + 1}`}
             />

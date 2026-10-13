@@ -12,6 +12,7 @@ import {
   type InferredColumn,
 } from "@/lib/sql/inferTypes";
 import { goVisualizeWithSql } from "@/lib/preload";
+import { useDebouncedValue } from "@/lib/useDebouncedValue";
 
 const SAMPLE = `id,name,email,signup_date,is_active,score
 1,Ada Lovelace,ada@example.com,2024-01-15,true,98.5
@@ -37,7 +38,7 @@ function ActionRow({
         type="button"
         onClick={onCopy}
         disabled={disabled}
-        className="min-h-[44px] flex-1 rounded-lg bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm ring-1 ring-black/5 transition-colors hover:bg-indigo-50 disabled:opacity-40 md:flex-none"
+        className="min-h-[44px] flex-1 rounded-[10px] border border-border bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm transition-colors hover:bg-accent-soft disabled:opacity-40 md:flex-none"
       >
         {copied ? "Copied!" : "Copy SQL"}
       </button>
@@ -45,7 +46,7 @@ function ActionRow({
         type="button"
         onClick={onVisualize}
         disabled={disabled}
-        className="min-h-[44px] flex-1 rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-600 disabled:opacity-40 md:flex-none"
+        className="min-h-[44px] flex-1 rounded-[10px] bg-ink px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-40 md:flex-none"
       >
         Visualize this schema →
       </button>
@@ -53,7 +54,7 @@ function ActionRow({
         type="button"
         onClick={onDownload}
         disabled={disabled}
-        className="min-h-[44px] rounded-lg bg-white px-4 py-2 text-sm font-medium text-muted shadow-sm ring-1 ring-black/5 transition-colors hover:text-ink disabled:opacity-40"
+        className="min-h-[44px] rounded-[10px] border border-border bg-white px-4 py-2 text-sm font-medium text-muted shadow-sm transition-colors hover:text-ink disabled:opacity-40"
       >
         Download .sql
       </button>
@@ -67,11 +68,12 @@ export default function CsvToSql() {
   const [copied, setCopied] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const debouncedInput = useDebouncedValue(input);
 
   const result = useMemo(() => {
-    if (!input.trim()) return { sql: "", error: null as string | null, cols: [] as InferredColumn[], rowCount: 0 };
+    if (!debouncedInput.trim()) return { sql: "", error: null as string | null, cols: [] as InferredColumn[], rowCount: 0 };
     try {
-      const parsed = Papa.parse<Record<string, string>>(input, {
+      const parsed = Papa.parse<Record<string, string>>(debouncedInput, {
         header: true,
         skipEmptyLines: "greedy",
       });
@@ -114,7 +116,7 @@ export default function CsvToSql() {
         rowCount: 0,
       };
     }
-  }, [input, tableName]);
+  }, [debouncedInput, tableName]);
 
   async function copyOutput() {
     if (!result.sql) return;
@@ -147,21 +149,21 @@ export default function CsvToSql() {
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl bg-white p-4 shadow-sm ring-1 ring-black/5">
+      <div className="flex flex-wrap items-center gap-3 rounded-[20px] border border-border bg-white p-4 shadow-sm">
         <label className="flex items-center gap-2 text-sm">
           <span className="font-medium text-muted">Table name:</span>
           <input
             value={tableName}
             onChange={(e) => setTableName(e.target.value)}
             spellCheck={false}
-            className="w-44 rounded-lg border border-border bg-white px-3 py-1.5 font-mono text-sm text-ink outline-none focus:border-indigo-400"
+            className="w-44 rounded-[10px] border border-border bg-white px-3 py-1.5 font-mono text-sm text-ink outline-none focus:border-accent"
           />
         </label>
         <div className="ml-auto flex gap-2">
           <button
             type="button"
             onClick={() => fileInputRef.current?.click()}
-            className="min-h-[44px] rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:text-ink"
+            className="min-h-[44px] rounded-[10px] border border-border bg-white px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:text-ink"
           >
             Upload CSV
           </button>
@@ -171,7 +173,7 @@ export default function CsvToSql() {
               setInput(SAMPLE);
               setTableName("imported");
             }}
-            className="min-h-[44px] rounded-lg border border-border bg-white px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:text-ink"
+            className="min-h-[44px] rounded-[10px] border border-border bg-white px-3 py-1.5 text-xs font-medium text-muted transition-colors hover:text-ink"
           >
             Reset sample
           </button>
@@ -200,7 +202,7 @@ export default function CsvToSql() {
             setIsDragging(false);
             handleFile(e.dataTransfer.files?.[0]);
           }}
-          className={`overflow-hidden rounded-2xl bg-white shadow-sm ring-1 transition-colors ${isDragging ? "ring-2 ring-indigo-500" : "ring-black/5"}`}
+          className={`overflow-hidden rounded-[20px] border border-border bg-white shadow-sm transition-colors ${isDragging ? "border-accent ring-2 ring-accent/40" : ""}`}
         >
           <div className="flex items-center justify-between border-b border-border px-4 py-2.5">
             <span className="font-mono text-xs font-medium text-muted">
@@ -221,13 +223,14 @@ export default function CsvToSql() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Paste CSV here (first row = headers), or drag-drop a file…"
             spellCheck={false}
+            aria-label="CSV to convert"
             className="h-[380px] w-full resize-none bg-white p-4 font-mono text-base leading-relaxed text-ink outline-none placeholder:text-muted/60 md:text-sm"
           />
         </div>
 
-        <div className="overflow-hidden rounded-2xl bg-[#1a1a1a] shadow-sm ring-1 ring-black/5">
-          <div className="flex items-center justify-between border-b border-[#333] px-4 py-2.5">
-            <span className="font-mono text-xs font-medium text-[#999]">
+        <div className="overflow-hidden rounded-[20px] bg-ink shadow-lg">
+          <div className="flex items-center justify-between border-b border-white/10 px-4 py-2.5">
+            <span className="font-mono text-xs font-medium text-white/50">
               output.sql
               {result.cols.length > 0 &&
                 ` · ${result.cols.map((c) => `${c.name}: ${c.pgType}`).join(", ")}`}
@@ -235,17 +238,41 @@ export default function CsvToSql() {
           </div>
           <div className="h-[380px] overflow-auto p-4">
             {result.error ? (
-              <p className="font-mono text-sm leading-relaxed text-red-400">
-                {result.error}
-              </p>
+              <div className="rounded-xl border border-red-400/30 bg-red-500/10 p-4">
+                <p className="font-mono text-sm font-medium text-red-300">
+                  Could not convert this CSV
+                </p>
+                <p className="mt-1 font-mono text-xs leading-relaxed text-white/50">
+                  Make sure the first row holds column names and each row has
+                  the same field count.
+                </p>
+                <p className="mt-2 whitespace-pre-wrap break-words font-mono text-sm leading-relaxed text-red-300/80">
+                  {result.error}
+                </p>
+              </div>
             ) : result.sql ? (
-              <pre className="font-mono text-sm leading-relaxed text-[#e5e5e5]">
-                {result.sql}
-              </pre>
+              <div className="flex min-h-full">
+                <div
+                  aria-hidden="true"
+                  className="w-9 shrink-0 select-none pr-3 text-right font-mono text-sm leading-relaxed text-white/30"
+                >
+                  {Array.from({ length: result.sql.split("\n").length }, (_, i) => (
+                    <div key={i + 1}>{i + 1}</div>
+                  ))}
+                </div>
+                <pre className="min-w-0 flex-1 font-mono text-sm leading-relaxed text-white/85">
+                  {result.sql}
+                </pre>
+              </div>
             ) : (
-              <p className="font-mono text-sm text-[#666]">
-                CREATE TABLE + INSERTs appear here…
-              </p>
+              <div className="flex h-full flex-col items-center justify-center text-center">
+                <p className="font-mono text-sm text-white/40">
+                  Drop a CSV on the left and CREATE TABLE + INSERTs land here.
+                </p>
+                <p className="mt-1 font-mono text-xs text-white/30">
+                  Your file never leaves the browser.
+                </p>
+              </div>
             )}
           </div>
         </div>

@@ -5,7 +5,7 @@ import RelatedTools from "@/app/sections/RelatedTools";
 import SchemaAnalyzer from "@/components/SchemaAnalyzer";
 
 export const metadata: Metadata = {
-  title: "Free Database Schema Analyzer -- Grade Your PostgreSQL Schema",
+  title: "Free Database Schema Analyzer | Grade Your PostgreSQL Schema",
   description:
     "Paste your SQL and get a graded PostgreSQL schema health report: missing primary keys, unindexed foreign keys, naming drift. Free, no signup, private.",
   keywords:
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     canonical: "https://www.dbdiagramr.space/database-schema-analyzer",
   },
   openGraph: {
-    title: "Free Database Schema Analyzer -- Grade Your PostgreSQL Schema",
+    title: "Free Database Schema Analyzer | Grade Your PostgreSQL Schema",
     description:
       "Paste SQL, get a graded schema health report in seconds. Missing keys, unindexed foreign keys, naming drift. No signup required.",
     type: "website",
@@ -22,7 +22,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free Database Schema Analyzer -- Grade Your PostgreSQL Schema",
+    title: "Free Database Schema Analyzer | Grade Your PostgreSQL Schema",
     description:
       "Paste SQL, get a graded schema health report in seconds. No signup required.",
   },
@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     q: "What is a good schema health score?",
-    a: "90+ (grade A) means a clean schema with at most minor notes. 75-89 (B) is healthy with a few warnings worth fixing. Below 60 (D) usually means missing primary keys — fix those first, they affect correctness, not just performance.",
+    a: "90+ (grade A) means a clean schema with at most minor notes. 75-89 (B) is healthy with a few warnings worth fixing. Below 60 (D) usually means missing primary keys. Fix those first, they affect correctness, not just performance.",
   },
   {
     q: "Can I export the report?",
@@ -61,7 +61,7 @@ const jsonLd = {
     {
       "@type": "Article",
       "@id": "https://www.dbdiagramr.space/database-schema-analyzer#article",
-      headline: "Free Database Schema Analyzer -- Grade Your PostgreSQL Schema",
+      headline: "Free Database Schema Analyzer | Grade Your PostgreSQL Schema",
       description:
         "Paste your SQL and get a graded PostgreSQL schema health report: missing primary keys, unindexed foreign keys, naming drift.",
       datePublished: "2026-09-25",
@@ -133,31 +133,31 @@ export default function SchemaAnalyzerPage() {
       <div className="mx-auto max-w-6xl px-4 pb-16 pt-24">
         <Link
           href="/visualize"
-          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500"
+          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-accent-hover"
         >
           &larr; Try the tool
         </Link>
 
         <div className="mb-10">
-          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+          <span className="inline-block rounded-[20px] border border-accent bg-accent-soft px-3 py-1 text-xs font-medium text-accent">
             Free tool
           </span>
-          <h1 className="mt-4 text-4xl font-medium text-ink md:text-5xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-ink md:text-5xl">
             Database Schema Analyzer
           </h1>
           <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted">
             Paste your SQL and get a graded PostgreSQL schema health report in
-            seconds. Missing keys, slow joins, naming drift — flagged with a fix
+            seconds. Missing keys, slow joins, naming drift, each flagged with a fix
             for each. Free, no signup, private.
           </p>
           <div className="mt-6 flex flex-wrap gap-3">
             {checks.map((label) => (
               <span
                 key={label}
-                className="inline-flex items-center gap-2 rounded-full border border-indigo-400 bg-[#D4D2FF] px-4 py-1.5 text-xs font-medium text-ink"
+                className="inline-flex items-center gap-2 rounded-full border border-accent bg-accent-soft px-4 py-1.5 text-xs font-medium text-ink"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-indigo-600 animate-pulse" />
-                <p className="text-indigo-600">{label}</p>
+                <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                <p className="text-accent">{label}</p>
               </span>
             ))}
           </div>
@@ -166,29 +166,29 @@ export default function SchemaAnalyzerPage() {
         <SchemaAnalyzer />
 
         <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
+          <h2 className="mb-4 text-2xl font-semibold tracking-tight text-ink">
             What the analyzer checks
           </h2>
-          <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
             <ul className="list-disc space-y-2 pl-5 leading-relaxed text-muted">
               <li>
                 <strong className="text-ink">Primary keys</strong> on every
-                table — missing keys break identity and replication
+                table. Missing keys break identity and replication
               </li>
               <li>
-                <strong className="text-ink">Foreign key indexes</strong> —
+                <strong className="text-ink">Foreign key indexes</strong>:
                 Postgres does not auto-index FK columns, unindexed joins are slow
               </li>
               <li>
-                <strong className="text-ink">Nullable foreign keys</strong> —
+                <strong className="text-ink">Nullable foreign keys</strong>:
                 usually a design smell unless the relation is optional
               </li>
               <li>
-                <strong className="text-ink">Naming consistency</strong> —
+                <strong className="text-ink">Naming consistency</strong>:
                 mixed snake_case and camelCase across tables
               </li>
               <li>
-                <strong className="text-ink">Table shape</strong> — unusually
+                <strong className="text-ink">Table shape</strong>: unusually
                 wide tables and missing audit columns
               </li>
             </ul>
@@ -196,14 +196,14 @@ export default function SchemaAnalyzerPage() {
         </section>
 
         <section className="mt-16">
-          <h2 className="mb-6 text-2xl font-medium text-ink">
+          <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">
             Frequently asked questions
           </h2>
           <div className="grid gap-4">
             {faqs.map((faq) => (
               <div
                 key={faq.q}
-                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5"
+                className="rounded-[20px] border border-border bg-white p-6 shadow-sm"
               >
                 <h3 className="text-lg font-medium text-ink">{faq.q}</h3>
                 <p className="mt-2 leading-relaxed text-muted">{faq.a}</p>
@@ -214,8 +214,8 @@ export default function SchemaAnalyzerPage() {
 
         <RelatedTools current="/database-schema-analyzer" />
 
-        <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">
-          <h2 className="text-2xl font-medium text-white">
+        <section className="mt-16 rounded-[20px] bg-ink px-8 py-12 text-center">
+          <h2 className="text-2xl font-semibold text-white">
             See your healthy schema as a diagram
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-white/70">
@@ -224,7 +224,7 @@ export default function SchemaAnalyzerPage() {
           </p>
           <a
             href="/visualize"
-            className="mt-6 inline-block rounded-lg bg-white px-8 py-3 font-medium text-ink transition-colors hover:bg-indigo-100"
+            className="mt-6 inline-block rounded-[10px] bg-accent px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
           >
             Try it free &rarr;
           </a>

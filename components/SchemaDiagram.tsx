@@ -36,6 +36,21 @@ function downloadBlob(blob: Blob, filename: string) {
   URL.revokeObjectURL(url);
 }
 
+/* ── Sticker palette: table identity color, deterministic by schema order ── */
+
+export const STICKERS = [
+  { header: "#eaf3e4", edge: "#3d7e16" },
+  { header: "#d9ead3", edge: "#1e7e34" },
+  { header: "#e2f0e4", edge: "#0f766e" },
+  { header: "#f0f7e6", edge: "#65a30d" },
+  { header: "#dcefe4", edge: "#0d9488" },
+  { header: "#e8f3dc", edge: "#4d7c0f" },
+] as const;
+
+export function stickerFor(tableName: string, order: number) {
+  return STICKERS[order % STICKERS.length];
+}
+
 /* ── Custom node: a table card ── */
 
 type TableNodeData = {
@@ -44,6 +59,7 @@ type TableNodeData = {
   highlightCols?: Set<string>;
   highlightTable?: boolean;
   searchActive?: boolean;
+  colorIdx?: number;
 };
 
 type TableFlowNode = RFNode<TableNodeData, "table">;
@@ -52,15 +68,19 @@ function TableNode({ data }: NodeProps<TableFlowNode>) {
   const { table, targetCols } = data;
   const size = tableSize(table);
   const fkColumns = new Set(table.foreignKeys.map((f) => f.column));
+  const sticker = STICKERS[(data.colorIdx ?? 0) % STICKERS.length];
 
   const handleTop = (i: number) => ((LAYOUT.header + i * LAYOUT.rowH + LAYOUT.rowH / 2) / size.height) * 100;
 
   return (
     <div
-      className={`overflow-hidden rounded-lg border bg-white shadow-[0_2px_8px_rgba(0,0,0,0.08)] ${data.searchActive && data.highlightTable ? "border-indigo-500/50" : "border-border"}`}
+      className={`overflow-hidden rounded-xl bg-[#1e1e1e] shadow-lg ${data.searchActive && data.highlightTable ? "ring-2 ring-[#7aa861]" : ""}`}
       style={{ width: size.width, height: size.height }}
     >
-      <div className={`flex h-[38px] items-center justify-center text-[13px] font-semibold ${data.searchActive && data.highlightTable ? "bg-indigo-100 text-indigo-700" : "bg-surface text-ink"}`}>
+      <div
+        className="flex h-[38px] items-center justify-center font-mono text-[13px] font-bold text-[#1e1e1e]"
+        style={{ background: sticker.header }}
+      >
         {table.name}
       </div>
       <div className="relative">
@@ -73,14 +93,21 @@ function TableNode({ data }: NodeProps<TableFlowNode>) {
           return (
             <div
               key={col.name}
-              className={`relative flex h-[26px] items-center justify-between border-b px-[14px] last:border-b-0 ${isColMatch ? "bg-indigo-50" : ""} ${isSearchActive && data.highlightTable === false && !isColMatch ? "opacity-60" : ""} border-border`}
+              className={`relative flex h-[26px] items-center justify-between px-[14px] ${isSearchActive && data.highlightTable === false && !isColMatch ? "opacity-50" : ""}`}
+              style={
+                isColMatch
+                  ? { background: "#eaf2e4" }
+                  : isPk
+                    ? { background: `${sticker.edge}26` }
+                    : undefined
+              }
               title={`${col.name} ${formatType(col.type)}${col.nullable === "YES" ? " nullable" : " not null"}${col.default ? ` default ${col.default}` : ""}`}
             >
-              <span className={`truncate font-mono text-[12px] ${isColMatch ? "font-semibold text-indigo-600" : "text-ink"}`}>{col.name}</span>
+              <span className={`truncate font-mono text-[12px] ${isColMatch ? "font-bold text-[#1e1e1e]" : "text-white"}`}>{col.name}</span>
               <span className="ml-2 flex shrink-0 items-center gap-1.5">
-                <span className={`font-mono text-[10px] ${isColMatch ? "text-indigo-500" : "text-muted"}`}>{formatType(col.type)}</span>
+                <span className={`font-mono text-[10px] ${isColMatch ? "text-[#1e1e1e]" : "text-[#a3bfa0]"}`}>{formatType(col.type)}</span>
                 {(isPk || isFkCol) && (
-                  <span className="font-mono text-[10px] font-bold text-[#6366f1]">
+                  <span className="font-mono text-[10px] font-bold" style={{ color: isColMatch ? "#1e1e1e" : sticker.header }}>
                     {isPk ? "PK" : "FK"}
                   </span>
                 )}
@@ -113,7 +140,7 @@ function TableNode({ data }: NodeProps<TableFlowNode>) {
 
 /* ── Custom edge: smooth orthogonal path + cardinality badges ── */
 
-type ErdEdgeData = { fromLabel: string; toLabel: string };
+type ErdEdgeData = { fromLabel: string; toLabel: string; edgeColor?: string };
 
 type ErdFlowEdge = Edge<ErdEdgeData, "erd">;
 
@@ -147,7 +174,10 @@ function ErdEdge({
           className="pointer-events-none absolute"
           style={{ transform: `translate(-50%, -50%) translate(${sourceX}px, ${sourceY}px)` }}
         >
-          <span className="flex h-4 w-4 items-center justify-center rounded bg-white text-[9px] font-bold text-[#4f46e5] ring-1 ring-border">
+          <span
+            className="flex h-4 w-4 items-center justify-center rounded bg-white text-[9px] font-bold ring-1 ring-[#1e1e1e]"
+            style={{ color: data?.edgeColor ?? "#3d7e16" }}
+          >
             {data?.fromLabel ?? "*"}
           </span>
         </div>
@@ -155,7 +185,10 @@ function ErdEdge({
           className="pointer-events-none absolute"
           style={{ transform: `translate(-50%, -50%) translate(${targetX}px, ${targetY}px)` }}
         >
-          <span className="flex h-4 w-4 items-center justify-center rounded bg-white text-[9px] font-bold text-[#4f46e5] ring-1 ring-border">
+          <span
+            className="flex h-4 w-4 items-center justify-center rounded bg-white text-[9px] font-bold ring-1 ring-[#1e1e1e]"
+            style={{ color: data?.edgeColor ?? "#3d7e16" }}
+          >
             {data?.toLabel ?? "1"}
           </span>
         </div>
@@ -180,19 +213,22 @@ function buildElements(schema: Schema) {
     }
   }
 
-  const nodes: TableFlowNode[] = schema.tables.map((table) => {
+  const nodes: TableFlowNode[] = schema.tables.map((table, idx) => {
     const pos = layout[table.name];
     return {
       id: table.name,
       type: "table" as const,
       position: { x: pos.x, y: pos.y },
-      data: { table, targetCols: targetCols.get(table.name) ?? new Set() },
+      data: { table, targetCols: targetCols.get(table.name) ?? new Set(), colorIdx: idx },
     };
   });
+
+  const orderOf = (name: string) => schema.tables.findIndex((t) => t.name === name);
 
   const edges: ErdFlowEdge[] = [];
   for (const table of schema.tables) {
     for (const fk of table.foreignKeys) {
+      const edgeColor = STICKERS[(orderOf(table.name) + STICKERS.length) % STICKERS.length].edge;
       edges.push({
         id: `${table.name}-${fk.column}-${fk.referencesTable}-${fk.referencesColumn}`,
         source: table.name,
@@ -200,9 +236,9 @@ function buildElements(schema: Schema) {
         target: fk.referencesTable,
         targetHandle: `tgt-${fk.referencesColumn}`,
         type: "erd" as const,
-        data: { fromLabel: "*", toLabel: "1" },
-        markerEnd: { type: MarkerType.ArrowClosed, color: "#4f46e5" },
-        style: { stroke: "#4f46e5", strokeWidth: 1.5, transition: "opacity 0.3s ease" },
+        data: { fromLabel: "*", toLabel: "1", edgeColor },
+        markerEnd: { type: MarkerType.ArrowClosed, color: edgeColor },
+        style: { stroke: edgeColor, strokeWidth: 2, transition: "opacity 0.15s ease" },
       });
     }
   }
@@ -210,7 +246,7 @@ function buildElements(schema: Schema) {
   return { nodes, edges };
 }
 
-function Canvas({ schema, className = "", searchQuery = "" }: SchemaDiagramProps) {
+function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true, passive = false, minimal = false }: SchemaDiagramProps) {
   const { fitView } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState<TableFlowNode>([]);
   const [edges, setEdges, onEdgesChange] = useEdgesState<ErdFlowEdge>([]);
@@ -295,7 +331,7 @@ function Canvas({ schema, className = "", searchQuery = "" }: SchemaDiagramProps
           style: {
             ...n.style,
             opacity: isMatch ? 1 : 0.18,
-            transition: "opacity 0.3s ease",
+            transition: "opacity 0.15s ease",
           },
         };
       });
@@ -317,13 +353,12 @@ function Canvas({ schema, className = "", searchQuery = "" }: SchemaDiagramProps
   const renderedEdges = useMemo(() => {
     if (searchActive && searchMatches) {
       return edges.map((e) => {
-        // Dim edges where neither end matched
+        // Dim edges where neither end matched, keep table colors otherwise
         const isRelated = searchMatches.tableMatches.has(e.source) || searchMatches.tableMatches.has(e.target);
         return {
           ...e,
           style: {
             ...e.style,
-            stroke: isRelated ? "#4f46e5" : "#333",
             opacity: isRelated ? 0.9 : 0.06,
           },
         };
@@ -337,7 +372,6 @@ function Canvas({ schema, className = "", searchQuery = "" }: SchemaDiagramProps
           animated: active,
           style: {
             ...e.style,
-            stroke: active ? "#4f46e5" : "#333",
             opacity: active ? 1 : 0.08,
           },
         };
@@ -379,7 +413,7 @@ function Canvas({ schema, className = "", searchQuery = "" }: SchemaDiagramProps
       canvas.width = w * 2;
       canvas.height = h * 2;
       const ctx = canvas.getContext("2d")!;
-      ctx.fillStyle = "#faf9f7";
+      ctx.fillStyle = "#f3ffe6";
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       ctx.scale(2, 2);
       ctx.drawImage(img, 0, 0, w, h);
@@ -410,32 +444,41 @@ function Canvas({ schema, className = "", searchQuery = "" }: SchemaDiagramProps
         deleteKeyCode={null}
         minZoom={0.2}
         maxZoom={2.5}
+        zoomOnScroll={passive ? false : zoomOnScroll}
+        panOnScroll={false}
+        panOnDrag={!passive}
+        nodesDraggable={!passive}
+        elementsSelectable={!passive}
+        preventScrolling={!passive}
         colorMode="light"
       >
-        <Background variant={BackgroundVariant.Dots} gap={28} size={1} color="#d4d4d4" />
-        <Controls position="bottom-left" showInteractive={false} className="!border-border !bg-white [&_button]:!text-ink [&_button:hover]:!bg-surface" />
-        <MiniMap
-          position="bottom-right"
-          pannable
-          zoomable
-          nodeColor="#4f46e5"
-          nodeStrokeWidth={2}
-          maskColor="rgba(250,249,247,0.7)"
-          className="!bg-white"
-        />
+        <Background variant={BackgroundVariant.Dots} gap={22} size={1.2} color="#bfd8b2" />
+        <Controls position="bottom-left" showInteractive={false} className="!rounded-[10px] !border !border-border !bg-white !shadow-md [&_button]:!border-b-[#eaf2e4] [&_button]:!text-ink [&_button:hover]:!bg-accent-soft" />
+        {!minimal && (
+          <MiniMap
+            position="bottom-right"
+            pannable
+            zoomable
+            nodeColor="#3d7e16"
+            nodeStrokeWidth={2}
+            maskColor="rgba(243,255,230,0.7)"
+            className="!rounded-[10px] !border !border-border !bg-white !shadow-md"
+          />
+        )}
         <Panel position="top-right">
+          {!minimal && (
           <div ref={downloadRef} className="relative">
             <button
               onClick={() => setDownloadOpen((v) => !v)}
               title="Download"
-              className="flex h-8 w-8 items-center justify-center rounded-lg bg-white text-ink shadow-md ring-1 ring-border transition-colors hover:bg-surface hover:text-ink"
+              className="flex h-8 w-8 items-center justify-center rounded-[10px] border border-border bg-white text-ink shadow-md transition-colors hover:bg-accent-soft"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                 <path d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
             </button>
             {downloadOpen && (
-              <div className="absolute right-0 top-10 z-20 w-36 rounded-lg border border-border bg-white py-1 shadow-xl">
+              <div className="absolute right-0 top-10 z-20 w-36 rounded-[10px] border border-border bg-white py-1 shadow-xl">
                 <button
                   onClick={handleExportSVG}
                   className="flex w-full items-center gap-2 px-3 py-2 text-xs text-muted transition-colors hover:bg-surface hover:text-ink"
@@ -453,6 +496,7 @@ function Canvas({ schema, className = "", searchQuery = "" }: SchemaDiagramProps
               </div>
             )}
           </div>
+          )}
         </Panel>
       </ReactFlow>
     </div>
@@ -463,12 +507,25 @@ interface SchemaDiagramProps {
   schema: Schema;
   className?: string;
   searchQuery?: string;
+  /** Disable wheel-zoom so embedded previews don't trap page scroll (hero). */
+  zoomOnScroll?: boolean;
+  /**
+   * Fully passive preview: no wheel-zoom, no pane pan, no node drag, no
+   * selection, and no scroll prevention — the page always scrolls, on
+   * desktop and touch. Hover highlighting still works.
+   */
+  passive?: boolean;
+  /**
+   * Minimal chrome for embedded previews: hides the minimap and the
+   * download menu, keeping only zoom controls.
+   */
+  minimal?: boolean;
 }
 
-export default function SchemaDiagram({ schema, className = "", searchQuery = "" }: SchemaDiagramProps) {
+export default function SchemaDiagram({ schema, className = "", searchQuery = "", zoomOnScroll = true, passive = false, minimal = false }: SchemaDiagramProps) {
   return (
     <ReactFlowProvider>
-      <Canvas schema={schema} className={className} searchQuery={searchQuery} />
+      <Canvas schema={schema} className={className} searchQuery={searchQuery} zoomOnScroll={zoomOnScroll} passive={passive} minimal={minimal} />
     </ReactFlowProvider>
   );
 }

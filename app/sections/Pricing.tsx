@@ -17,7 +17,7 @@ const plans = [
     border: "",
     bg: "bg-surface",
     ctaStyle:
-      "border border-ink text-ink hover:bg-surface rounded-lg py-3 font-medium",
+      "border border-border text-ink hover:bg-surface rounded-lg py-3 font-medium",
     checkColor: "text-ink",
   },
   {
@@ -33,11 +33,11 @@ const plans = [
       "Priority email support",
     ],
     cta: "Upgrade to Pro",
-    badge: "text-indigo-700 bg-indigo-50",
-    border: "border-2 border-indigo-600",
+    badge: "text-accent bg-accent-soft",
+    border: "border-2 border-accent",
     bg: "bg-cream",
-    ctaStyle: "bg-ink text-white hover:bg-indigo-600 rounded-lg py-3 font-medium",
-    checkColor: "text-indigo-600",
+    ctaStyle: "bg-ink text-white hover:bg-accent-hover rounded-[10px] py-3 font-medium",
+    checkColor: "text-accent",
     popular: true,
   },
 ];
@@ -46,7 +46,7 @@ export default function Pricing() {
   return (
     <section className="bg-cream pt-[120px]">
       <div className="mx-auto max-w-7xl px-4 py-24">
-        <h2 className="mb-4 text-3xl font-medium text-ink md:text-4xl">
+        <h2 className="mb-4 text-3xl font-semibold tracking-tight text-ink md:text-4xl">
           Simple pricing
         </h2>
         <p className="mb-16 max-w-2xl text-lg text-muted">
@@ -56,8 +56,8 @@ export default function Pricing() {
           {plans.map((plan) => (
             <div key={plan.name}>
               {plan.popular && (
-                <p className="mb-4 text-center text-xs font-medium uppercase tracking-wider text-indigo-600">
-                  <span className="inline-block rounded-full bg-indigo-50 px-3 py-1">
+                <p className="mb-4 text-center text-xs font-medium uppercase tracking-wider text-accent">
+                  <span className="inline-block rounded-[20px] border border-accent bg-accent-soft px-3 py-1">
                     Most popular
                   </span>
                 </p>

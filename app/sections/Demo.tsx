@@ -84,11 +84,11 @@ export default function Demo() {
     <section id="demo" ref={sectionRef} className="bg-cream">
       <div className="mx-auto max-w-5xl px-4 py-24">
         <div className="mb-4 text-center">
-          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+          <span className="inline-block rounded-[20px] border border-accent bg-accent-soft px-3 py-1 text-xs font-medium text-accent">
             Interactive Preview
           </span>
         </div>
-        <h2 className="mb-6 text-center text-3xl font-medium text-ink md:text-4xl">
+        <h2 className="mb-6 text-center text-3xl font-semibold tracking-tight text-ink md:text-4xl">
           See your database, visually
         </h2>
         <p className="mx-auto mb-16 max-w-lg text-center text-muted">

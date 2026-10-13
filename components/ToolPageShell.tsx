@@ -94,16 +94,16 @@ export default function ToolPageShell({
       <div className="mx-auto max-w-6xl px-4 pb-16 pt-24">
         <Link
           href="/tools"
-          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500"
+          className="mb-8 inline-flex items-center gap-1 font-mono text-xs font-medium text-accent transition-colors hover:text-accent-hover"
         >
           &larr; All tools
         </Link>
 
         <div className="mb-10">
-          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+          <span className="inline-block rounded-[20px] border border-accent bg-accent-soft px-3 py-1 font-mono text-xs font-medium text-accent">
             {badge}
           </span>
-          <h1 className="mt-4 text-4xl font-medium text-ink md:text-5xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-ink md:text-5xl">
             {h1}
           </h1>
           <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted">
@@ -114,14 +114,14 @@ export default function ToolPageShell({
         {children}
 
         <section className="mt-16">
-          <h2 className="mb-6 text-2xl font-medium text-ink">
+          <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">
             Frequently asked questions
           </h2>
           <div className="grid gap-4">
             {faqs.map((faq) => (
               <div
                 key={faq.q}
-                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5"
+                className="rounded-[20px] border border-border bg-white p-6 shadow-sm"
               >
                 <h3 className="text-lg font-medium text-ink">{faq.q}</h3>
                 <p className="mt-2 leading-relaxed text-muted">{faq.a}</p>
@@ -133,8 +133,8 @@ export default function ToolPageShell({
         <RelatedTools current={current} siblings={siblings} />
 
         {exploreLinks.length > 0 && (
-          <div className="mt-4 rounded-xl bg-white p-5 shadow-sm ring-1 ring-black/5">
-            <div className="text-sm font-medium uppercase tracking-wider text-muted">
+          <div className="mt-4 rounded-[20px] border border-border bg-white p-5 shadow-sm">
+            <div className="font-mono text-xs font-medium uppercase tracking-widest text-muted">
               Keep exploring
             </div>
             <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
@@ -142,7 +142,7 @@ export default function ToolPageShell({
                 <Link
                   key={l.href}
                   href={l.href}
-                  className="font-medium text-indigo-600 hover:text-indigo-500"
+                  className="font-medium text-accent hover:text-accent-hover"
                 >
                   {l.label} →
                 </Link>
@@ -151,20 +151,30 @@ export default function ToolPageShell({
           </div>
         )}
 
-        <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">
-          <h2 className="text-2xl font-medium text-white">
+        <section className="mt-16 rounded-[20px] bg-ink px-8 py-12 text-center">
+          <h2 className="text-2xl font-semibold text-white">
             Turn it into an ER diagram
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-white/70">
             Paste your PostgreSQL connection string and get an interactive ER
             diagram of your own schema in under 10 seconds. No signup required.
           </p>
-          <a
-            href="/visualize"
-            className="mt-6 inline-block rounded-lg bg-white px-8 py-3 font-medium text-ink transition-colors hover:bg-indigo-100"
-          >
-            Try it free &rarr;
-          </a>
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+            <a
+              href="/visualize"
+              className="inline-block rounded-[10px] bg-accent px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
+            >
+              Try it free &rarr;
+            </a>
+            <a
+              href="https://github.com/VarunKvK/dbdiagramr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block rounded-[10px] border border-white/40 px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-white/10"
+            >
+              View on GitHub
+            </a>
+          </div>
         </section>
       </div>
       <Footer />

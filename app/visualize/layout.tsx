@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "PostgreSQL ER Diagram Generator -- Paste Connection String, Get Diagram",
+  title: "PostgreSQL ER Diagram Generator | Paste Connection String, Get Diagram",
   description:
     "Paste a PostgreSQL connection string and instantly generate an interactive ER diagram. Pan, zoom, hover to trace foreign key relationships, export as SVG or PNG. No signup required.",
   keywords:
@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     canonical: "https://www.dbdiagramr.space/visualize",
   },
   openGraph: {
-    title: "PostgreSQL ER Diagram Generator -- Paste Connection String, Get Diagram",
+    title: "PostgreSQL ER Diagram Generator | Paste Connection String, Get Diagram",
     description:
       "Paste a PostgreSQL connection string and get an interactive ER diagram in under 10 seconds. No signup, no setup.",
     type: "website",

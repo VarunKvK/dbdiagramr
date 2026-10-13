@@ -24,20 +24,20 @@ export default function SchemaCopyButtons({
       <button
         type="button"
         onClick={() => copy("sql")}
-        className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm ring-1 ring-black/5 transition-colors hover:bg-indigo-50"
+        className="rounded-[10px] border border-border bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm transition-colors hover:bg-accent-soft"
       >
         {copied === "sql" ? "Copied!" : "Copy as SQL"}
       </button>
       <button
         type="button"
         onClick={() => copy("mermaid")}
-        className="rounded-lg bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm ring-1 ring-black/5 transition-colors hover:bg-indigo-50"
+        className="rounded-[10px] border border-border bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm transition-colors hover:bg-accent-soft"
       >
         {copied === "mermaid" ? "Copied!" : "Copy as Mermaid"}
       </button>
       <a
         href={`/visualize?schema=${slug}`}
-        className="rounded-lg bg-ink px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-indigo-600"
+        className="rounded-[10px] bg-ink px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
       >
         Open in DBdiagramr to edit →
       </a>

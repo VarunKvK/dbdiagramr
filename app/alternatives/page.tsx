@@ -79,10 +79,10 @@ export default function AlternativesPage() {
       />
       <div className="mx-auto max-w-6xl px-4 pb-16 pt-24">
         <div className="mb-12 text-center">
-          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+          <span className="inline-block rounded-[20px] border border-accent bg-accent-soft px-3 py-1 text-xs font-medium text-accent">
             Alternatives
           </span>
-          <h1 className="mt-4 text-4xl font-medium text-ink md:text-5xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-ink md:text-5xl">
             How dbdiagramr compares to other diagram tools
           </h1>
           <p className="mx-auto mt-4 max-w-2xl text-lg text-muted">
@@ -97,9 +97,9 @@ export default function AlternativesPage() {
             <Link
               key={alt.slug}
               href={`/${alt.slug}`}
-              className="group rounded-2xl bg-white p-8 shadow-sm ring-1 ring-black/5 transition-all hover:-translate-y-1 hover:shadow-lg"
+              className="group rounded-[20px] border border-border bg-white p-8 shadow-sm transition-colors hover:shadow-md"
             >
-              <h2 className="text-2xl font-medium text-ink group-hover:text-indigo-600">
+              <h2 className="text-2xl font-medium text-ink group-hover:text-accent">
                 {alt.headline}
               </h2>
               <p className="mt-3 leading-relaxed text-muted">{alt.summary}</p>
@@ -107,21 +107,21 @@ export default function AlternativesPage() {
                 {alt.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="rounded-full bg-[#fafafa] px-3 py-1 text-xs font-medium text-muted ring-1 ring-black/5"
+                    className="rounded-full bg-surface px-3 py-1 text-xs font-medium text-muted ring-1 ring-black/5"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
-              <div className="mt-6 text-sm font-medium text-indigo-600 transition-colors group-hover:text-indigo-500">
+              <div className="mt-6 text-sm font-medium text-accent transition-colors group-hover:text-accent-hover">
                 Read the comparison →
               </div>
             </Link>
           ))}
         </div>
 
-        <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">
-          <h2 className="text-2xl font-medium text-white">
+        <section className="mt-16 rounded-[20px] bg-ink px-8 py-12 text-center">
+          <h2 className="text-2xl font-semibold text-white">
             Just want to see your database?
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-white/70">
@@ -130,7 +130,7 @@ export default function AlternativesPage() {
           </p>
           <a
             href="/visualize"
-            className="mt-6 inline-block rounded-lg bg-white px-8 py-3 font-medium text-ink transition-colors hover:bg-indigo-100"
+            className="mt-6 inline-block rounded-[10px] bg-accent px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
           >
             Try it free →
           </a>

@@ -1,22 +1,26 @@
 import type { Metadata } from "next";
-import { Inter, Carattere } from "next/font/google";
+import { Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
 import Script from "next/script";
 import Navbar from "@/app/sections/Navbar";
 import Popup from "@/components/Popup";
 import { Toaster } from "sonner";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"] });
-const carattere = Carattere({
+const instrument = Instrument_Sans({
   subsets: ["latin"],
-  weight: "400",
-  variable: "--font-carattere",
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-sans",
+});
+const plexMono = IBM_Plex_Mono({
+  subsets: ["latin"],
+  weight: ["400", "500", "600"],
+  variable: "--font-mono",
 });
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.dbdiagramr.space"),
   title: {
-    default: "PostgreSQL ER Diagram Tool -- Generate Diagrams in 10 Seconds | dbdiagramr",
+    default: "PostgreSQL ER Diagram Tool, Generate Diagrams in 10 Seconds | dbdiagramr",
     template: "%s | dbdiagramr",
   },
   description:
@@ -32,7 +36,7 @@ export const metadata: Metadata = {
     follow: true,
   },
   openGraph: {
-    title: "PostgreSQL ER Diagram Tool -- Paste Connection String, Get Diagram",
+    title: "PostgreSQL ER Diagram Tool | Paste Connection String, Get Diagram",
     description:
       "Generate interactive ER diagrams from any PostgreSQL database. Hover to trace foreign key relationships, export as SVG or PNG. Free.",
     type: "website",
@@ -57,7 +61,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.className} ${carattere.variable} scroll-smooth`}>
+    <html lang="en" className={`${instrument.variable} ${plexMono.variable} scroll-smooth`}>
       <body className="antialiased">
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-MK1QVPVPSJ"

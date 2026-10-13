@@ -35,15 +35,15 @@ const faqs = [
   },
   {
     q: "Is it free?",
-    a: "Yes, completely free with no signup. Build URIs from parts or decode pasted URIs -- presets cover Supabase pooler and direct, Neon, Railway, and localhost.",
+    a: "Yes, completely free with no signup. Build URIs from parts or decode pasted URIs, presets cover Supabase pooler and direct, Neon, Railway, and localhost.",
   },
   {
     q: "Is my password uploaded anywhere?",
-    a: "No. Building and parsing run entirely in your browser. Nothing is sent to a server -- and when you open the result in dbdiagramr, the connection string travels via sessionStorage, never via URL parameters or server logs.",
+    a: "No. Building and parsing run entirely in your browser. Nothing is sent to a server, and when you open the result in dbdiagramr, the connection string travels via sessionStorage, never via URL parameters or server logs.",
   },
   {
     q: "Which providers are supported?",
-    a: "Any PostgreSQL URI parses, and presets prefill Supabase (Session pooler 5432 and Direct), Neon (pooled host, sslmode=require), Railway, and localhost. Transaction poolers (Supabase 6543) decode fine but cannot run schema introspection -- use Session mode for visualization.",
+    a: "Any PostgreSQL URI parses, and presets prefill Supabase (Session pooler 5432 and Direct), Neon (pooled host, sslmode=require), Railway, and localhost. Transaction poolers (Supabase 6543) decode fine but cannot run schema introspection, use Session mode for visualization.",
   },
   {
     q: "Can I visualize the database this connects to?",
@@ -63,13 +63,12 @@ export default function ConnStringPage() {
     <ToolPageShell
       appName="PostgreSQL Connection String Builder"
       h1="PostgreSQL connection string builder"
-      intro="Build a PostgreSQL connection URI from parts -- or paste one to decode every field. Presets for Supabase, Neon, and Railway. Passwords never leave your browser."
+      intro="Build a PostgreSQL connection URI from parts, or paste one to decode every field. Presets for Supabase, Neon, and Railway. Passwords never leave your browser."
       current="/postgres-connection-string"
-      siblings={["/postgres-er-diagram", "/supabase-schema-diagram", "/visualize"]}
+      siblings={["/postgres-er-diagram", "/visualize"]}
       faqs={faqs}
       exploreLinks={[
         { href: "/postgres-er-diagram", label: "PostgreSQL ER Diagram Tool" },
-        { href: "/supabase-schema-diagram", label: "Supabase Schema Diagram" },
       ]}
     >
       <script

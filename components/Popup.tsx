@@ -167,31 +167,32 @@ export default function Popup({
         if (e.target === e.currentTarget) dismiss(false);
       }}
     >
-      <div className="absolute inset-0 bg-ink/40" aria-hidden="true" />
-      <div className="relative w-full max-w-md rounded-2xl bg-white/95 p-6 shadow-2xl ring-1 ring-black/10 backdrop-blur sm:p-8">
+      <div className="absolute inset-0 bg-ink/50" aria-hidden="true" />
+      <div className="relative w-full max-w-lg rounded-[20px] bg-white p-6 shadow-2xl sm:p-10">
         <button
           ref={closeRef}
           type="button"
           onClick={() => dismiss(false)}
           aria-label="Close"
-          className="absolute top-4 right-4 rounded-lg p-1.5 text-muted transition-colors hover:bg-surface hover:text-ink focus:ring-2 focus:ring-indigo-600 focus:outline-none"
+          className="absolute top-4 right-4 rounded-[10px] p-1.5 text-muted transition-colors hover:bg-surface hover:text-ink focus:ring-2 focus:ring-accent focus:outline-none"
         >
           <X size={20} />
         </button>
 
-        <div className="mb-4 inline-flex h-11 w-11 items-center justify-center rounded-xl bg-indigo-50 text-indigo-600">
-          <Database size={22} />
+        <div className="mb-5 inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.18em] text-accent">
+          <Database size={18} strokeWidth={2.25} />
+          <span>dbdiagramr</span>
         </div>
 
-        <h2 id={`${id}-title`} className="text-xl font-medium text-ink">
+        <h2 id={`${id}-title`} className="text-2xl font-semibold tracking-tight text-ink md:text-[28px]">
           {title}
         </h2>
-        <p className="mt-2 leading-relaxed text-muted">{body}</p>
+        <p className="mt-3 text-base leading-relaxed text-muted">{body}</p>
 
         <a
           href={ctaHref}
           onClick={handleCta}
-          className="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-ink px-6 py-3 font-medium text-white transition-colors hover:bg-indigo-600 focus:ring-2 focus:ring-indigo-600 focus:ring-offset-2 focus:outline-none"
+          className="mt-7 inline-flex w-full items-center justify-center gap-2 rounded-[10px] bg-accent px-6 py-3.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover focus:outline-none"
         >
           {ctaLabel}
           <ArrowRight size={16} />
@@ -200,7 +201,7 @@ export default function Popup({
         <button
           type="button"
           onClick={() => dismiss(true)}
-          className="mt-3 w-full text-center text-sm text-muted transition-colors hover:text-ink focus:ring-2 focus:ring-indigo-600 focus:outline-none"
+          className="mt-4 w-full text-center text-[15px] text-muted transition-colors hover:text-ink focus:ring-2 focus:ring-accent focus:outline-none"
         >
           {declineLabel}
         </button>

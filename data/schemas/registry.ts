@@ -222,7 +222,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Stripe Billing Database Schema Diagram",
     h1: "Stripe Billing Database Schema Diagram",
     description:
-      "Stripe billing schema diagram — customers, products, prices, subscriptions, invoices, payment methods and payment intents with all foreign keys.",
+      "Stripe billing schema diagram: customers, products, prices, subscriptions, invoices, payment methods and payment intents with all foreign keys.",
     keywords: [
       "stripe database schema",
       "stripe billing schema",
@@ -232,7 +232,7 @@ export const schemaEntries: SchemaEntry[] = [
       "stripe postgres schema",
     ],
     intro:
-      "If you bill with Stripe, these are the tables behind the API. Customers own subscriptions and payment methods; subscriptions are composed of subscription items that reference prices; prices belong to products; invoices collect line items and link to payment intents. This diagram maps the full Stripe billing model as PostgreSQL tables — the shape you would build when syncing Stripe objects into your own database or designing a Stripe-like billing system from scratch.",
+      "If you bill with Stripe, these are the tables behind the API. Customers own subscriptions and payment methods; subscriptions are composed of subscription items that reference prices; prices belong to products; invoices collect line items and link to payment intents. This diagram maps the full Stripe billing model as PostgreSQL tables. The shape you would build when syncing Stripe objects into your own database or designing a Stripe-like billing system from scratch.",
     facts: [
       { label: "Tables", value: "9" },
       { label: "Core table", value: "customers" },
@@ -241,7 +241,7 @@ export const schemaEntries: SchemaEntry[] = [
     faqs: [
       {
         q: "What tables does a Stripe billing schema need?",
-        a: "A Stripe-like billing schema needs customers, products, prices, subscriptions, subscription_items, invoices, invoice_line_items, payment_methods, and payment_intents — 9 tables covering the full subscription and payment lifecycle.",
+        a: "A Stripe-like billing schema needs customers, products, prices, subscriptions, subscription_items, invoices, invoice_line_items, payment_methods, and payment_intents. 9 tables covering the full subscription and payment lifecycle.",
       },
       {
         q: "How do Stripe subscriptions relate to invoices and payments?",
@@ -262,7 +262,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "E-commerce Database Schema Diagram (PostgreSQL)",
     h1: "E-commerce Database Schema Diagram",
     description:
-      "E-commerce PostgreSQL schema diagram — customers, products, categories, carts, orders, order items, payments and reviews with all foreign keys.",
+      "E-commerce PostgreSQL schema diagram: customers, products, categories, carts, orders, order items, payments and reviews with all foreign keys.",
     keywords: [
       "ecommerce database schema",
       "ecommerce postgres schema",
@@ -281,11 +281,11 @@ export const schemaEntries: SchemaEntry[] = [
     faqs: [
       {
         q: "What tables does an e-commerce database need?",
-        a: "A standard e-commerce schema needs customers, addresses, categories, products, product_images, carts, cart_items, orders, order_items, payments, and reviews — 11 tables covering catalog, cart, checkout, and post-purchase flows.",
+        a: "A standard e-commerce schema needs customers, addresses, categories, products, product_images, carts, cart_items, orders, order_items, payments, and reviews. 11 tables covering catalog, cart, checkout, and post-purchase flows.",
       },
       {
         q: "What is the difference between cart_items and order_items?",
-        a: "cart_items are mutable — quantities change until checkout. order_items are immutable snapshots copied from the cart at order time, preserving the price and product that was actually purchased even if the product later changes.",
+        a: "cart_items are mutable. Quantities change until checkout. order_items are immutable snapshots copied from the cart at order time, preserving the price and product that was actually purchased even if the product later changes.",
       },
     ],
     lastUpdated: "2026-09-03",

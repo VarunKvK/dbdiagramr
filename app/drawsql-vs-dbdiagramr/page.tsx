@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "DrawSQL vs dbdiagramr -- Which ER Diagram Tool? (2026)",
+  title: "DrawSQL vs dbdiagramr | Which ER Diagram Tool? (2026)",
   description:
     "DrawSQL vs dbdiagramr: team collaboration and visual schema editing vs instant ER diagrams from a live PostgreSQL connection string. Feature comparison with FAQs.",
   alternates: {
@@ -177,16 +177,16 @@ export default function DrawSqlVsPage() {
       <div className="mx-auto max-w-5xl px-4 pb-16 pt-24">
         <a
           href="/alternatives"
-          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500"
+          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-accent-hover"
         >
           ← All alternatives
         </a>
 
         <div className="mb-10">
-          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+          <span className="inline-block rounded-[20px] border border-accent bg-accent-soft px-3 py-1 text-xs font-medium text-accent">
             Comparison
           </span>
-          <h1 className="mt-4 text-4xl font-medium text-ink md:text-5xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-ink md:text-5xl">
             DrawSQL vs dbdiagramr
           </h1>
           <p className="mt-4 text-lg leading-relaxed text-muted">
@@ -202,14 +202,14 @@ export default function DrawSqlVsPage() {
           </p>
         </div>
 
-        <div className="overflow-hidden rounded-xl border border-border bg-white shadow-sm">
+        <div className="overflow-hidden rounded-[20px] border border-border bg-white shadow-sm">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-border bg-[#fafafa] text-left">
+              <tr className="border-b border-border bg-surface text-left">
                 <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted">
                   Feature
                 </th>
-                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-indigo-600">
+                <th className="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-accent">
                   dbdiagramr
                 </th>
                 <th className="px-4 py-3 text-xs font-medium uppercase tracking-wider text-muted">
@@ -226,10 +226,10 @@ export default function DrawSqlVsPage() {
         </div>
 
         <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
+          <h2 className="mb-4 text-2xl font-semibold tracking-tight text-ink">
             When to choose dbdiagramr
           </h2>
-          <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
             <ul className="list-disc space-y-2 pl-5 leading-relaxed text-muted">
               <li>
                 You need to quickly understand a PostgreSQL database that
@@ -248,10 +248,10 @@ export default function DrawSqlVsPage() {
         </section>
 
         <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
+          <h2 className="mb-4 text-2xl font-semibold tracking-tight text-ink">
             When to choose DrawSQL
           </h2>
-          <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
             <ul className="list-disc space-y-2 pl-5 leading-relaxed text-muted">
               <li>
                 You are designing or evolving a schema with a team and need
@@ -270,14 +270,14 @@ export default function DrawSqlVsPage() {
         </section>
 
         <section className="mt-16">
-          <h2 className="mb-6 text-2xl font-medium text-ink">
+          <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">
             Frequently asked questions
           </h2>
           <div className="grid gap-4">
             {faqs.map((faq) => (
               <div
                 key={faq.q}
-                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5"
+                className="rounded-[20px] border border-border bg-white p-6 shadow-sm"
               >
                 <h3 className="text-lg font-medium text-ink">{faq.q}</h3>
                 <p className="mt-2 leading-relaxed text-muted">{faq.a}</p>
@@ -286,8 +286,8 @@ export default function DrawSqlVsPage() {
           </div>
         </section>
 
-        <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">
-          <h2 className="text-2xl font-medium text-white">
+        <section className="mt-16 rounded-[20px] bg-ink px-8 py-12 text-center">
+          <h2 className="text-2xl font-semibold text-white">
             Visualize your own database
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-white/70">
@@ -296,7 +296,7 @@ export default function DrawSqlVsPage() {
           </p>
           <a
             href="/visualize"
-            className="mt-6 inline-block rounded-lg bg-white px-8 py-3 font-medium text-ink transition-colors hover:bg-indigo-100"
+            className="mt-6 inline-block rounded-[10px] bg-accent px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
           >
             Try it free →
           </a>

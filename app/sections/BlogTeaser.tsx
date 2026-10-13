@@ -1,12 +1,10 @@
 import Link from "next/link";
 import { getAllPosts } from "@/data/blog/posts";
+import { MetaPill } from "@/components/ui/pills";
+import LinkExplorer from "@/app/sections/LinkExplorer";
 
 const toolLinks = [
   { href: "/postgres-er-diagram", label: "PostgreSQL ER Diagram" },
-  { href: "/supabase-schema-diagram", label: "Supabase Schema Diagram" },
-  { href: "/free-schema-generator", label: "Free Schema Generator" },
-  { href: "/database-diagram-online", label: "Database Diagram Online" },
-  { href: "/postgres-schema-visualizer", label: "Schema Visualizer" },
   { href: "/database-schema-analyzer", label: "Schema Health Analyzer" },
   { href: "/sql-formatter", label: "SQL Formatter" },
   { href: "/csv-to-sql", label: "CSV to SQL" },
@@ -16,6 +14,9 @@ const toolLinks = [
   { href: "/sql-to-typescript", label: "SQL to TypeScript" },
   { href: "/sql-to-prisma", label: "SQL to Prisma" },
   { href: "/postgres-connection-string", label: "Connection String Builder" },
+  { href: "/sql-schema-diff", label: "Schema Diff" },
+  { href: "/dbml-to-sql", label: "DBML to SQL" },
+  { href: "/prisma-erd-generator", label: "Prisma ERD" },
 ];
 
 const schemaLinks = [
@@ -29,100 +30,98 @@ const schemaLinks = [
   { href: "/schema/ecommerce", label: "E-commerce" },
 ];
 
+function BlogCard({
+  post,
+  tall = false,
+}: {
+  post: ReturnType<typeof getAllPosts>[number];
+  tall?: boolean;
+}) {
+  return (
+    <Link
+      href={`/blog/${post.slug}`}
+      className={`group flex flex-col rounded-[20px] bg-ink p-5 text-white transition-colors hover:bg-pine ${
+        tall ? "md:row-span-2" : ""
+      }`}
+    >
+      <div className="flex flex-wrap gap-2">
+        <MetaPill>{post.date}</MetaPill>
+        <MetaPill>{post.readingMinutes} min</MetaPill>
+      </div>
+      <h3
+        className={`mt-4 font-semibold leading-snug tracking-tight ${
+          tall ? "text-2xl" : "text-xl"
+        }`}
+      >
+        {post.title}
+      </h3>
+      <p
+        className={`mt-2 text-sm font-medium leading-relaxed text-white/60 ${
+          tall ? "" : "line-clamp-2"
+        }`}
+      >
+        {post.description}
+      </p>
+      <div className="mt-auto pt-5">
+        <span className="inline-block rounded-[20px] bg-accent px-4 py-1.5 font-mono text-xs font-medium text-white transition-colors group-hover:bg-accent-hover">
+          Read More
+        </span>
+      </div>
+    </Link>
+  );
+}
+
 export default function BlogTeaser() {
-  const posts = getAllPosts().slice(0, 6);
+  const posts = getAllPosts().slice(0, 5);
+  const [featured, ...rest] = posts;
 
   return (
-    <section className="bg-white py-20 mt-[120px] mb-24">
+    <section className="bg-cream py-20 md:py-28">
       <div className="mx-auto max-w-7xl px-4">
         <div className="mb-10 flex items-end justify-between">
           <div>
-            <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
-              Blog
-            </span>
-            <h2 className="mt-3 text-3xl font-medium text-ink md:text-4xl">
-              PostgreSQL guides
+            <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted">
+              Guides
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold tracking-tight text-ink md:text-5xl">
+              Learn from real <span className="text-accent">schemas</span>
             </h2>
-            <p className="mt-2 max-w-xl text-muted">
-              Practical guides on schemas, ER diagrams, and connection strings —
-              all grounded in live database introspection.
+            <p className="mt-2 max-w-xl font-medium text-muted">
+              Practical guides on schemas, ER diagrams, and connection strings.
             </p>
           </div>
           <Link
             href="/blog"
-            className="hidden text-sm font-medium text-indigo-600 hover:text-indigo-500 md:inline-flex"
+            className="hidden shrink-0 rounded-[10px] border border-accent px-5 py-2.5 text-xs font-medium text-accent transition-colors hover:bg-accent-soft md:inline-flex"
           >
             View all posts →
           </Link>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3">
-          {posts.map((post) => (
-            <Link
-              key={post.slug}
-              href={`/blog/${post.slug}`}
-              className="group rounded-2xl bg-cream p-6 ring-1 ring-black/5 transition-all hover:-translate-y-1 hover:shadow-md"
-            >
-              <div className="text-xs text-muted">
-                {post.date} · {post.readingMinutes} min
-              </div>
-              <h3 className="mt-3 line-clamp-2 text-lg font-medium leading-tight text-ink group-hover:text-indigo-600">
-                {post.title}
-              </h3>
-              <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-muted">
-                {post.description}
-              </p>
-              <div className="mt-4 text-sm font-medium text-indigo-600 group-hover:text-indigo-500">
-                Read article →
-              </div>
-            </Link>
+        <div className="grid gap-5 md:grid-cols-3">
+          {featured && <BlogCard post={featured} tall />}
+          {rest.map((post) => (
+            <BlogCard key={post.slug} post={post} />
           ))}
         </div>
 
         <div className="mt-8 text-center md:hidden">
           <Link
             href="/blog"
-            className="text-sm font-medium text-indigo-600 hover:text-indigo-500"
+            className="text-sm font-medium text-accent hover:text-accent-hover"
           >
             View all posts →
           </Link>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
-          <div className="rounded-2xl bg-cream p-6 ring-1 ring-black/5">
-            <h3 className="text-sm font-medium uppercase tracking-wider text-muted">
-              Free tools
-            </h3>
-            <ul className="mt-3 space-y-2">
-              {toolLinks.map((t) => (
-                <li key={t.href}>
-                  <Link
-                    href={t.href}
-                    className="text-sm font-medium text-ink hover:text-indigo-600 hover:underline"
-                  >
-                    {t.label} →
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
-          <div className="rounded-2xl bg-cream p-6 ring-1 ring-black/5">
-            <h3 className="text-sm font-medium uppercase tracking-wider text-muted">
-              Popular schemas
-            </h3>
-            <ul className="mt-3 space-y-2">
-              {schemaLinks.map((s) => (
-                <li key={s.href}>
-                  <Link
-                    href={s.href}
-                    className="text-sm font-medium text-ink hover:text-indigo-600 hover:underline"
-                  >
-                    {s.label} schema diagram →
-                  </Link>
-                </li>
-              ))}
-            </ul>
-          </div>
+        <div className="mt-6">
+          <LinkExplorer
+            tools={toolLinks}
+            schemas={schemaLinks.map((s) => ({
+              ...s,
+              label: `${s.label} schema`,
+            }))}
+          />
         </div>
       </div>
     </section>

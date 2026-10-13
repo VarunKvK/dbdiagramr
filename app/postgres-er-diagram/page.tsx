@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/app/sections/Footer";
 import RelatedTools from "@/app/sections/RelatedTools";
-import TwoWaysToUse from "@/app/sections/TwoWaysToUse";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
 import { ECOMMERCE_SQL } from "@/lib/sql/pgDumpSamples";
@@ -10,7 +9,7 @@ import { ECOMMERCE_SQL } from "@/lib/sql/pgDumpSamples";
 const schema = parseSqlToSchema(ECOMMERCE_SQL).schema;
 
 export const metadata: Metadata = {
-  title: "PostgreSQL ER Diagram Tool -- Generate Diagrams in 10 Seconds",
+  title: "PostgreSQL ER Diagram Tool | Generate Diagrams in 10 Seconds",
   description:
     "Generate an interactive ER diagram from any PostgreSQL database. Paste your connection string and see tables, columns, and foreign keys instantly. Free.",
   keywords:
@@ -19,7 +18,7 @@ export const metadata: Metadata = {
     canonical: "https://www.dbdiagramr.space/postgres-er-diagram",
   },
   openGraph: {
-    title: "PostgreSQL ER Diagram Tool -- Generate Diagrams in 10 Seconds",
+    title: "PostgreSQL ER Diagram Tool | Generate Diagrams in 10 Seconds",
     description:
       "Generate an interactive ER diagram from any PostgreSQL database in under 10 seconds. No signup required.",
     type: "website",
@@ -27,7 +26,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "PostgreSQL ER Diagram Tool -- Generate Diagrams in 10 Seconds",
+    title: "PostgreSQL ER Diagram Tool | Generate Diagrams in 10 Seconds",
     description:
       "Generate an interactive ER diagram from any PostgreSQL database in under 10 seconds.",
   },
@@ -44,7 +43,7 @@ const faqs = [
   },
   {
     q: "How are many-to-many relationships shown?",
-    a: "As their own node. A join table like film_actor appears as a table with two foreign-key lines -- one to film, one to actor. Composite primary keys (order_id, product_id) get a PK badge on each column, so junction tables are instantly recognizable.",
+    a: "As their own node. A join table like film_actor appears as a table with two foreign-key lines, one to film, one to actor. Composite primary keys (order_id, product_id) get a PK badge on each column, so junction tables are instantly recognizable.",
   },
   {
     q: "How does the diagram display Postgres arrays, enums, and jsonb?",
@@ -66,7 +65,7 @@ const jsonLd = {
     {
       "@type": "Article",
       "@id": "https://www.dbdiagramr.space/postgres-er-diagram#article",
-      headline: "PostgreSQL ER Diagram Tool -- Generate Diagrams in 10 Seconds",
+      headline: "PostgreSQL ER Diagram Tool | Generate Diagrams in 10 Seconds",
       description:
         "Generate an interactive ER diagram from any PostgreSQL database. Paste your connection string and see tables, columns, and foreign keys instantly.",
       datePublished: "2026-09-08",
@@ -129,16 +128,16 @@ export default function PostgresErDiagramPage() {
       <div className="mx-auto max-w-6xl px-4 pb-16 pt-24">
         <Link
           href="/visualize"
-          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-indigo-600 transition-colors hover:text-indigo-500"
+          className="mb-8 inline-flex items-center gap-1 text-sm font-medium text-accent transition-colors hover:text-accent-hover"
         >
           &larr; Try the tool
         </Link>
 
         <div className="mb-10">
-          <span className="inline-block rounded-full bg-indigo-50 px-3 py-1 text-xs font-medium text-indigo-600">
+          <span className="inline-block rounded-[20px] border border-accent bg-accent-soft px-3 py-1 text-xs font-medium text-accent">
             PostgreSQL
           </span>
-          <h1 className="mt-4 text-4xl font-medium text-ink md:text-5xl">
+          <h1 className="mt-4 text-4xl font-semibold tracking-tight text-ink md:text-5xl">
             PostgreSQL ER Diagram Tool
           </h1>
           <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted">
@@ -149,21 +148,21 @@ export default function PostgresErDiagramPage() {
             {["Paste SQL or Connect", "Live Preview", "Export SVG/PNG"].map((label) => (
               <span
                 key={label}
-                className="inline-flex items-center gap-2 rounded-full border border-indigo-400 bg-[#D4D2FF] px-4 py-1.5 text-xs font-medium text-ink"
+                className="inline-flex items-center gap-2 rounded-full border border-accent bg-accent-soft px-4 py-1.5 text-xs font-medium text-ink"
               >
-                <span className="h-1.5 w-1.5 rounded-full bg-indigo-600 animate-pulse" />
-                <p className="text-indigo-600">{label}</p>
+                <span className="h-1.5 w-1.5 rounded-full bg-accent" />
+                <p className="text-accent">{label}</p>
               </span>
             ))}
           </div>
         </div>
 
-        <div className="overflow-hidden rounded-2xl bg-[#1a1a1a] shadow-2xl ring-1 ring-black/5">
-          <div className="flex h-10 items-center gap-2 border-b border-[#333] bg-[#252525] px-4">
+        <div className="overflow-hidden rounded-[20px] bg-ink shadow-lg">
+          <div className="flex h-10 items-center gap-2 border-b border-white/10 bg-pine px-4">
             <span className="h-3 w-3 rounded-full bg-[#ff5f57] ring-1 ring-black/10" />
             <span className="h-3 w-3 rounded-full bg-[#febc2e] ring-1 ring-black/10" />
             <span className="h-3 w-3 rounded-full bg-[#28c840] ring-1 ring-black/10" />
-            <span className="ml-2 text-xs text-[#999]">
+            <span className="ml-2 text-xs text-white/50">
               dbdiagramr.space/visualize
             </span>
           </div>
@@ -172,26 +171,25 @@ export default function PostgresErDiagramPage() {
           </div>
         </div>
 
-        <TwoWaysToUse />
 
         <section className="mt-16">
-          <h2 className="mb-4 text-2xl font-medium text-ink">
+          <h2 className="mb-4 text-2xl font-semibold tracking-tight text-ink">
             How Postgres-specific types render
           </h2>
-          <div className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5">
+          <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
             <ul className="list-disc space-y-2 pl-5 leading-relaxed text-muted">
               <li>
-                <strong className="text-ink">Arrays</strong> -- text[],
+                <strong className="text-ink">Arrays</strong>: text[],
                 integer[], and multi-dimensional arrays render with brackets,
                 exactly as \d shows them
               </li>
               <li>
-                <strong className="text-ink">Enums and domains</strong> -- custom
+                <strong className="text-ink">Enums and domains</strong>: custom
                 type names (mpaa_rating, email_address) are preserved, never
                 collapsed to varchar
               </li>
               <li>
-                <strong className="text-ink">json / jsonb</strong> -- shown as-is
+                <strong className="text-ink">json / jsonb</strong>: shown as-is
                 on the column; key structure inside the document is not expanded
               </li>
               <li>
@@ -199,7 +197,7 @@ export default function PostgresErDiagramPage() {
                 tstzrange, int4range, inet, cidr, and uuid all render verbatim
               </li>
               <li>
-                <strong className="text-ink">Composite keys</strong> -- every
+                <strong className="text-ink">Composite keys</strong>: every
                 column in a multi-column primary key gets its own PK badge
               </li>
             </ul>
@@ -207,14 +205,14 @@ export default function PostgresErDiagramPage() {
         </section>
 
         <section className="mt-16">
-          <h2 className="mb-6 text-2xl font-medium text-ink">
+          <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">
             Frequently asked questions
           </h2>
           <div className="grid gap-4">
             {faqs.map((faq) => (
               <div
                 key={faq.q}
-                className="rounded-xl bg-white p-6 shadow-sm ring-1 ring-black/5"
+                className="rounded-[20px] border border-border bg-white p-6 shadow-sm"
               >
                 <h3 className="text-lg font-medium text-ink">{faq.q}</h3>
                 <p className="mt-2 leading-relaxed text-muted">{faq.a}</p>
@@ -225,8 +223,8 @@ export default function PostgresErDiagramPage() {
 
         <RelatedTools current="/postgres-er-diagram" />
 
-        <section className="mt-16 rounded-2xl bg-ink px-8 py-12 text-center">
-          <h2 className="text-2xl font-medium text-white">
+        <section className="mt-16 rounded-[20px] bg-ink px-8 py-12 text-center">
+          <h2 className="text-2xl font-semibold text-white">
             Generate your PostgreSQL ER diagram now
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-white/70">
@@ -235,7 +233,7 @@ export default function PostgresErDiagramPage() {
           </p>
           <a
             href="/visualize"
-            className="mt-6 inline-block rounded-lg bg-white px-8 py-3 font-medium text-ink transition-colors hover:bg-indigo-100"
+            className="mt-6 inline-block rounded-[10px] bg-accent px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
           >
             Try it free &rarr;
           </a>

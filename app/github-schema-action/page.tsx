@@ -5,7 +5,7 @@ import ToolPageShell, {
 } from "@/components/ToolPageShell";
 
 const URL = "https://www.dbdiagramr.space/github-schema-action";
-const TITLE = "GitHub Action: Schema Diff & ER Diagram on Pull Requests | dbdiagramr";
+const TITLE = "GitHub Action: Schema Diff & ER Diagram on Pull Requests";
 const DESCRIPTION =
   "Free GitHub Action that comments a schema diff, migration preview, and Mermaid ER diagram on every PR touching Postgres migrations. No database, no API keys.";
 

@@ -11,11 +11,13 @@ const ENDPOINT = "https://api.indexnow.org/indexnow";
 
 const STATUS_MEANING = {
   200: "OK — URLs submitted successfully",
+  202: "Accepted — queued for distribution to participating engines",
   400: "Bad request — invalid format",
   403: "Forbidden — key not valid (key file missing or mismatch; redeploy?)",
   422: "Unprocessable — URLs don't belong to the host",
   429: "Too many requests — back off, potential spam flag",
 };
+const SUCCESS = new Set([200, 202]);
 
 async function main() {
   const urls = process.argv.slice(2).filter((a) => !a.startsWith("-"));
@@ -56,7 +58,7 @@ async function main() {
   }
 
   console.log(`IndexNow → ${res.status}: ${STATUS_MEANING[res.status] ?? (await res.text()).slice(0, 200)}`);
-  if (res.status !== 200) process.exit(1);
+  if (!SUCCESS.has(res.status)) process.exit(1);
   console.log(`Submitted ${urls.length} URL(s):`);
   for (const u of urls) console.log(`  ${u}`);
 }

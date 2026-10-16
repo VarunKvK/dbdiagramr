@@ -31,6 +31,27 @@ const nextConfig = {
   },
   async redirects() {
     return [
+      // Removed landing pages (Oct 2026 revamp) — keep their equity.
+      {
+        source: "/supabase-schema-diagram",
+        destination: "/schema/supabase",
+        permanent: true,
+      },
+      {
+        source: "/free-schema-generator",
+        destination: "/postgres-er-diagram",
+        permanent: true,
+      },
+      {
+        source: "/database-diagram-online",
+        destination: "/postgres-er-diagram",
+        permanent: true,
+      },
+      {
+        source: "/postgres-schema-visualizer",
+        destination: "/postgres-er-diagram",
+        permanent: true,
+      },
       {
         source: "/:path*",
         has: [{ type: "host", value: "dbdiagramr.space" }],

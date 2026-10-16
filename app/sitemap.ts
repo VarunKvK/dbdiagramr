@@ -15,7 +15,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/alternatives": "2026-08-30",
     "/dbdiagram-io-vs-dbdiagramr": "2026-09-17",
     "/drawsql-vs-dbdiagramr": "2026-09-28",
-    "/postgres-er-diagram": "2026-09-28",
+    "/postgres-er-diagram": "2026-10-16",
     "/database-schema-analyzer": "2026-09-25",
     "/tools": "2026-10-10",
     "/sql-formatter": "2026-09-25",

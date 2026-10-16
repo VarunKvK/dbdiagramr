@@ -57,6 +57,10 @@ const faqs = [
     q: "Can I export the ER diagram?",
     a: "Yes. Export your diagram as PNG or SVG. You can also zoom, pan, and hover over tables to trace foreign key relationships interactively.",
   },
+  {
+    q: "Does Postgres support diagrams like SQL Server Management Studio?",
+    a: "Postgres has no built-in diagram view like SSMS database diagrams. The usual workarounds are pgAdmin's graphical query builder, which is not a real ERD, or exporting the schema to an external tool. dbdiagramr fills that gap: paste your connection string and get the SSMS-style table-and-relationship view Postgres never shipped, with Postgres-native types (arrays, enums, jsonb) shown exactly as the database reports them.",
+  },
 ];
 
 const jsonLd = {
@@ -69,7 +73,7 @@ const jsonLd = {
       description:
         "Generate an interactive ER diagram from any PostgreSQL database. Paste your connection string and see tables, columns, and foreign keys instantly.",
       datePublished: "2026-09-08",
-      dateModified: "2026-09-28",
+      dateModified: "2026-10-16",
       mainEntityOfPage: "https://www.dbdiagramr.space/postgres-er-diagram",
       author: {
         "@type": "Person",

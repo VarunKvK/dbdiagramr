@@ -5,6 +5,7 @@
   "scripts": {
     "postinstall": "cp node_modules/libpg-query/wasm/libpg-query.wasm public/libpg-query.wasm",
     "indexnow": "node scripts/indexnow-submit.mjs",
+    "bing": "node scripts/bing-submit.mjs",
     "dev": "next dev",
     "build": "next build",
     "start": "next start",

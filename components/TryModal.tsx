@@ -362,6 +362,24 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
                 </p>
               )}
 
+              <details className="mt-3 rounded-[10px] border border-border bg-surface px-3 py-2">
+                <summary className="cursor-pointer font-mono text-xs font-medium text-ink">
+                  Is my connection string safe?
+                </summary>
+                <ul className="mt-2 space-y-1.5 font-mono text-[11px] leading-relaxed text-muted">
+                  <li>· Sent to our backend for one request, then discarded.</li>
+                  <li>· Never stored, never logged.</li>
+                  <li>· Reads schema metadata only, never table rows.</li>
+                  <li>· TLS certificates are always verified.</li>
+                </ul>
+                <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted">
+                  A read-only role only needs CONNECT and USAGE:
+                </p>
+                <pre className="mt-1 overflow-x-auto rounded border border-border bg-white p-2 font-mono text-[10px] leading-relaxed text-ink">{`CREATE ROLE dbdiagramr_reader LOGIN PASSWORD '...';
+GRANT CONNECT ON DATABASE your_db TO dbdiagramr_reader;
+GRANT USAGE ON SCHEMA public TO dbdiagramr_reader;`}</pre>
+              </details>
+
               <button
                 onClick={handleGenerateConnection}
                 disabled={!connectionString.trim() || showLocalhostWarning}

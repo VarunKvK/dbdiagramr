@@ -38,7 +38,7 @@ const comparisonRows = [
   },
   {
     feature: "Free plan",
-    dbdiagramr: "5 diagrams per month",
+    dbdiagramr: "Unlimited diagrams",
     drawsql: "Public diagrams free; private diagrams from $19/month",
   },
   {
@@ -57,8 +57,8 @@ const comparisonRows = [
     drawsql: "SQL, JSON, PNG",
   },
   {
-    feature: "Pro price",
-    dbdiagramr: "$8/month",
+    feature: "Paid plan",
+    dbdiagramr: "Pro in development, no billing yet",
     drawsql: "$19/month",
   },
   {
@@ -88,7 +88,7 @@ const faqs = [
   },
   {
     q: "Is dbdiagramr free?",
-    a: "Yes. dbdiagramr's free plan includes 5 diagrams per month. Pro costs $8/month for unlimited diagrams, and nothing you visualize is ever stored or published.",
+    a: "Yes. Every diagramming feature is free, with no diagram limit and no account. A Pro plan for saved diagrams, version history, sharing and multiple schemas is in development; there is no price and no checkout yet. Nothing you visualize is stored or published.",
   },
 ];
 

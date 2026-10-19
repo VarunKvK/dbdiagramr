@@ -12,7 +12,7 @@ export default function About() {
           <p className="mx-auto mt-6 max-w-xl text-base font-medium leading-relaxed text-white/70">
             We built dbdiagramr so developers could stop guessing and start
             seeing their databases, crystal clear, with just a connection
-            string. Confusing schemas become easy, shareable diagrams.
+            string. Confusing schemas become clear diagrams.
           </p>
         </div>
 

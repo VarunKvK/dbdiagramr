@@ -33,7 +33,7 @@ const comparisonRows = [
   },
   {
     feature: "Free plan",
-    dbdiagramr: "5 diagrams per month",
+    dbdiagramr: "Unlimited diagrams",
     dbdiagram: "Up to 10 diagrams, public by default",
   },
   {
@@ -52,8 +52,8 @@ const comparisonRows = [
     dbdiagram: "PNG, PDF, SVG",
   },
   {
-    feature: "Pro price",
-    dbdiagramr: "$8/month",
+    feature: "Paid plan",
+    dbdiagramr: "Pro in development, no billing yet",
     dbdiagram: "$14/month",
   },
   {
@@ -74,11 +74,11 @@ const faqs = [
   },
   {
     q: "Is dbdiagramr free?",
-    a: "Yes. dbdiagramr's free plan includes 5 diagrams per month. Pro costs $8/month for unlimited diagrams. No credit card is required to try the free plan.",
+    a: "Yes. Every diagramming feature is free, with no diagram limit and no account. A Pro plan for saved diagrams, version history, sharing and multiple schemas is in development; there is no price and no checkout yet.",
   },
   {
     q: "Are my diagrams private on dbdiagramr?",
-    a: "Yes. dbdiagramr never stores connection strings or publishes diagrams. Your schema is introspected and discarded immediately, so nothing you visualize is made public - unlike free plans that make diagrams public by default.",
+    a: "Yes. Paste-SQL mode never leaves your browser. A live connection string is sent to the dbdiagramr backend for a single request and discarded; nothing is stored or published, so nothing you visualize is made public - unlike free plans that make diagrams public by default.",
   },
 ];
 
@@ -287,7 +287,7 @@ export default function DbDiagramIoVsPage() {
                 <strong>dbdiagram.io:</strong> Free tier limited to 10 diagrams, all public. Pro at $14/month removes limits and makes diagrams private.
               </p>
               <p className="mt-2 text-sm leading-relaxed text-muted">
-                <strong>dbdiagramr:</strong> Free tier includes 5 diagrams/month, all private. Pro at $8/month for unlimited diagrams. No credit card required.
+                <strong>dbdiagramr:</strong> Free with no diagram limit, all private. Pro (saved diagrams, version history, sharing, multiple schemas) is in development - no price and no billing yet.
               </p>
             </div>
             <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
@@ -296,7 +296,7 @@ export default function DbDiagramIoVsPage() {
                 <strong>dbdiagram.io:</strong> Free diagrams are public by default. Anyone with the link can view them.
               </p>
               <p className="mt-2 text-sm leading-relaxed text-muted">
-                <strong>dbdiagramr:</strong> Nothing is stored or published. Your connection string is used client-side and discarded immediately.
+                <strong>dbdiagramr:</strong> Nothing is stored or published. Paste-SQL is parsed in your browser; a live connection string is sent to our backend for one request and discarded.
               </p>
             </div>
           </div>
@@ -310,7 +310,7 @@ export default function DbDiagramIoVsPage() {
             <strong>Use dbdiagram.io</strong> if you&apos;re designing a new schema from scratch and prefer writing code (DBML) to define your tables. It&apos;s excellent for planning and prototyping.
           </p>
           <p className="mt-3 text-lg leading-relaxed text-muted">
-            <strong>Use dbdiagramr</strong> if you need to understand or document a PostgreSQL database that already exists. Paste a connection string, get an interactive diagram in seconds. No signup, no limits, no drift.
+            <strong>Use dbdiagramr</strong> if you need to understand or document a PostgreSQL database that already exists. Paste a connection string, get an interactive diagram in seconds. No signup, no diagram limit, no drift.
           </p>
           <p className="mt-3 text-sm text-muted/70">
             For most developers working with existing databases, dbdiagramr is faster and more practical. For schema design from scratch, dbdiagram.io has the edge.

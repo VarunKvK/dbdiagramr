@@ -20,7 +20,7 @@ Every team has a stale database diagram in a wiki — drawn by hand months ago, 
 dbdiagramr solves the drift problem by **introspecting your live database**. No hand-drawing, no DBML to maintain, no manual re-export from pgAdmin. Paste the same connection string after any migration and you have a truthful diagram in 10 seconds.
 
 ```
-You → paste connection string → dbdiagramr queries information_schema → interactive SVG diagram
+You → paste connection string → dbdiagramr reads pg_catalog → interactive SVG diagram
                                           ↑
                                      always reflects what's actually deployed
 ```
@@ -31,8 +31,8 @@ You → paste connection string → dbdiagramr queries information_schema → in
 |---|---|
 | **Instant** | Connects to your PostgreSQL database and generates a diagram in under 10 seconds |
 | **Interactive** | Pan, zoom, drag tables, hover to trace foreign key relationships |
-| **Secure** | Your connection string is never stored — introspected and discarded immediately. No row data is read, only schema structure. |
-| **Shareable** | Export as SVG/PNG or share an interactive link (Pro) |
+| **Secure** | Paste-SQL never leaves the browser. Live connections use the backend for one request and are never stored. No row data is read, only schema structure. |
+| **Exportable** | Download as SVG or PNG. Shareable interactive links are planned for Pro. |
 | **Self-hostable** | Open source (MIT). Run it yourself or use the hosted version. |
 | **Any Postgres** | Works with Supabase, Neon, Railway, or any PostgreSQL provider. Handles transaction pooler (port 6543). |
 
@@ -73,7 +73,7 @@ Want another schema added? [Open an issue](https://github.com/VarunKvK/dbdiagram
 | Setup | 10 seconds | 30 min of DBML / dragging | Click → image | Instant but no picture |
 | Always up to date? | Yes (re-introspect) | No — drifts | Manual re-export | Yes but unreadable |
 | Interactive? | Yes | Yes | Partly | No |
-| Free? | Free tier + $8 Pro | Free tier | Free | Free |
+| Free? | Free, no diagram limit (Pro in development) | Free tier | Free | Free |
 
 Full comparisons: [dbdiagram.io vs dbdiagramr](https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr) | [DrawSQL vs dbdiagramr](https://www.dbdiagramr.space/drawsql-vs-dbdiagramr)
 
@@ -81,7 +81,7 @@ Full comparisons: [dbdiagram.io vs dbdiagramr](https://www.dbdiagramr.space/dbdi
 
 - **Next.js 14** + TypeScript
 - **Tailwind CSS**
-- **PostgreSQL** (`pg`) for schema introspection via `information_schema`
+- **PostgreSQL** (`pg`) for schema introspection via `pg_catalog`
 - **@xyflow/react** + **dagre** for interactive diagram rendering
 - **SVG** — no Canvas, no proprietary dependencies
 

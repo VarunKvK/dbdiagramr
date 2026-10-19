@@ -20,7 +20,7 @@ const features = [
     icon: Download,
     title: "Export Anywhere",
     description:
-      "Download as SVG, PNG, or shareable link. Embed diagrams in docs, READMEs, or presentations.",
+      "Download as SVG or PNG. Embed diagrams in docs, READMEs, or presentations.",
     dark: true,
   },
   {

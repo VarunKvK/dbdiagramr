@@ -2,9 +2,9 @@ import { cn } from "@/lib/utils";
 
 const cards = [
   {
-    title: "Unlimited diagram limits",
+    title: "No diagram limit",
     description:
-      "Create as many diagrams as you need. No caps, no quotas, no upgrade prompts.",
+      "Create as many diagrams as you need. No counts, no quotas, no upgrade prompts.",
     className: "bg-accent-soft text-ink md:col-span-1",
     muted: false,
   },
@@ -16,9 +16,9 @@ const cards = [
     muted: true,
   },
   {
-    title: "Private by default",
+    title: "Private by design",
     description:
-      "Your schemas stay in your browser. No public diagrams, no accounts, no data collection.",
+      "Paste SQL never leaves your browser. Live connections go to our backend for one request, then are discarded. No stored schemas, no accounts.",
     className: "bg-punch text-white md:col-span-2",
     muted: true,
   },

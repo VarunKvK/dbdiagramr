@@ -4,7 +4,7 @@
 
 ## What dbdiagramr does
 
-dbdiagramr introspects a live PostgreSQL database via `information_schema` and renders every table, column, primary key, and foreign key as an interactive SVG diagram. Pan, zoom, hover to trace relationships, export as SVG or PNG. The connection string is never stored — introspected and discarded immediately.
+dbdiagramr introspects a live PostgreSQL database via the PostgreSQL system catalogs (`pg_catalog`) and renders every table, column, primary key, and foreign key as an interactive SVG diagram. Pan, zoom, hover to trace relationships, export as SVG or PNG. Paste-SQL mode is parsed in the browser. Live connections are sent to the dbdiagramr backend, used for one request, then discarded; the connection string and schema are never stored.
 
 - Input: PostgreSQL connection string (e.g. `postgresql://user:pass@host:5432/db`)
 - Output: Interactive ER diagram with auto-layout (React Flow + dagre)
@@ -20,6 +20,7 @@ dbdiagramr introspects a live PostgreSQL database via `information_schema` and r
 - Alternatives / Comparisons — https://www.dbdiagramr.space/alternatives
 - dbdiagram.io vs dbdiagramr — https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr
 - DrawSQL vs dbdiagramr — https://www.dbdiagramr.space/drawsql-vs-dbdiagramr
+- Pricing — https://www.dbdiagramr.space/pricing
 - Pricing (machine-readable) — https://www.dbdiagramr.space/pricing.md
 - Features — https://www.dbdiagramr.space#features
 - How it works — https://www.dbdiagramr.space#guide
@@ -43,8 +44,8 @@ Live, interactive ER diagrams of popular PostgreSQL schemas. Each page shows eve
 
 - Instant: Connect and generate a diagram in under 10 seconds. No manual drawing.
 - Interactive: Pan, zoom, drag tables, hover to trace foreign key relationships.
-- Shareable: Export as PNG/SVG or share an interactive link (Pro).
-- Secure: Connection string never stored. Only schema structure is read, never row data.
+- Exportable: Download as PNG or SVG. Shareable interactive links are planned for Pro.
+- Secure: Paste-SQL never leaves the browser. Live connection strings are used once by the backend and never stored. Only schema structure is read, never row data.
 - Always current: Re-paste the same connection string after a migration — diagram updates in 10 seconds. No drift.
 - Self-hostable: Open source (MIT), Next.js 14 + TypeScript.
 
@@ -59,14 +60,14 @@ Live, interactive ER diagrams of popular PostgreSQL schemas. Each page shows eve
 | Export SVG/PNG | Yes | Yes | Yes | No |
 | Live schema from your DB | Yes | No (hand copy) | Snapshot | Live but text |
 | Always up to date | Yes (re-introspect) | No (drifts) | Manual re-run | Always |
-| Free | Yes (free tier) | Free tier exists | Free | Free |
+| Free | Yes (no diagram limit) | Free tier exists | Free | Free |
 
 ## Pricing
 
-- Free: $0/month — 5 diagrams per month, static PNG export, single database connection, community support
-- Pro: $8/month — unlimited diagrams, interactive shareable links, version history, team access (up to 5 members), priority email support
+- Free: $0 — unlimited diagrams, live PostgreSQL introspection, paste-SQL mode, SVG and PNG export, no signup
+- Pro: in development — no price and no checkout. Planned: saved diagrams, version history and schema diffs, multiple schemas, shareable links, private-repo GitHub Action licence
 
-Details: https://www.dbdiagramr.space/pricing.md and https://www.dbdiagramr.space#pricing
+Details: https://www.dbdiagramr.space/pricing and https://www.dbdiagramr.space/pricing.md
 
 ## How It Works (3 Steps)
 
@@ -90,4 +91,4 @@ Supports: Supabase (direct / session pooler / transaction pooler), Neon (pooled 
 - License: MIT
 - Stack: Next.js 14, TypeScript, Tailwind CSS, PostgreSQL (pg), @xyflow/react + dagre
 - Contact / X: https://x.com/im_daedalus
-- Last updated: 2026-09-03
+- Last updated: 2026-10-19

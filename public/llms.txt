@@ -9,7 +9,8 @@ dbdiagramr is a free, open-source web tool that generates interactive entity-rel
 - Schema diagram library: https://www.dbdiagramr.space/schema
 - Blog (PostgreSQL guides): https://www.dbdiagramr.space/blog
 - Comparisons: https://www.dbdiagramr.space/alternatives
-- Pricing: https://www.dbdiagramr.space/pricing.md
+- Pricing: https://www.dbdiagramr.space/pricing
+- Pricing (machine-readable): https://www.dbdiagramr.space/pricing.md
 - Full context: https://www.dbdiagramr.space/llms-full.txt
 - Features: https://www.dbdiagramr.space#features
 - How it works: https://www.dbdiagramr.space#guide
@@ -27,8 +28,8 @@ Reference ER diagrams of popular PostgreSQL schemas, each showing every table, c
 
 ## Pricing
 
-- Free: $0/month - 5 diagrams per month, static PNG export, single database connection
-- Pro: $8/month - unlimited diagrams, interactive shareable links, version history, team access (up to 5 members), priority support
+- Free: $0 - unlimited diagrams, live PostgreSQL introspection, paste-SQL mode, SVG and PNG export, no signup
+- Pro: in development - no price and no checkout. Planned: saved diagrams, version history and schema diffs, multiple schemas, shareable links, private-repo GitHub Action licence
 
 ## About
 
@@ -37,6 +38,7 @@ Reference ER diagrams of popular PostgreSQL schemas, each showing every table, c
 - Exports diagrams as SVG or PNG
 - Works with cloud databases: Supabase, Neon, Railway
 - Uses the Transaction pooler (port 6543) for serverless platform compatibility
-- Connection strings are never stored - introspected and discarded immediately
+- Paste-SQL mode parses in the browser; live connection strings are sent to the dbdiagramr backend for one request, then discarded
+- Connection strings and schemas are never stored
 - Built with Next.js, PostgreSQL, and Tailwind CSS
-- Last updated: 2026-09-03
+- Last updated: 2026-10-19

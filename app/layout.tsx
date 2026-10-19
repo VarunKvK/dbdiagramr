@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     template: "%s | dbdiagramr",
   },
   description:
-    "Paste a PostgreSQL connection string and generate an interactive ER diagram in under 10 seconds. No signup, no setup. Free for 5 diagrams/month.",
+    "Paste a PostgreSQL connection string and generate an interactive ER diagram in under 10 seconds. No signup, no setup, no diagram limit.",
   keywords:
     "postgresql er diagram, postgresql schema diagram, er diagram generator, database schema visualization, postgresql schema visualization, db diagram, supabase schema, er diagram tool",
   authors: [{ name: "dbdiagramr" }],
@@ -124,14 +124,8 @@ gtag('config', 'G-MK1QVPVPSJ');`}
           "@type": "Offer",
           "name": "Free",
           "price": "0",
-          "priceCurrency": "USD"
-        },
-        {
-          "@type": "Offer",
-          "name": "Pro",
-          "price": "8",
           "priceCurrency": "USD",
-          "priceInterval": "month"
+          "description": "Unlimited diagrams, no account required."
         }
       ]
     },

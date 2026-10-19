@@ -5,8 +5,9 @@ import { toast } from "sonner";
 import type { Schema } from "@/lib/diagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
 import { ECOMMERCE_SQL, SUPABASE_SQL } from "@/lib/sql/pgDumpSamples";
-import { rlsSummary } from "@/lib/rls";
+import { RLS_META, rlsSummary, type RlsSummary } from "@/lib/rls";
 import { track } from "@/lib/analytics";
+import TrackedLink from "@/components/TrackedLink";
 
 type Phase = "form" | "loading" | "result" | "error";
 type Mode = "connection" | "sql";
@@ -32,6 +33,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
   const [sqlText, setSqlText] = useState("");
   const [sqlError, setSqlError] = useState<string | null>(null);
   const [phase, setPhase] = useState<Phase>("form");
+  const [resultRls, setResultRls] = useState<RlsSummary | null>(null);
   const [errorMsg, setErrorMsg] = useState("");
   const [errorHint, setErrorHint] = useState<string | null>(null);
   const [isLiveSite, setIsLiveSite] = useState(false);
@@ -75,6 +77,31 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
     connectionString.includes("localhost") ||
     connectionString.includes("127.0.0.1");
   const showLocalhostWarning = isLiveSite && isLocalhostInput;
+
+  const resultRlsMessage: { color: string; text: string } | null = resultRls
+    ? resultRls.disabled > 0
+      ? {
+          color: RLS_META.disabled.color,
+          text: `${resultRls.disabled} ${
+            resultRls.disabled === 1 ? "table has" : "tables have"
+          } RLS off.`,
+        }
+      : resultRls.noPolicies > 0
+        ? {
+            color: RLS_META["no-policies"].color,
+            text: `${resultRls.noPolicies} ${
+              resultRls.noPolicies === 1 ? "table has" : "tables have"
+            } RLS on with no policies.`,
+          }
+        : resultRls.protected > 0
+          ? {
+              color: RLS_META.protected.color,
+              text: `RLS is on for all ${resultRls.total} ${
+                resultRls.total === 1 ? "table" : "tables"
+              }.`,
+            }
+          : null
+    : null;
 
   const handleSqlLive = useCallback(
     (text: string) => {
@@ -226,6 +253,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
         rls_protected: rls.protected,
       });
       setPhase("result");
+      setResultRls(rls);
       onSchemaGenerated(schema);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Something went wrong";
@@ -240,6 +268,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
 
   function handleNewConnection() {
     setPhase("form");
+    setResultRls(null);
     setErrorHint(null);
     onSchemaCleared();
   }
@@ -448,6 +477,30 @@ GRANT USAGE ON SCHEMA public TO dbdiagramr_reader;`}</pre>
             <div className="flex min-h-0 flex-1 items-center justify-center">
               <div className="w-full rounded-[20px] border border-border bg-white p-5 text-center">
                 <p className="font-mono text-sm text-ink">Connected</p>
+                {resultRlsMessage && (
+                  <div className="mt-3 rounded-[10px] border border-border bg-surface px-3 py-2.5">
+                    <p className="flex items-start justify-center gap-2 font-mono text-[11px] leading-relaxed text-muted">
+                      <span
+                        className="mt-1 h-2 w-2 shrink-0 rounded-full"
+                        style={{ background: resultRlsMessage.color }}
+                      />
+                      <span>{resultRlsMessage.text}</span>
+                    </p>
+                    <TrackedLink
+                      href="/supabase-rls-check"
+                      event="rls_cta_clicked"
+                      params={{
+                        location: "connect_result",
+                        rls_disabled: resultRls?.disabled ?? 0,
+                        rls_no_policies: resultRls?.noPolicies ?? 0,
+                        rls_protected: resultRls?.protected ?? 0,
+                      }}
+                      className="mt-1 inline-block font-mono text-[11px] font-medium text-accent hover:text-accent-hover"
+                    >
+                      What this means →
+                    </TrackedLink>
+                  </div>
+                )}
                 <button onClick={handleNewConnection} className="mt-3 font-mono text-sm text-muted underline-offset-4 hover:text-ink hover:underline">
                   New connection
                 </button>

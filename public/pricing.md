@@ -3,13 +3,14 @@
 ## Free
 - Price: $0
 - Limits: none
-- Features: unlimited diagrams, live PostgreSQL introspection, paste-SQL mode, SVG and PNG export, no signup
+- Features: unlimited diagrams, live PostgreSQL introspection, RLS status and policy counts, paste-SQL mode, SVG and PNG export, no signup
+- RLS coverage: public schema only (Supabase auth/storage not included yet)
 - Storage: nothing is saved; diagrams exist for the current session
 
 ## Pro (in development)
 - Price: not announced
 - Status: no checkout, no subscriptions, nobody can be charged
-- Planned features: saved diagrams and layout, version history and schema diffs, multiple schemas, shareable links, licence for private repositories in the GitHub Action
+- Planned features: schema checks on private-repo pull requests, lint rules for risky migrations, sticky PR comments with the diff and ER diagram, licence covers one organisation
 
 ## Privacy
 - Paste SQL: parsed in your browser; the SQL never leaves the page

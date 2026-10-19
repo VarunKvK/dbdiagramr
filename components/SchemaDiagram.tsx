@@ -26,6 +26,8 @@ import { renderDiagramSVG } from "@/lib/diagram";
 import { LAYOUT, layoutSchema, tableSize } from "@/lib/diagramLayout";
 import type { Rect } from "@/lib/diagramLayout";
 import { formatType } from "@/lib/formatType";
+import { RLS_META, rlsHint, rlsStatus, rlsSummary } from "@/lib/rls";
+import { track } from "@/lib/analytics";
 
 function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
@@ -78,10 +80,19 @@ function TableNode({ data }: NodeProps<TableFlowNode>) {
       style={{ width: size.width, height: size.height }}
     >
       <div
-        className="flex h-[38px] items-center justify-center font-mono text-[13px] font-bold text-[#1e1e1e]"
+        className="relative flex h-[38px] items-center justify-center font-mono text-[13px] font-bold text-[#1e1e1e]"
         style={{ background: sticker.header }}
       >
         {table.name}
+        {table.rls && (
+          <span
+            role="img"
+            aria-label={rlsHint(table)}
+            title={rlsHint(table)}
+            className="absolute right-3 top-1/2 h-2.5 w-2.5 -translate-y-1/2 rounded-full ring-2 ring-black/10"
+            style={{ background: RLS_META[rlsStatus(table.rls)].color }}
+          />
+        )}
       </div>
       <div className="relative">
         {table.columns.map((col, i) => {
@@ -246,6 +257,30 @@ function buildElements(schema: Schema) {
   return { nodes, edges };
 }
 
+function RlsLegendItem({
+  status,
+  count,
+}: {
+  status: "disabled" | "no-policies" | "protected";
+  count: number;
+}) {
+  const meta = RLS_META[status];
+  const label =
+    status === "disabled" ? "off" : status === "no-policies" ? "no policies" : "on";
+
+  return (
+    <span className="inline-flex items-center gap-1.5" title={meta.description}>
+      <span
+        className="h-2 w-2 rounded-full"
+        style={{ background: meta.color }}
+      />
+      <span>
+        {count} {label}
+      </span>
+    </span>
+  );
+}
+
 function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true, passive = false, minimal = false }: SchemaDiagramProps) {
   const { fitView } = useReactFlow();
   const [nodes, setNodes, onNodesChange] = useNodesState<TableFlowNode>([]);
@@ -253,6 +288,8 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
   const [hovered, setHovered] = useState<string | null>(null);
   const [downloadOpen, setDownloadOpen] = useState(false);
   const downloadRef = useRef<HTMLDivElement>(null);
+  const rls = useMemo(() => rlsSummary(schema), [schema]);
+  const lastRlsTracked = useRef("");
 
   useEffect(() => {
     const { nodes: n, edges: e } = buildElements(schema);
@@ -261,6 +298,21 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
     const t = setTimeout(() => fitView({ padding: 0.15, duration: 200 }), 60);
     return () => clearTimeout(t);
   }, [schema, setNodes, setEdges, fitView]);
+
+  useEffect(() => {
+    if (!rls.hasRls) return;
+    const signature = schema.tables
+      .map((table) => `${table.name}:${table.rls?.enabled}:${table.rls?.policyCount}`)
+      .join("|");
+    if (lastRlsTracked.current === signature) return;
+    lastRlsTracked.current = signature;
+    track("rls_summary_viewed", {
+      table_count: schema.tables.length,
+      rls_disabled: rls.disabled,
+      rls_no_policies: rls.noPolicies,
+      rls_protected: rls.protected,
+    });
+  }, [schema, rls]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -391,12 +443,22 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
 
   const handleExportSVG = useCallback(() => {
     const svg = renderDiagramSVG(schema, positionsForExport);
+    track("export_clicked", {
+      format: "svg",
+      table_count: schema.tables.length,
+      rls: rls.hasRls,
+    });
     downloadBlob(new Blob([svg], { type: "image/svg+xml;charset=utf-8" }), "schema-diagram.svg");
     setDownloadOpen(false);
-  }, [schema, positionsForExport]);
+  }, [schema, positionsForExport, rls.hasRls]);
 
   const handleExportPNG = useCallback(() => {
     const svg = renderDiagramSVG(schema, positionsForExport);
+    track("export_clicked", {
+      format: "png",
+      table_count: schema.tables.length,
+      rls: rls.hasRls,
+    });
     const all = Object.values(positionsForExport);
     const minX = Math.min(...all.map((p) => p.x)) - 40;
     const minY = Math.min(...all.map((p) => p.y)) - 40;
@@ -427,7 +489,7 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
     };
     img.onerror = () => URL.revokeObjectURL(url);
     img.src = url;
-  }, [schema, positionsForExport]);
+  }, [schema, positionsForExport, rls.hasRls]);
 
   return (
     <div className={`relative ${className}`}>
@@ -464,6 +526,22 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
             maskColor="rgba(243,255,230,0.7)"
             className="!rounded-[10px] !border !border-border !bg-white !shadow-md"
           />
+        )}
+        {rls.hasRls && (
+          <Panel position="bottom-center">
+            <div className="mb-1 flex flex-wrap items-center justify-center gap-x-3 gap-y-1 rounded-full border border-border bg-white/95 px-3 py-1.5 font-mono text-[11px] font-medium text-muted shadow-md backdrop-blur-sm">
+              <span className="text-ink">RLS</span>
+              {rls.disabled > 0 && (
+                <RlsLegendItem status="disabled" count={rls.disabled} />
+              )}
+              {rls.noPolicies > 0 && (
+                <RlsLegendItem status="no-policies" count={rls.noPolicies} />
+              )}
+              {rls.protected > 0 && (
+                <RlsLegendItem status="protected" count={rls.protected} />
+              )}
+            </div>
+          </Panel>
         )}
         <Panel position="top-right">
           {!minimal && (

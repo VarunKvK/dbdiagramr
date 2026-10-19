@@ -10,6 +10,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const staticLastmod: Record<string, string> = {
     "/": "2026-09-10",
     "/visualize": "2026-09-08",
+    "/supabase-rls-check": "2026-10-19",
     "/schema": "2026-09-27",
     "/blog": "2026-09-17",
     "/alternatives": "2026-08-30",
@@ -57,6 +58,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${base}/visualize`,
       lastModified: staticLastmod["/visualize"],
+      changeFrequency: "monthly",
+      priority: 0.9,
+    },
+    {
+      url: `${base}/supabase-rls-check`,
+      lastModified: staticLastmod["/supabase-rls-check"],
       changeFrequency: "monthly",
       priority: 0.9,
     },

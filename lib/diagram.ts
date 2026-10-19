@@ -1,6 +1,7 @@
 import { layoutSchema, getRowY, routePath } from "@/lib/diagramLayout";
 import type { Rect } from "@/lib/diagramLayout";
 import { formatType } from "@/lib/formatType";
+import { RLS_META, rlsHint, rlsStatus, rlsSummary } from "@/lib/rls";
 
 export type Column = {
   name: string;
@@ -16,10 +17,17 @@ export type ForeignKey = {
   referencesColumn: string;
 };
 
+export type RlsInfo = {
+  enabled: boolean;
+  forced: boolean;
+  policyCount: number;
+};
+
 export type Table = {
   name: string;
   columns: Column[];
   foreignKeys: ForeignKey[];
+  rls?: RlsInfo;
 };
 
 export type Schema = {
@@ -66,6 +74,7 @@ export function renderDiagramSVG(schema: Schema, layout: Record<string, Rect>): 
   const maxY = Math.max(...all.map((p) => p.y + p.h)) + 40;
   const vw = maxX - minX;
   const vh = maxY - minY;
+  const rls = rlsSummary(schema);
 
   const connections: string[] = [];
   tables.forEach((table) => {
@@ -95,6 +104,7 @@ ${badge(ex - 10, ey - 14, "1", false)}
     const { x, y, w, h } = pos;
     const isFk = table.foreignKeys.length > 0;
     const fkColumns = new Set(table.foreignKeys.map((f) => f.column));
+    const rlsMeta = table.rls ? RLS_META[rlsStatus(table.rls)] : null;
 
     const colLines: string[] = [];
     table.columns.forEach((col, i) => {
@@ -126,11 +136,13 @@ ${badge(ex - 10, ey - 14, "1", false)}
 
     cards.push(
       `    <g>
+      ${rlsMeta ? `<title>${esc(rlsHint(table))}</title>` : ""}
       <rect x="${x + 2}" y="${y + 3}" width="${w}" height="${h}" rx="8" fill="black" opacity="0.25" filter="url(#glow)" />
       <rect x="${x}" y="${y}" width="${w}" height="${h}" rx="8" fill="#1a1a1a" stroke="#2a2a2a" strokeWidth="1.5" />
       <rect x="${x}" y="${y}" width="${w}" height="38" rx="8" fill="#252525" />
       <rect x="${x}" y="${y + 30}" width="${w}" height="10" fill="#252525" />
       <text x="${x + w / 2}" y="${y + 25}" textAnchor="middle" fill="#e5e5e5" fontSize="13" fontWeight="600" fontFamily="Inter, sans-serif">${esc(table.name)}</text>
+      ${rlsMeta ? `<circle cx="${x + w - 16}" cy="${y + 19}" r="4.5" fill="${rlsMeta.color}" stroke="#1a1a1a" strokeWidth="1" />` : ""}
 ${colLines.join("\n")}
     </g>`
     );
@@ -158,6 +170,34 @@ ${colLines.join("\n")}
   }
 
   parts.push(`  <g id="tables">\n${cards.join("\n")}\n  </g>`);
+
+  if (rls.hasRls) {
+    const items = [
+      { count: rls.disabled, label: "off", color: RLS_META.disabled.color },
+      { count: rls.noPolicies, label: "no policies", color: RLS_META["no-policies"].color },
+      { count: rls.protected, label: "on", color: RLS_META.protected.color },
+    ].filter((item) => item.count > 0);
+
+    let lx = minX + 10;
+    const ly = maxY - 16;
+    const legend: string[] = [
+      `<g id="rls-legend"><title>RLS: ${rls.disabled} off, ${rls.noPolicies} with no policies, ${rls.protected} protected</title>`,
+    ];
+
+    for (const item of items) {
+      legend.push(
+        `<circle cx="${lx + 4}" cy="${ly - 4}" r="4" fill="${item.color}" />`
+      );
+      legend.push(
+        `<text x="${lx + 12}" y="${ly}" fill="#a0a0a0" fontSize="11" fontFamily="Inter, sans-serif">${item.count} ${item.label}</text>`
+      );
+      lx += 30 + item.label.length * 6.4 + String(item.count).length * 6.4;
+    }
+
+    legend.push("</g>");
+    parts.push(legend.join("\n"));
+  }
+
   parts.push("</svg>");
 
   return parts.join("\n");

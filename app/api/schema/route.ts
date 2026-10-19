@@ -267,8 +267,18 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const tablesResult = await client.query<{ table_name: string }>(
-      `SELECT c.relname AS table_name
+    const tablesResult = await client.query<{
+      table_name: string;
+      rls_enabled: boolean;
+      rls_forced: boolean;
+      policy_count: number;
+    }>(
+      `SELECT c.relname AS table_name,
+              c.relrowsecurity AS rls_enabled,
+              c.relforcerowsecurity AS rls_forced,
+              (SELECT count(*)::int
+                 FROM pg_catalog.pg_policy p
+                WHERE p.polrelid = c.oid) AS policy_count
        FROM pg_catalog.pg_class c
        JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
        WHERE n.nspname = 'public'
@@ -290,6 +300,11 @@ export async function POST(request: NextRequest) {
         name: row.table_name,
         columns: [],
         foreignKeys: [],
+        rls: {
+          enabled: row.rls_enabled,
+          forced: row.rls_forced,
+          policyCount: row.policy_count,
+        },
       });
     }
 

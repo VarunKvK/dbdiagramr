@@ -7,7 +7,7 @@ import { plans } from "@/lib/plans";
 const URL = "https://www.dbdiagramr.space/pricing";
 const TITLE = "Pricing";
 const DESCRIPTION =
-  "dbdiagramr is free with no diagram limit and no account. A Pro plan for saved diagrams, version history and sharing is in development.";
+  "dbdiagramr is free: unlimited diagrams, live PostgreSQL and Supabase introspection, RLS status, and SVG/PNG export. A private-repo CI plan is in development.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -38,8 +38,8 @@ export default function PricingPage() {
         </h1>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
           Every diagramming feature is free, with no diagram limit and no
-          account. Pro adds saved diagrams, version history and sharing, and it
-          is still in development.
+          account. Pro adds schema checks inside GitHub Actions for private
+          repositories, and it is still in development.
         </p>
 
         <div className="mt-12 grid gap-6 md:grid-cols-2">
@@ -148,8 +148,15 @@ export default function PricingPage() {
           <p className="mt-3 max-w-3xl text-sm leading-relaxed text-muted">
             There is no checkout, no subscription and no card on file. The free
             plan will stay free with unlimited diagrams when Pro ships. Pro will
-            be an optional upgrade for persistence, history, multi-schema
-            diagrams and sharing.
+            be an optional upgrade for teams that want schema guardrails on
+            private repositories. Need the check today?{" "}
+            <Link
+              href="/supabase-rls-check"
+              className="font-medium text-accent hover:text-accent-hover"
+            >
+              Run the free RLS check
+            </Link>
+            .
           </p>
         </section>
       </div>

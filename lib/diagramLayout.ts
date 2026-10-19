@@ -44,7 +44,8 @@ export function tableSize(table: Table): { width: number; height: number } {
     const w = c.name.length * LAYOUT.colCharW + typeShort.length * LAYOUT.typeCharW + LAYOUT.badgeW + 24;
     return Math.max(max, w);
   }, 0);
-  const headerW = table.name.length * LAYOUT.headCharW + 24;
+  const headerW =
+    table.name.length * LAYOUT.headCharW + (table.rls ? 52 : 24);
   const width = Math.max(LAYOUT.minW, colW, headerW);
   const height = LAYOUT.header + table.columns.length * LAYOUT.rowH + LAYOUT.rowPad;
   return { width, height };

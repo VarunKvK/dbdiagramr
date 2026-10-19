@@ -20,6 +20,7 @@ dbdiagramr introspects a live PostgreSQL database via the PostgreSQL system cata
 - Alternatives / Comparisons — https://www.dbdiagramr.space/alternatives
 - dbdiagram.io vs dbdiagramr — https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr
 - DrawSQL vs dbdiagramr — https://www.dbdiagramr.space/drawsql-vs-dbdiagramr
+- Supabase RLS check — https://www.dbdiagramr.space/supabase-rls-check
 - Pricing — https://www.dbdiagramr.space/pricing
 - Pricing (machine-readable) — https://www.dbdiagramr.space/pricing.md
 - Features — https://www.dbdiagramr.space#features
@@ -44,7 +45,8 @@ Live, interactive ER diagrams of popular PostgreSQL schemas. Each page shows eve
 
 - Instant: Connect and generate a diagram in under 10 seconds. No manual drawing.
 - Interactive: Pan, zoom, drag tables, hover to trace foreign key relationships.
-- Exportable: Download as PNG or SVG. Shareable interactive links are planned for Pro.
+- Exportable: Download as PNG or SVG.
+- RLS-aware: Live connections show per-table Row Level Security status and policy counts (public schema only). Pasted SQL shows RLS as unknown.
 - Secure: Paste-SQL never leaves the browser. Live connection strings are used once by the backend and never stored. Only schema structure is read, never row data.
 - Always current: Re-paste the same connection string after a migration — diagram updates in 10 seconds. No drift.
 - Self-hostable: Open source (MIT), Next.js 14 + TypeScript.
@@ -64,8 +66,8 @@ Live, interactive ER diagrams of popular PostgreSQL schemas. Each page shows eve
 
 ## Pricing
 
-- Free: $0 — unlimited diagrams, live PostgreSQL introspection, paste-SQL mode, SVG and PNG export, no signup
-- Pro: in development — no price and no checkout. Planned: saved diagrams, version history and schema diffs, multiple schemas, shareable links, private-repo GitHub Action licence
+- Free: $0 — unlimited diagrams, live PostgreSQL introspection, per-table RLS status, paste-SQL mode, SVG and PNG export, no signup
+- Pro: in development — no price and no checkout. Planned: schema checks on private-repo pull requests, lint rules for risky migrations, sticky PR comments
 
 Details: https://www.dbdiagramr.space/pricing and https://www.dbdiagramr.space/pricing.md
 

@@ -23,6 +23,7 @@ export const plans: Plan[] = [
     features: [
       "Unlimited diagrams, no monthly cap",
       "Live PostgreSQL introspection",
+      "RLS status on live connections",
       "Paste-SQL mode, parsed in your browser",
       "SVG and PNG export",
       "No signup, no account",
@@ -36,13 +37,12 @@ export const plans: Plan[] = [
     price: null,
     priceLabel: "In development",
     description:
-      "For teams documenting a schema that keeps changing: save it, version it, share it.",
+      "For private repositories: catch risky schema changes before they merge, inside GitHub Actions.",
     features: [
-      "Saved diagrams and table layout",
-      "Version history and schema diffs",
-      "Multiple schemas in one diagram",
-      "Shareable links",
-      "Licence for private repositories in the GitHub Action",
+      "Schema checks on private-repo pull requests",
+      "Lint rules for risky migrations",
+      "Sticky PR comments with the diff and ER diagram",
+      "Licence covers one organisation",
     ],
     cta: null,
   },

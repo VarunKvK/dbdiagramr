@@ -28,6 +28,13 @@ export const metadata: Metadata = {
 
 const tools = [
   {
+    href: "/supabase-rls-check",
+    name: "Supabase RLS Check",
+    description:
+      "Connect with a read-only role and see which public tables have RLS off, RLS with no policies, or protection in place.",
+    tags: ["Supabase", "Security", "New"],
+  },
+  {
     href: "/postgres-er-diagram",
     name: "PostgreSQL ER Diagram",
     description:

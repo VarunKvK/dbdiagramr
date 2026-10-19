@@ -9,6 +9,7 @@ dbdiagramr is a free, open-source web tool that generates interactive entity-rel
 - Schema diagram library: https://www.dbdiagramr.space/schema
 - Blog (PostgreSQL guides): https://www.dbdiagramr.space/blog
 - Comparisons: https://www.dbdiagramr.space/alternatives
+- Supabase RLS check: https://www.dbdiagramr.space/supabase-rls-check
 - Pricing: https://www.dbdiagramr.space/pricing
 - Pricing (machine-readable): https://www.dbdiagramr.space/pricing.md
 - Full context: https://www.dbdiagramr.space/llms-full.txt
@@ -28,14 +29,15 @@ Reference ER diagrams of popular PostgreSQL schemas, each showing every table, c
 
 ## Pricing
 
-- Free: $0 - unlimited diagrams, live PostgreSQL introspection, paste-SQL mode, SVG and PNG export, no signup
-- Pro: in development - no price and no checkout. Planned: saved diagrams, version history and schema diffs, multiple schemas, shareable links, private-repo GitHub Action licence
+- Free: $0 - unlimited diagrams, live PostgreSQL introspection, per-table RLS status, paste-SQL mode, SVG and PNG export, no signup
+- Pro: in development - no price and no checkout. Planned: schema checks on private-repo pull requests, lint rules for risky migrations, sticky PR comments
 
 ## About
 
 - Generates interactive entity-relationship diagrams from live PostgreSQL schemas
 - Renders on an interactive canvas with pan, zoom, and hover-to-trace table relationships
 - Exports diagrams as SVG or PNG
+- Shows per-table Row Level Security status on live connections (public schema)
 - Works with cloud databases: Supabase, Neon, Railway
 - Uses the Transaction pooler (port 6543) for serverless platform compatibility
 - Paste-SQL mode parses in the browser; live connection strings are sent to the dbdiagramr backend for one request, then discarded

@@ -5,6 +5,8 @@ import { toast } from "sonner";
 import type { Schema } from "@/lib/diagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
 import { ECOMMERCE_SQL, SUPABASE_SQL } from "@/lib/sql/pgDumpSamples";
+import { rlsSummary } from "@/lib/rls";
+import { track } from "@/lib/analytics";
 
 type Phase = "form" | "loading" | "result" | "error";
 type Mode = "connection" | "sql";
@@ -18,9 +20,11 @@ interface TryModalProps {
   initialSql?: string;
   /** Preload a connection string (e.g. staged by the conn-string builder) */
   initialConnString?: string;
+  /** Stretch to fill the parent on both tabs (used by the full-screen /visualize rail) */
+  fill?: boolean;
 }
 
-export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: controlledMode, onModeChange, initialSql, initialConnString }: TryModalProps) {
+export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: controlledMode, onModeChange, initialSql, initialConnString, fill }: TryModalProps) {
   const [internalMode, setInternalMode] = useState<Mode>("sql");
   const mode = controlledMode ?? internalMode;
   const setMode = onModeChange ?? setInternalMode;
@@ -38,6 +42,8 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const initialApplied = useRef(false);
+  const lastTrackedSigRef = useRef("");
+  const pendingSourceRef = useRef<"sql" | "sample" | "file">("sql");
 
   // Preload SQL once (e.g. "Open in DBdiagramr to edit" from a schema page)
   useEffect(() => {
@@ -80,6 +86,15 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
       }
       try {
         const { schema } = parseSqlToSchema(trimmed);
+        const signature = schema.tables.map((table) => table.name).join("\u0000");
+        if (signature && signature !== lastTrackedSigRef.current) {
+          lastTrackedSigRef.current = signature;
+          track("schema_generated", {
+            mode: pendingSourceRef.current,
+            table_count: schema.tables.length,
+          });
+          pendingSourceRef.current = "sql";
+        }
         setSqlError(null);
         onSchemaGenerated(schema);
       } catch (err: unknown) {
@@ -112,6 +127,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
     let sample = "";
     if (kind === "ecommerce") sample = ECOMMERCE_SQL;
     else sample = SUPABASE_SQL;
+    pendingSourceRef.current = "sample";
     setSqlText(sample);
     setActiveFile(kind);
     try {
@@ -136,6 +152,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
     const reader = new FileReader();
     reader.onload = () => {
       const text = String(reader.result || "");
+      pendingSourceRef.current = "file";
       setSqlText(text);
       setActiveFile("schema");
     };
@@ -148,6 +165,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
     setIsDragging(false);
     const text = e.dataTransfer.getData("text/plain");
     if (text) {
+      pendingSourceRef.current = "file";
       setSqlText(text);
       setActiveFile("schema");
       return;
@@ -156,6 +174,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
+        pendingSourceRef.current = "file";
         setSqlText(String(reader.result || ""));
         setActiveFile("schema");
       };
@@ -198,6 +217,14 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
         throw new Error(data.details || data.error || "API error");
       }
       const schema = data as Schema;
+      const rls = rlsSummary(schema);
+      track("schema_generated", {
+        mode: "live",
+        table_count: schema.tables.length,
+        rls_disabled: rls.disabled,
+        rls_no_policies: rls.noPolicies,
+        rls_protected: rls.protected,
+      });
       setPhase("result");
       onSchemaGenerated(schema);
     } catch (err: unknown) {
@@ -232,7 +259,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
       onDragOver={isSql ? (e) => { e.preventDefault(); setIsDragging(true); } : undefined}
       onDragLeave={isSql ? (e) => { e.preventDefault(); if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false); } : undefined}
       onDrop={isSql ? handleDrop : undefined}
-      className={`relative flex w-full flex-col gap-4 rounded-[14px] p-1 ${isSql && isDragging ? "ring-2 ring-punch/40" : ""} ${isSql ? "h-full min-h-0 flex-1" : "h-auto"}`}
+      className={`relative flex w-full flex-col gap-4 rounded-[14px] p-1 ${isSql && isDragging ? "ring-2 ring-punch/40" : ""} ${isSql || fill ? "h-full min-h-0 flex-1" : "h-auto"}`}
     >
       {isSql && isDragging && (
         <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-[20px] border-2 border-dashed border-accent bg-ink/5 backdrop-blur-sm">
@@ -327,98 +354,107 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
           <input ref={fileInputRef} type="file" accept=".sql,.txt" onChange={handleFileUpload} className="hidden" aria-hidden />
         </div>
       ) : (
-        <>
+        <div className="flex min-h-0 flex-1 flex-col gap-4">
           {(phase === "form" || phase === "loading") && (
-            <div className="rounded-[20px] border border-border bg-white p-5 shadow-sm">
-              <h3 className="text-sm font-semibold text-ink">Connect to your database</h3>
-              <p className="mt-1 text-sm leading-relaxed text-muted">Paste your connection string to visualize your live schema.</p>
-              <div className="mt-4">
-                <label htmlFor="connection-string" className="sr-only">Connection string</label>
-                <input
-                  id="connection-string"
-                  type="text"
-                  value={connectionString}
-                  onChange={(e) => setConnectionString(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder="postgresql://user:pass@host:5432/dbname"
-                  autoComplete="off"
-                  spellCheck={false}
-                  aria-invalid={showLocalhostWarning}
-                  aria-describedby={showLocalhostWarning ? "localhost-warning" : undefined}
-                  className="w-full rounded-[10px] border border-border bg-surface px-4 py-3 font-mono text-sm text-ink placeholder:text-muted outline-none focus:border-accent focus:ring-1 focus:ring-accent/30"
-                />
+            <div className="flex max-h-full min-h-0 flex-col rounded-[20px] border border-border bg-white p-5 shadow-sm">
+              <div className="shrink-0">
+                <h3 className="text-sm font-semibold text-ink">Connect to your database</h3>
+                <p className="mt-1 text-sm leading-relaxed text-muted">Paste your connection string to visualize your live schema.</p>
               </div>
 
-              {showLocalhostWarning && (
-                <div id="localhost-warning" className="mt-3 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3">
-                  <p className="font-mono text-xs font-medium text-amber-700">Local database detected</p>
-                  <p className="mt-1 font-mono text-xs leading-relaxed text-amber-600">Local databases only work when running locally. For the hosted version, use Supabase, Neon, or Railway.</p>
+              <div className="mt-4 flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto">
+                <div className="shrink-0">
+                  <label htmlFor="connection-string" className="sr-only">Connection string</label>
+                  <input
+                    id="connection-string"
+                    type="text"
+                    value={connectionString}
+                    onChange={(e) => setConnectionString(e.target.value)}
+                    onKeyDown={handleKeyDown}
+                    placeholder="postgresql://user:pass@host:5432/dbname"
+                    autoComplete="off"
+                    spellCheck={false}
+                    aria-invalid={showLocalhostWarning}
+                    aria-describedby={showLocalhostWarning ? "localhost-warning" : undefined}
+                    className="w-full rounded-[10px] border border-border bg-surface px-4 py-3 font-mono text-sm text-ink placeholder:text-muted outline-none focus:border-accent focus:ring-1 focus:ring-accent/30"
+                  />
                 </div>
-              )}
 
-              {isLiveSite && !showLocalhostWarning && (
-                <p className="mt-3 font-mono text-xs leading-relaxed text-muted">
-                  Tip: On Vercel or Netlify use your database Transaction pooler (port 6543), not direct 5432.
-                </p>
-              )}
+                {showLocalhostWarning && (
+                  <div id="localhost-warning" className="shrink-0 rounded-xl border border-amber-200 bg-amber-50 px-3 py-3">
+                    <p className="font-mono text-xs font-medium text-amber-700">Local database detected</p>
+                    <p className="mt-1 font-mono text-xs leading-relaxed text-amber-600">Local databases only work when running locally. For the hosted version, use Supabase, Neon, or Railway.</p>
+                  </div>
+                )}
 
-              <details className="mt-3 rounded-[10px] border border-border bg-surface px-3 py-2">
-                <summary className="cursor-pointer font-mono text-xs font-medium text-ink">
-                  Is my connection string safe?
-                </summary>
-                <ul className="mt-2 space-y-1.5 font-mono text-[11px] leading-relaxed text-muted">
-                  <li>· Sent to our backend for one request, then discarded.</li>
-                  <li>· Never stored, never logged.</li>
-                  <li>· Reads schema metadata only, never table rows.</li>
-                  <li>· TLS certificates are always verified.</li>
-                </ul>
-                <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted">
-                  A read-only role only needs CONNECT and USAGE:
-                </p>
-                <pre className="mt-1 overflow-x-auto rounded border border-border bg-white p-2 font-mono text-[10px] leading-relaxed text-ink">{`CREATE ROLE dbdiagramr_reader LOGIN PASSWORD '...';
+                {isLiveSite && !showLocalhostWarning && (
+                  <p className="shrink-0 font-mono text-xs leading-relaxed text-muted">
+                    Tip: On Vercel or Netlify use your database Transaction pooler (port 6543), not direct 5432.
+                  </p>
+                )}
+
+                <details className="shrink-0 rounded-[10px] border border-border bg-surface px-3 py-2">
+                  <summary className="cursor-pointer font-mono text-xs font-medium text-ink">
+                    Is my connection string safe?
+                  </summary>
+                  <ul className="mt-2 space-y-1.5 font-mono text-[11px] leading-relaxed text-muted">
+                    <li>· Sent to our backend for one request, then discarded.</li>
+                    <li>· Never stored, never logged.</li>
+                    <li>· Reads schema metadata only, never table rows.</li>
+                    <li>· TLS certificates are always verified.</li>
+                  </ul>
+                  <p className="mt-2 font-mono text-[11px] leading-relaxed text-muted">
+                    A read-only role only needs CONNECT and USAGE:
+                  </p>
+                  <pre className="mt-1 overflow-x-auto rounded border border-border bg-white p-2 font-mono text-[10px] leading-relaxed text-ink">{`CREATE ROLE dbdiagramr_reader LOGIN PASSWORD '...';
 GRANT CONNECT ON DATABASE your_db TO dbdiagramr_reader;
 GRANT USAGE ON SCHEMA public TO dbdiagramr_reader;`}</pre>
-              </details>
+                </details>
+              </div>
 
-              <button
-                onClick={handleGenerateConnection}
-                disabled={!connectionString.trim() || showLocalhostWarning}
-                className="mt-5 w-full rounded-[10px] bg-accent px-4 py-3 font-mono text-xs font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-40"
-              >
-                Generate diagram
-              </button>
-            </div>
-          )}
-
-          {phase === "loading" && (
-            <div className="flex items-center justify-center gap-3 rounded-[20px] border border-border bg-white p-6">
-              <div className="h-5 w-5 animate-spin rounded-full border-2 border-border border-t-ink" />
-              <span className="font-mono text-sm text-muted">Analyzing schema...</span>
+              {phase === "loading" ? (
+                <div className="mt-4 flex shrink-0 items-center justify-center gap-3 rounded-[10px] border border-border bg-surface px-4 py-3">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-border border-t-ink" />
+                  <span className="font-mono text-xs text-muted">Analyzing schema...</span>
+                </div>
+              ) : (
+                <button
+                  onClick={handleGenerateConnection}
+                  disabled={!connectionString.trim() || showLocalhostWarning}
+                  className="mt-4 w-full shrink-0 rounded-[10px] bg-accent px-4 py-3 font-mono text-xs font-medium text-white transition-colors hover:bg-accent-hover disabled:opacity-40"
+                >
+                  Generate diagram
+                </button>
+              )}
             </div>
           )}
 
           {phase === "error" && (
-            <div className="rounded-xl border border-red-200 bg-red-50 p-5">
-              <p className="whitespace-pre-wrap break-words font-mono text-sm leading-relaxed text-red-600">{errorMsg}</p>
-              {errorHint === "pooler" && (
-                <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
-                  <p className="font-mono text-xs font-medium text-amber-700">Try the Transaction pooler (port 6543)</p>
-                  <p className="mt-1 font-mono text-xs leading-relaxed text-amber-600">Direct connections often fail from serverless. In your dashboard go to Connect, Transaction pooler, copy the 6543 string.</p>
-                </div>
-              )}
-              <button onClick={handleNewConnection} className="mt-4 w-full rounded-[10px] bg-accent px-4 py-2.5 font-mono text-xs font-medium text-white transition-colors hover:bg-accent-hover">Try again</button>
+            <div className="flex min-h-0 flex-1 items-center justify-center">
+              <div className="w-full rounded-xl border border-red-200 bg-red-50 p-5">
+                <p className="whitespace-pre-wrap break-words font-mono text-sm leading-relaxed text-red-600">{errorMsg}</p>
+                {errorHint === "pooler" && (
+                  <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
+                    <p className="font-mono text-xs font-medium text-amber-700">Try the Transaction pooler (port 6543)</p>
+                    <p className="mt-1 font-mono text-xs leading-relaxed text-amber-600">Direct connections often fail from serverless. In your dashboard go to Connect, Transaction pooler, copy the 6543 string.</p>
+                  </div>
+                )}
+                <button onClick={handleNewConnection} className="mt-4 w-full rounded-[10px] bg-accent px-4 py-2.5 font-mono text-xs font-medium text-white transition-colors hover:bg-accent-hover">Try again</button>
+              </div>
             </div>
           )}
 
           {phase === "result" && (
-            <div className="rounded-[20px] border border-border bg-white p-5 text-center">
-              <p className="font-mono text-sm text-ink">Connected</p>
-              <button onClick={handleNewConnection} className="mt-3 font-mono text-sm text-muted underline-offset-4 hover:text-ink hover:underline">
-                New connection
-              </button>
+            <div className="flex min-h-0 flex-1 items-center justify-center">
+              <div className="w-full rounded-[20px] border border-border bg-white p-5 text-center">
+                <p className="font-mono text-sm text-ink">Connected</p>
+                <button onClick={handleNewConnection} className="mt-3 font-mono text-sm text-muted underline-offset-4 hover:text-ink hover:underline">
+                  New connection
+                </button>
+              </div>
             </div>
           )}
-        </>
+        </div>
       )}
     </div>
   );

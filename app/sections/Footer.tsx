@@ -97,7 +97,7 @@ export default function Footer() {
 
         <div className="mt-12 flex flex-col items-start justify-between gap-4 border-t border-white/15 pt-6 md:flex-row md:items-center">
           <p className="text-xl font-semibold text-white">
-            &copy; 2026 dbdiagramr.
+            &copy; 2026 dbdiagramr. Free and open source (MIT).
           </p>
           <div className="flex items-center gap-8 text-xl font-semibold">
             <a
@@ -108,6 +108,15 @@ export default function Footer() {
               aria-label="dbdiagramr on GitHub"
             >
               Github
+            </a>
+            <a
+              href="https://x.com/im_daedalus"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="transition-colors hover:text-punch"
+              aria-label="dbdiagramr on X"
+            >
+              X
             </a>
             <a
               href="/blog"

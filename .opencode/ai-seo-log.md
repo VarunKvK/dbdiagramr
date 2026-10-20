@@ -15,3 +15,30 @@ no topics. Pricing ($0/$8, 5 diagrams/mo) not present as text in homepage HTML
 
 Changes made: audit only, no code changes.
 Re-measure on: 2026-11-13
+
+## 2026-10-20 · prompt set v1, first measured run
+
+Prompts run in ChatGPT and Perplexity (answers pasted by owner), 2026-10-20:
+
+| Prompt | ChatGPT | Perplexity |
+|---|---|---|
+| Database diagram tool for an existing Postgres DB (free, open source, web) | dbdiagramr **#1** | absent |
+| Best free ER diagram tools | absent | absent |
+| dbdiagram.io alternatives | absent | absent |
+| Visualize an existing Postgres schema | absent | absent (ChartDB) |
+| Supabase schema diagram | absent | absent (ChartDB) |
+| Live Supabase/Postgres ERD | dbdiagramr **#1** | absent (ChartDB) |
+
+Baseline: ChatGPT 2/6, Perplexity 0/6.
+
+Wrong claims in ChatGPT's answer about dbdiagramr: "Verify repository licence" (site is MIT), "Free to try" (free, no diagram limit, no account).
+
+Sources the answers actually cited (outreach targets, validated live on 2026-10-20):
+- Cited and editable: owox.com/blog/articles/database-diagram-design-tools (updated 2026-10-07), trevor.io/blog/top-7-entity-relationship-diagram-tools, airbyte.com/data-engineering-resources/relational-database-schema-design-tools, skyvia.com/blog/top-data-modeling-tools, wildandfreetools.com, enlisted.directory, github.com/Wolfsrudel/awesome-list-database-tools, alternativeto.net.
+- Cited but not editable: chartdb.io, dbschema.com, devart.com, erstudio.com, bytebase.com, erflow.io, holistics.io (owns dbdiagram.io), supabase partner catalog (application only).
+- Cited but dead: atlassian.com/data/databases/7-free-database-diagramming-tools (404).
+
+None of the cited pages mention dbdiagramr in their roundups (checked owox, trevor, airbyte, skyvia).
+
+Changes made: homepage states open source (MIT) in hero and footer; SoftwareApplication JSON-LD added with price 0, MIT licence, codeRepository; llms.txt now links GitHub and MIT.
+Re-measure on: 2026-11-13.

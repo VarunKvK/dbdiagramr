@@ -38,12 +38,47 @@ const howToJsonLd = {
   ],
 };
 
+const softwareJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  name: "dbdiagramr",
+  applicationCategory: "DeveloperApplication",
+  operatingSystem: "Web",
+  url: "https://www.dbdiagramr.space",
+  description:
+    "Free, open-source web tool that generates interactive ER diagrams from a PostgreSQL connection string or SQL.",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  license: "https://opensource.org/licenses/MIT",
+  codeRepository: "https://github.com/VarunKvK/dbdiagramr",
+  isAccessibleForFree: true,
+  featureList: [
+    "Live PostgreSQL schema introspection",
+    "Interactive ER diagrams with foreign-key tracing",
+    "Per-table Row Level Security status",
+    "SVG and PNG export",
+    "Paste-SQL mode parsed in the browser",
+    "No signup and no diagram limit",
+  ],
+  sameAs: [
+    "https://github.com/VarunKvK/dbdiagramr",
+    "https://x.com/im_daedalus",
+  ],
+};
+
 export default function Home() {
   return (
     <main className="">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
       />
       <div id="hero" className="scroll-mt-16">
         <Hero />

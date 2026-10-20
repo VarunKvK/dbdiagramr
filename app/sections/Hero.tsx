@@ -35,7 +35,7 @@ export default function Hero() {
       <div className="mx-auto max-w-7xl px-6 lg:px-8">
         <div className="mx-auto max-w-4xl text-center">
           <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted">
-            PostgreSQL ER diagrams · free, no signup
+            PostgreSQL ER diagrams · free, no signup, open source (MIT)
           </p>
           <h1 className="mt-6 text-5xl font-semibold leading-[1.02] tracking-tight text-ink md:text-7xl">
             Paste SQL. See Schema. <span className="text-accent">Ship Faster.</span>

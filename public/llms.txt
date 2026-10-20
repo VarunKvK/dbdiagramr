@@ -35,6 +35,9 @@ Reference ER diagrams of popular PostgreSQL schemas, each showing every table, c
 
 ## About
 
+- Open source under the MIT licence: https://github.com/VarunKvK/dbdiagramr
+- Contact and updates on X: https://x.com/im_daedalus
+- Free with no diagram limit and no account
 - Generates interactive entity-relationship diagrams from live PostgreSQL schemas
 - Renders on an interactive canvas with pan, zoom, and hover-to-trace table relationships
 - Exports diagrams as SVG or PNG

@@ -16,6 +16,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/alternatives": "2026-08-30",
     "/dbdiagram-io-vs-dbdiagramr": "2026-09-17",
     "/drawsql-vs-dbdiagramr": "2026-09-28",
+    "/chartdb-alternative": "2026-10-20",
     "/postgres-er-diagram": "2026-10-16",
     "/database-schema-analyzer": "2026-09-25",
     "/tools": "2026-10-10",
@@ -88,6 +89,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
     {
       url: `${base}/drawsql-vs-dbdiagramr`,
       lastModified: staticLastmod["/drawsql-vs-dbdiagramr"],
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
+      url: `${base}/chartdb-alternative`,
+      lastModified: staticLastmod["/chartdb-alternative"],
       changeFrequency: "monthly",
       priority: 0.7,
     },

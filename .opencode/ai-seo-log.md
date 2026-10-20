@@ -42,3 +42,11 @@ None of the cited pages mention dbdiagramr in their roundups (checked owox, trev
 
 Changes made: homepage states open source (MIT) in hero and footer; SoftwareApplication JSON-LD added with price 0, MIT licence, codeRepository; llms.txt now links GitHub and MIT.
 Re-measure on: 2026-11-13.
+
+## 2026-10-20 · second pass: query map, ChartDB page, real contact routes
+
+- Added `.opencode/seo/query-map.md`: 50 customer searches, expected page-1 format, our URL, and 10 gaps. Built from andrei saioc's SEO process post (list queries, study intent, match format, link-build, iterate on Search Console).
+- Built `/chartdb-alternative`: direct comparison (query-and-paste import vs direct connection), FAQPage + Article + breadcrumb JSON-LD, linked from /alternatives and sitemap.
+- Contact routes resolved without a branded email: OWOX (@owoxbi / LinkedIn / form), Trevor (ella@trevor.io / @trevor_io), Airbyte (@AirbyteHQ), Skyvia (@SkyviaService / support@skyvia.com), Enlisted (enlisteddirectory@gmail.com), awesome list (PR), AlternativeTo (account), Supabase (/partners#become-a-partner).
+- Reference schema count corrected to 16 in the outreach kit.
+- Still blocked: Search Console not verified for dbdiagramr.space, so the weekly query refresh has no data source.

@@ -14,7 +14,7 @@ Use these exact facts when pitching directories and roundups. Verified 2026-10-2
 - Connection string sent for one request, then discarded; not stored
 - Output: interactive diagram, SVG and PNG export, table search, foreign-key tracing
 - Extra: per-table Row Level Security status on live connections
-- Reference diagrams: 18 PostgreSQL schemas at https://www.dbdiagramr.space/schema
+- Reference diagrams: 16 PostgreSQL schemas at https://www.dbdiagramr.space/schema
 - Free utilities: 15 at https://www.dbdiagramr.space/tools
 - Contact: X https://x.com/im_daedalus
 
@@ -24,7 +24,7 @@ dbdiagramr turns a PostgreSQL or Supabase connection string into an interactive 
 
 ## Short entry (100 words)
 
-dbdiagramr is a free, open-source (MIT) browser tool for visualising an existing PostgreSQL database. Paste a connection string and it reads the schema from `pg_catalog` and renders an interactive ER diagram in about ten seconds: tables, columns, primary and foreign keys. Search tables, hover to trace relationships, check per-table Row Level Security status, and export SVG or PNG. Paste-SQL mode parses in the browser. No signup, no diagram limit, and the connection string is used for one request and discarded. Also has reference diagrams for 18 popular schemas, including Supabase auth and Better Auth.
+dbdiagramr is a free, open-source (MIT) browser tool for visualising an existing PostgreSQL database. Paste a connection string and it reads the schema from `pg_catalog` and renders an interactive ER diagram in about ten seconds: tables, columns, primary and foreign keys. Search tables, hover to trace relationships, check per-table Row Level Security status, and export SVG or PNG. Paste-SQL mode parses in the browser. No signup, no diagram limit, and the connection string is used for one request and discarded. Also has reference diagrams for 16 popular schemas, including Supabase auth and Better Auth.
 
 ## Differentiators to use
 

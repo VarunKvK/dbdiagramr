@@ -2,8 +2,22 @@
 
 ## How to send (no email address)
 
-- Preferred: X DM from [@im_daedalus](https://x.com/im_daedalus), or the site's contact form.
-- Paste the body below; drop the subject line when using a form.
+You can send 6 of 9 without owning an email address. Real routes, checked 2026-10-20:
+
+| Target | Route | Email needed? |
+|---|---|---|
+| OWOX | X DM @owoxbi, LinkedIn Ievgen Krasovytskyi, or https://www.owox.com/company/contact | Form asks for email; X/LinkedIn do not |
+| Trevor.io | ella@trevor.io (listed in their help centre) or X DM @trevor_io | Yes for email; no for X |
+| Airbyte | X DM @AirbyteHQ (no content email published) | No |
+| Skyvia | X DM @SkyviaService or support@skyvia.com | No for X |
+| WildAndFreeTools | https://wildandfreetools.com/contact/ | Yes - blocked |
+| Enlisted | enlisteddirectory@gmail.com | Yes - blocked unless you use a personal address |
+| Awesome list | Pull request on GitHub | No |
+| AlternativeTo | Account, then https://alternativeto.net/manage/add-software/ | No email needed to submit |
+| Supabase | https://supabase.com/partners#become-a-partner | Form asks for email |
+
+- Preferred: X DM from [@im_daedalus](https://x.com/im_daedalus). X DMs are open only if the recipient follows you or has DMs open; if the button is missing, reply publicly to their post with one line and ask where to send it.
+- Paste the body below; drop the subject line for DMs and forms.
 - If a form requires an email address, stop and flag it. Do not invent one.
 - Sign as Varun and add: X: https://x.com/im_daedalus
 

@@ -5,15 +5,15 @@ Status: todo | sent | replied | listed | declined
 
 | # | Page | Cited by | We listed? | Contact route | Angle | Status |
 |---|---|---|---|---|---|---|
-| 1 | owox.com/blog/articles/database-diagram-design-tools (updated 2026-10-07, author Ievgen Krasovytskyi) | Perplexity | No | X DM or site contact form | Their list has no direct-connect browser tool; dbdiagramr fits the "reads an existing database" group | todo |
-| 2 | trevor.io/blog/top-7-entity-relationship-diagram-tools | Perplexity | No | X DM or site contact form | Add one live-Postgres option to a 7-tool list dominated by drawing tools | todo |
-| 3 | airbyte.com/data-engineering-resources/relational-database-schema-design-tools | Perplexity | No | X DM or site contact form | Their schema-design list omits a zero-setup browser viewer | todo |
-| 4 | skyvia.com/blog/top-data-modeling-tools | Perplexity | No | X DM or site contact form | Add a free option for readers who already have a Postgres schema | todo |
-| 5 | wildandfreetools.com/blog/best-erd-tool-reddit-2026 | ChatGPT | No | X DM or site contact form (301 to canonical; verify) | Reddit-sourced free ERD list; dbdiagramr is a common Reddit answer | todo |
-| 6 | enlisted.directory | ChatGPT | No | Directory submit | Free directory listing | todo |
-| 7 | github.com/Wolfsrudel/awesome-list-database-tools | Perplexity | No | Pull request | Add under diagram/ER tools | todo |
-| 8 | alternativeto.net | Perplexity | No | Submit app page | Claim/create dbdiagramr listing as a dbdiagram.io alternative | todo |
-| 9 | supabase.com/partners/catalog | Both | No | Partner application | ChartDB is listed; Supabase is 2 of 6 prompts | todo |
+| 1 | owox.com/blog/articles/database-diagram-design-tools (updated 2026-10-07, author Ievgen Krasovytskyi) | Perplexity | No | X DM @owoxbi, LinkedIn Ievgen Krasovytskyi, or /company/contact form | Their list has no direct-connect browser tool; dbdiagramr fits the "reads an existing database" group | todo |
+| 2 | trevor.io/blog/top-7-entity-relationship-diagram-tools | Perplexity | No | ella@trevor.io (official help centre) or X DM @trevor_io | Add one live-Postgres option to a 7-tool list dominated by drawing tools | todo |
+| 3 | airbyte.com/data-engineering-resources/relational-database-schema-design-tools | Perplexity | No | X DM @AirbyteHQ or LinkedIn (no content email found) | Their schema-design list omits a zero-setup browser viewer | todo |
+| 4 | skyvia.com/blog/top-data-modeling-tools | Perplexity | No | support@skyvia.com or X DM @SkyviaService | Add a free option for readers who already have a Postgres schema | todo |
+| 5 | wildandfreetools.com/blog/best-erd-tool-reddit-2026 | ChatGPT | No | Form at /contact/ (requires email) | Reddit-sourced free ERD list; dbdiagramr is a common Reddit answer | todo |
+| 6 | enlisted.directory | ChatGPT | No | enlisteddirectory@gmail.com (submit flow 404s) | Free directory listing | todo |
+| 7 | github.com/Wolfsrudel/awesome-list-database-tools | Perplexity | No | GitHub PR (no email needed) | Add under diagram/ER tools | todo |
+| 8 | alternativeto.net | Perplexity | No | Account + /manage/add-software/ (bot-blocked) | Claim/create dbdiagramr listing as a dbdiagram.io alternative | todo |
+| 9 | supabase.com/partners/catalog | Both | No | /partners#become-a-partner form | ChartDB is listed; Supabase is 2 of 6 prompts | todo |
 
 ## Do not pitch
 

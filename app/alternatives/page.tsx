@@ -5,7 +5,7 @@ import Footer from "@/app/sections/Footer";
 export const metadata: Metadata = {
   title: "dbdiagramr Alternatives - ER Diagram Tools",
   description:
-    "Compare dbdiagramr to dbdiagram.io and DrawSQL. Paste a PostgreSQL connection string and get an interactive ER diagram in under 10 seconds - no signup.",
+    "Compare dbdiagramr to dbdiagram.io, DrawSQL, and ChartDB. Paste a PostgreSQL connection string and get an interactive ER diagram in under 10 seconds - no signup.",
   alternates: {
     canonical: "https://www.dbdiagramr.space/alternatives",
   },
@@ -28,6 +28,14 @@ const alternatives = [
       "DrawSQL is a collaborative visual editor for planning schemas with teams. dbdiagramr is a fast, no-signup way to visualize a PostgreSQL database that already exists.",
     tags: ["Team collaboration", "Visual editor", "Free public diagrams"],
   },
+  {
+    slug: "chartdb-alternative",
+    name: "ChartDB",
+    headline: "ChartDB vs dbdiagramr",
+    summary:
+      "ChartDB imports a schema by running a query and pasting the JSON. dbdiagramr connects to PostgreSQL directly, so the live diagram appears in seconds without writing a query.",
+    tags: ["Open source", "Multi-database", "Query-based import"],
+  },
 ];
 
 const jsonLd = {
@@ -38,7 +46,7 @@ const jsonLd = {
       "@id": "https://www.dbdiagramr.space/alternatives",
       name: "dbdiagramr Alternatives",
       description:
-        "Compare dbdiagramr to dbdiagram.io and DrawSQL for generating database diagrams from PostgreSQL.",
+        "Compare dbdiagramr to dbdiagram.io, DrawSQL, and ChartDB for generating database diagrams from PostgreSQL.",
       url: "https://www.dbdiagramr.space/alternatives",
       mainEntity: {
         "@type": "ItemList",

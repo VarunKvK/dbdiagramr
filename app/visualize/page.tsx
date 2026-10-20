@@ -161,7 +161,10 @@ export default function TryPage() {
         </div>
       </div>
 
-      <div className="relative flex min-h-0 flex-1 flex-col overflow-hidden">
+      <div
+        className="relative flex min-h-0 flex-1 flex-col overflow-hidden"
+        data-lenis-prevent
+      >
         {schema && (
           <div className="absolute left-4 right-4 top-4 z-20 flex items-center gap-2 rounded-full border border-border bg-white/95 px-3 py-2 shadow-lg backdrop-blur-sm sm:left-1/2 sm:right-auto sm:top-4 sm:w-[440px] sm:max-w-[90%] sm:-translate-x-1/2">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3d7e16" strokeWidth="2.5" className="shrink-0"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>

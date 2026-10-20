@@ -2,6 +2,7 @@
 
 import { useMemo, useState } from "react";
 import { goVisualizeWithConn } from "@/lib/preload";
+import { scrollToTop } from "@/lib/scroll";
 
 type Preset = "custom" | "supabase-pooler" | "supabase-direct" | "neon" | "railway" | "local";
 
@@ -126,7 +127,7 @@ export default function ConnStringBuilder() {
     const ssl = parsed.value.params.find(([k]) => k === "sslmode");
     if (ssl) setSslmode(ssl[1]);
     setParseError(null);
-    window.scrollTo({ top: 0, behavior: "smooth" });
+    scrollToTop();
   }
 
   return (

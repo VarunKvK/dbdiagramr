@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Footer from "@/app/sections/Footer";
+import FaqAccordion from "@/app/sections/FaqAccordion";
 
 export const metadata: Metadata = {
   title: "ChartDB Alternative | Live PostgreSQL ER Diagrams (2026)",
@@ -289,17 +290,7 @@ export default function ChartDbAlternativePage() {
           <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">
             Frequently asked questions
           </h2>
-          <div className="grid gap-4">
-            {faqs.map((faq) => (
-              <div
-                key={faq.q}
-                className="rounded-[20px] border border-border bg-white p-6 shadow-sm"
-              >
-                <h3 className="text-lg font-medium text-ink">{faq.q}</h3>
-                <p className="mt-2 leading-relaxed text-muted">{faq.a}</p>
-              </div>
-            ))}
-          </div>
+          <FaqAccordion items={faqs} variant="card" />
         </section>
 
         <section className="mt-16 rounded-[20px] bg-ink px-8 py-12 text-center">

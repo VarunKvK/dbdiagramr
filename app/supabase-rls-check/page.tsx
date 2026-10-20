@@ -5,6 +5,7 @@ import Footer from "@/app/sections/Footer";
 import RlsDemo from "@/components/RlsDemo";
 import TrackedLink from "@/components/TrackedLink";
 import { RLS_META } from "@/lib/rls";
+import FaqAccordion from "@/app/sections/FaqAccordion";
 
 const URL = "https://www.dbdiagramr.space/supabase-rls-check";
 const TITLE = "Supabase RLS Check — Find Tables Without Row Level Security";
@@ -227,15 +228,8 @@ GRANT USAGE ON SCHEMA public TO dbdiagramr_reader;`}</pre>
         <h2 className="text-2xl font-semibold tracking-tight text-ink md:text-3xl">
           Questions
         </h2>
-        <div className="mt-6 divide-y divide-border rounded-[16px] border border-border bg-surface">
-          {faqs.map((faq) => (
-            <details key={faq.q} className="group px-5 py-4">
-              <summary className="cursor-pointer list-none text-sm font-semibold text-ink">
-                {faq.q}
-              </summary>
-              <p className="mt-2 text-sm leading-relaxed text-muted">{faq.a}</p>
-            </details>
-          ))}
+        <div className="mt-6 overflow-hidden rounded-[16px] border border-border bg-surface">
+          <FaqAccordion items={faqs} variant="flush" />
         </div>
       </section>
 

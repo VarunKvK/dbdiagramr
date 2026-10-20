@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/app/sections/Footer";
+import FaqAccordion from "@/app/sections/FaqAccordion";
 
 export const metadata: Metadata = {
   title: { absolute: "dbdiagramr Alternatives: ER Diagram Tools Compared (2026)" },
@@ -303,13 +304,8 @@ export default function AlternativesPage() {
           <h2 className="text-2xl font-semibold tracking-tight text-ink">
             Frequently asked questions
           </h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {faqs.map((faq) => (
-              <div key={faq.q} className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
-                <h3 className="text-lg font-medium text-ink">{faq.q}</h3>
-                <p className="mt-2 leading-relaxed text-muted">{faq.a}</p>
-              </div>
-            ))}
+          <div className="mt-6">
+            <FaqAccordion items={faqs} variant="card" columns={2} />
           </div>
         </section>
 

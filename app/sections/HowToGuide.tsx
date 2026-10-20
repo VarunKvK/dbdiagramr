@@ -37,7 +37,7 @@ export default function HowToGuide() {
   const router = useRouter();
 
   return (
-    <section id="guide" className="bg-white">
+    <section id="guide" className="scroll-mt-16 bg-white">
       <div className="mx-auto max-w-4xl px-4 py-20">
         <div className="mb-4 text-center">
           <span className="inline-block rounded-[20px] border border-accent bg-accent-soft px-3 py-1 font-mono text-xs font-medium text-accent">

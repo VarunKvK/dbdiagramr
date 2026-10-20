@@ -1,4 +1,7 @@
 import Link from "next/link";
+import { ListOrdered, Type } from "lucide-react";
+import { OutlineButton } from "@/components/ui/pills";
+import FaqAccordion from "@/app/sections/FaqAccordion";
 
 export const postgresFaqs = [
   {
@@ -48,72 +51,110 @@ export const postgresHowToSteps = [
 
 export default function PostgresGuide() {
   return (
-    <section id="postgres-guide" className="scroll-mt-16 border-t border-border bg-white py-20 md:py-28">
-      <div className="mx-auto max-w-5xl px-6 lg:px-8">
-        <div className="max-w-3xl">
-          <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted">
-            PostgreSQL guide
-          </p>
-          <h2 className="mt-4 text-3xl font-semibold leading-tight tracking-tight text-ink md:text-5xl">
-            PostgreSQL ER diagrams, explained
-          </h2>
-          <p className="mt-5 text-lg leading-relaxed text-muted">
-            A PostgreSQL ER diagram turns tables, columns, primary keys, and
-            foreign keys into a picture you can read. dbdiagramr builds that
-            picture from your real database, so the diagram matches what is
-            deployed instead of a hand-maintained copy.{" "}
-            <Link href="/visualize" className="font-medium text-accent hover:text-accent-hover">
-              Open the visualizer
-            </Link>{" "}
-            to try it.
-          </p>
+    <section id="postgres-guide" className="scroll-mt-16 bg-cream py-20 md:py-28">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
+          <div className="max-w-2xl">
+            <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted">
+              PostgreSQL guide
+            </p>
+            <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-tight text-ink md:text-5xl">
+              PostgreSQL ER diagrams, <span className="text-accent">explained</span>
+            </h2>
+            <p className="mt-4 max-w-xl text-base font-medium leading-relaxed text-muted md:text-lg">
+              A PostgreSQL ER diagram turns tables, columns, primary keys, and
+              foreign keys into a picture you can read. dbdiagramr builds that
+              picture from your real database, so the diagram matches what is
+              deployed instead of a hand-maintained copy.
+            </p>
+            <Link
+              href="/visualize"
+              className="mt-4 inline-block text-sm font-medium text-accent hover:text-accent-hover md:hidden"
+            >
+              Open the visualizer →
+            </Link>
+          </div>
+          <OutlineButton href="/visualize" className="hidden shrink-0 md:inline-flex">
+            Open the visualizer →
+          </OutlineButton>
         </div>
 
-        <div className="mt-12 grid gap-6 md:grid-cols-2">
-          <div className="rounded-[20px] border border-border bg-cream p-7">
-            <h3 className="text-xl font-semibold text-ink">
+        <div className="mt-12 grid gap-5 md:grid-cols-2">
+          <div className="rounded-[20px] bg-ink p-8 text-white">
+            <Type size={28} strokeWidth={2} className="text-punch" />
+            <h3 className="mt-6 text-2xl font-semibold tracking-tight">
               How Postgres-specific types render
             </h3>
-            <ul className="mt-4 list-disc space-y-3 pl-5 leading-relaxed text-muted">
-              <li>
-                <strong className="text-ink">Arrays</strong>: text[],
-                integer[], and multi-dimensional arrays render with brackets,
-                exactly as \d shows them.
+            <ul className="mt-5 divide-y divide-white/10">
+              <li className="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+                <strong className="font-mono text-xs font-medium uppercase tracking-wider text-punch">
+                  Arrays
+                </strong>
+                <span className="text-sm leading-relaxed text-white/70">
+                  text[], integer[], and multi-dimensional arrays render with
+                  brackets, exactly as \d shows them.
+                </span>
               </li>
-              <li>
-                <strong className="text-ink">Enums and domains</strong>: custom
-                type names (mpaa_rating, email_address) are preserved, never
-                collapsed to varchar.
+              <li className="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+                <strong className="font-mono text-xs font-medium uppercase tracking-wider text-punch">
+                  Enums and domains
+                </strong>
+                <span className="text-sm leading-relaxed text-white/70">
+                  Custom type names (mpaa_rating, email_address) are preserved,
+                  never collapsed to varchar.
+                </span>
               </li>
-              <li>
-                <strong className="text-ink">json / jsonb</strong>: shown as-is
-                on the column; the key structure inside the document is not
-                expanded.
+              <li className="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+                <strong className="font-mono text-xs font-medium uppercase tracking-wider text-punch">
+                  json / jsonb
+                </strong>
+                <span className="text-sm leading-relaxed text-white/70">
+                  Shown as-is on the column; the key structure inside the
+                  document is not expanded.
+                </span>
               </li>
-              <li>
-                <strong className="text-ink">Ranges and network types</strong>:
-                tstzrange, int4range, inet, cidr, and uuid all render verbatim.
+              <li className="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+                <strong className="font-mono text-xs font-medium uppercase tracking-wider text-punch">
+                  Ranges and network types
+                </strong>
+                <span className="text-sm leading-relaxed text-white/70">
+                  tstzrange, int4range, inet, cidr, and uuid all render
+                  verbatim.
+                </span>
               </li>
-              <li>
-                <strong className="text-ink">Composite keys</strong>: every
-                column in a multi-column primary key gets its own PK badge.
+              <li className="grid gap-1 py-3 sm:grid-cols-[150px_1fr] sm:gap-4">
+                <strong className="font-mono text-xs font-medium uppercase tracking-wider text-punch">
+                  Composite keys
+                </strong>
+                <span className="text-sm leading-relaxed text-white/70">
+                  Every column in a multi-column primary key gets its own PK
+                  badge.
+                </span>
               </li>
             </ul>
           </div>
 
-          <div className="rounded-[20px] border border-border bg-cream p-7">
-            <h3 className="text-xl font-semibold text-ink">
+          <div className="rounded-[20px] bg-accent-soft p-8 text-ink">
+            <ListOrdered size={28} strokeWidth={2} className="text-accent" />
+            <h3 className="mt-6 text-2xl font-semibold tracking-tight">
               How to generate a PostgreSQL ER diagram
             </h3>
-            <ol className="mt-4 list-decimal space-y-4 pl-5 leading-relaxed text-muted">
-              {postgresHowToSteps.map((step) => (
-                <li key={step.name}>
-                  <strong className="text-ink">{step.name}.</strong>{" "}
-                  {step.text}
+            <ol className="mt-5 space-y-4">
+              {postgresHowToSteps.map((step, index) => (
+                <li key={step.name} className="flex gap-3">
+                  <span className="pt-0.5 font-mono text-xs font-medium text-accent">
+                    {String(index + 1).padStart(2, "0")}
+                  </span>
+                  <span className="text-sm leading-relaxed text-muted">
+                    <strong className="font-semibold text-ink">
+                      {step.name}.
+                    </strong>{" "}
+                    {step.text}
+                  </span>
                 </li>
               ))}
             </ol>
-            <p className="mt-5 text-sm leading-relaxed text-muted">
+            <p className="mt-5 text-xs leading-relaxed text-muted">
               No installation and no schema code. Paste-SQL mode runs in your
               browser; a live connection string is used for one request and is
               never stored.
@@ -122,20 +163,32 @@ export default function PostgresGuide() {
         </div>
 
         <div className="mt-16">
-          <h2 className="text-2xl font-semibold tracking-tight text-ink">
-            Frequently asked questions
-          </h2>
-          <div className="mt-6 grid gap-4 md:grid-cols-2">
-            {postgresFaqs.map((faq) => (
-              <div
-                key={faq.q}
-                className="rounded-[20px] border border-border bg-cream p-6"
-              >
-                <h3 className="text-lg font-medium text-ink">{faq.q}</h3>
-                <p className="mt-2 leading-relaxed text-muted">{faq.a}</p>
-              </div>
-            ))}
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <h2 className="text-2xl font-semibold tracking-tight text-ink">
+              Frequently asked questions
+            </h2>
+            <p className="font-mono text-xs text-muted">Select a question to expand</p>
           </div>
+          <div className="mt-6">
+            <FaqAccordion items={postgresFaqs} />
+          </div>
+          <p className="mt-6 font-mono text-xs leading-relaxed text-muted">
+            Still curious?{" "}
+            <Link
+              href="/visualize"
+              className="font-medium text-accent hover:text-accent-hover"
+            >
+              Open the visualizer
+            </Link>{" "}
+            or browse the{" "}
+            <Link
+              href="/schema"
+              className="font-medium text-accent hover:text-accent-hover"
+            >
+              schema library
+            </Link>
+            .
+          </p>
         </div>
       </div>
     </section>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Instrument_Sans, IBM_Plex_Mono } from "next/font/google";
 import Script from "next/script";
 import Navbar from "@/app/sections/Navbar";
+import SmoothScroll from "@/components/SmoothScroll";
 import Popup from "@/components/Popup";
 import { Toaster } from "sonner";
 import "./globals.css";
@@ -58,8 +59,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${instrument.variable} ${plexMono.variable} scroll-smooth`}>
+    <html lang="en" className={`${instrument.variable} ${plexMono.variable}`}>
       <body className="antialiased">
+        <SmoothScroll />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-MK1QVPVPSJ"
           strategy="lazyOnload"

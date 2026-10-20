@@ -7,6 +7,7 @@ import SchemaDiagram from "@/components/SchemaDiagram";
 import SchemaCopyButtons from "@/components/SchemaCopyButtons";
 import type { ForeignKey } from "@/lib/diagram";
 import { schemaToMermaid, schemaToSql } from "@/lib/schemaExport";
+import FaqAccordion from "@/app/sections/FaqAccordion";
 
 export function generateStaticParams() {
   return getAllSchemaEntries().map((entry) => ({ slug: entry.slug }));
@@ -446,17 +447,7 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
           <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">
             Frequently asked questions
           </h2>
-          <div className="grid gap-4">
-            {entry.faqs.map((faq) => (
-              <div
-                key={faq.q}
-                className="rounded-[20px] border border-border bg-white p-6 shadow-sm"
-              >
-                <h3 className="text-lg font-medium text-ink">{faq.q}</h3>
-                <p className="mt-2 leading-relaxed text-muted">{faq.a}</p>
-              </div>
-            ))}
-          </div>
+          <FaqAccordion items={entry.faqs} variant="card" />
         </section>
 
         <section className="mt-16">

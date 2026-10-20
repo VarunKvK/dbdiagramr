@@ -25,7 +25,7 @@ export default function Footer() {
             <div>
               <h3 className="mb-4 text-xl font-semibold">Product</h3>
               <ul className="space-y-3 text-lg font-medium text-white/70">
-                <li><a href="#features" className="transition-colors hover:text-white">Features</a></li>
+                <li><a href="/#features" className="transition-colors hover:text-white">Features</a></li>
                 <li>
                   <a
                     href="https://github.com/VarunKvK/dbdiagramr/releases"

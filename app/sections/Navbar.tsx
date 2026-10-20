@@ -3,11 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
-
-function scrollToId(id: string) {
-  const el = document.getElementById(id);
-  if (el) el.scrollIntoView({ behavior: "smooth" });
-}
+import { scrollToId, scrollToTop } from "@/lib/scroll";
 
 const links = [
   { label: "Schemas", target: "/schema" },
@@ -47,7 +43,7 @@ export default function Navbar() {
           onClick={(e) => {
             if (pathname === "/") {
               e.preventDefault();
-              window.scrollTo({ top: 0, behavior: "smooth" });
+              scrollToTop();
             }
           }}
           className="flex items-center gap-2 text-ink"

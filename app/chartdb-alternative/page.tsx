@@ -52,14 +52,14 @@ const comparisonRows = [
     chartdb: "No for the free editor",
   },
   {
-    feature: "Diagram limit",
-    dbdiagramr: "None",
-    chartdb: "Free editor, with paid team features",
+    feature: "Price",
+    dbdiagramr: "Free, no diagram limit",
+    chartdb: "Free tier; paid plans for teams",
   },
   {
     feature: "Export",
     dbdiagramr: "SVG and PNG",
-    chartdb: "SQL and image export",
+    chartdb: "SQL",
   },
   {
     feature: "Best for",

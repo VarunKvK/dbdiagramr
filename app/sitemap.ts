@@ -18,6 +18,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/drawsql-vs-dbdiagramr": "2026-09-28",
     "/chartdb-alternative": "2026-10-20",
     "/postgres-er-diagram": "2026-10-16",
+    "/supabase-er-diagram": "2026-10-20",
     "/database-schema-analyzer": "2026-09-25",
     "/tools": "2026-10-10",
     "/sql-formatter": "2026-09-25",
@@ -109,6 +110,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: staticLastmod["/postgres-er-diagram"],
       changeFrequency: "monthly",
       priority: 0.8,
+    },
+    {
+      url: `${base}/supabase-er-diagram`,
+      lastModified: staticLastmod["/supabase-er-diagram"],
+      changeFrequency: "monthly",
+      priority: 0.9,
     },
     {
       url: `${base}/database-schema-analyzer`,

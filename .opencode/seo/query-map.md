@@ -25,14 +25,14 @@ Status: cover | gap | out of scope
 
 | # | Query | Intent | Format to beat | Our page | Status |
 |---|---|---|---|---|---|
-| 11 | supabase schema diagram | tool | tool landing page | /schema/supabase (redirect from /supabase-schema-diagram) | gap: needs tool landing, not a reference page |
-| 12 | supabase er diagram | tool | tool landing page | /schema/supabase | gap: same |
-| 13 | supabase database diagram | tool | tool page | /schema/supabase | gap: same |
-| 14 | supabase visualizer | tool | tool page | /postgres-er-diagram | gap: add a Supabase section |
-| 15 | supabase erd | tool | tool page | /schema/supabase | gap: same as 11 |
+| 11 | supabase schema diagram | tool | tool landing page | /supabase-er-diagram | cover (built 2026-10-20) |
+| 12 | supabase er diagram | tool | tool landing page | /supabase-er-diagram | cover (built 2026-10-20) |
+| 13 | supabase database diagram | tool | tool page | /supabase-er-diagram | cover (built 2026-10-20) |
+| 14 | supabase visualizer | tool | tool page | /supabase-er-diagram | cover (built 2026-10-20) |
+| 15 | supabase erd | tool | tool page | /supabase-er-diagram | cover (built 2026-10-20) |
 | 16 | supabase rls check | tool | tool page | /supabase-rls-check | cover |
 | 17 | supabase auth schema diagram | reference | schema reference page | /blog/supabase-auth-schema-explained | cover |
-| 18 | visualize supabase database | tool | tutorial + tool | /schema/supabase | gap: add a how-to block |
+| 18 | visualize supabase database | tool | tutorial + tool | /supabase-er-diagram | cover (built 2026-10-20) |
 
 ## C. Comparisons (19-26)
 
@@ -88,15 +88,14 @@ Status: cover | gap | out of scope
 
 ## Score
 
-- Cover: 40
-- Gap: 10 (11-15, 18, 23-26)
+- Cover: 46
+- Gap: 4 (23-26)
 - Out of scope: 0
 
 ## Highest-value gaps
 
-1. **Supabase tool landing (11-15, 18).** 2 of 6 measured prompts are Supabase. /supabase-schema-diagram currently 308s to a reference page, so the tool intent has no landing. Build `/supabase-er-diagram` or retarget the redirect to a tool page.
-2. **pgAdmin / DBeaver comparisons (25-26).** High-volume searchers who already have the database and are looking for a diagram. Both are "how do I see relationships in X" tutorials; we do not have one.
-3. **dbdiagram vs chartdb head-to-head (23-24).** /chartdb-alternative is vendor-framed. Add a direct comparison block targeting the "vs" phrasing.
+1. **pgAdmin / DBeaver comparisons (25-26).** High-volume searchers who already have the database and are looking for a diagram. Both are "how do I see relationships in X" tutorials; we do not have one.
+2. **dbdiagram vs chartdb head-to-head (23-24).** /chartdb-alternative is vendor-framed. Add a direct comparison block targeting the "vs" phrasing.
 
 ## Weekly loop (from the post)
 

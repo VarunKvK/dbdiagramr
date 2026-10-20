@@ -50,3 +50,11 @@ Re-measure on: 2026-11-13.
 - Contact routes resolved without a branded email: OWOX (@owoxbi / LinkedIn / form), Trevor (ella@trevor.io / @trevor_io), Airbyte (@AirbyteHQ), Skyvia (@SkyviaService / support@skyvia.com), Enlisted (enlisteddirectory@gmail.com), awesome list (PR), AlternativeTo (account), Supabase (/partners#become-a-partner).
 - Reference schema count corrected to 16 in the outreach kit.
 - Still blocked: Search Console not verified for dbdiagramr.space, so the weekly query refresh has no data source.
+
+## 2026-10-20 · Supabase tool landing
+
+- Built `/supabase-er-diagram`: targets supabase schema diagram, supabase er diagram, supabase erd, supabase database diagram, supabase visualizer.
+- Content: Supabase auth demo (7 tables), 3-step pooler connect guide, public+auth+storage coverage, HowTo + FAQPage + Article + breadcrumb JSON-LD.
+- Retargeted `/supabase-schema-diagram` 308 from `/schema/supabase` to the new landing.
+- Internal links: /schema/supabase related links, sitemap priority 0.9.
+- Query map: Supabase rows 11-15 and 18 move from gap to cover; score 46 cover / 4 gap.

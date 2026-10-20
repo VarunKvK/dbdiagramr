@@ -42,7 +42,7 @@ const nextConfig = {
       // Removed landing pages (Oct 2026 revamp) — keep their equity.
       {
         source: "/supabase-schema-diagram",
-        destination: "/schema/supabase",
+        destination: "/supabase-er-diagram",
         permanent: true,
       },
       {

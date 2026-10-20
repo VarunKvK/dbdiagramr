@@ -38,7 +38,7 @@ dbdiagramr is a free, open-source (MIT) browser tool for visualising an existing
 - 1200x630: https://www.dbdiagramr.space/og/blog/betterauth-schema-explained.png (example; replace with a product screenshot if asked)
 - 1800x945: https://www.dbdiagramr.space/BetterAuth-DbDiagramr-OG.png
 - Live demo: https://www.dbdiagramr.space/visualize
-- Supabase-specific redirect: https://www.dbdiagramr.space/supabase-schema-diagram
+- Supabase landing: https://www.dbdiagramr.space/supabase-er-diagram
 
 ## Suggested table row
 

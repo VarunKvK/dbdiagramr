@@ -51,20 +51,20 @@ export const schemaEntries: SchemaEntry[] = [
   {
     slug: "supabase",
     name: "Supabase",
-    title: "Supabase Database Schema Diagram",
-    h1: "Supabase Database Schema Diagram",
+    title: "Supabase Auth Schema Diagram: Users, Identities, Sessions",
+    h1: "Supabase Auth Schema Diagram",
     description:
-      "Visualize the Supabase auth database schema - every table, column, and foreign key, including auth.users, auth.identities, and auth.sessions.",
+      "See the Supabase auth schema as a diagram: auth.users, auth.identities, auth.sessions, and refresh_tokens with every column and foreign key.",
     keywords: [
-      "supabase schema",
-      "supabase database schema",
       "supabase auth schema",
+      "supabase auth diagram",
       "supabase auth.users",
-      "supabase er diagram",
-      "supabase database diagram",
+      "supabase identities table",
+      "supabase sessions table",
+      "supabase database schema",
     ],
     intro:
-      "Every Supabase project ships with an auth schema that powers authentication, sessions, and user management. This is the full database schema diagram of the Supabase auth tables - auth.users, auth.identities, auth.sessions, and friends - showing the primary keys and foreign key relationships between them. Use it to understand how Supabase stores users before you build your own profiles table.",
+      "Every Supabase project ships with a built-in auth schema managed by GoTrue. This diagram maps the auth tables - auth.users, auth.identities, auth.sessions, and refresh_tokens - with the primary keys and foreign keys between them. It documents the built-in auth schema, not your app's public tables. To diagram your own Supabase project, connect it with the Supabase ER diagram tool.",
     facts: [
       { label: "Tables", value: "7" },
       { label: "Schema", value: "auth" },
@@ -80,7 +80,7 @@ export const schemaEntries: SchemaEntry[] = [
         a: "Every auth.users row can have multiple auth.identities rows linked by user_id. Each identity represents a sign-in method (email/password, Google, GitHub, etc.) for that user.",
       },
     ],
-    lastUpdated: "2026-08-03",
+    lastUpdated: "2026-10-20",
     schema: supabaseSchema,
     source: {
       label: "Supabase auth migrations (supabase/auth)",

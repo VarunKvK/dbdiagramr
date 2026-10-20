@@ -20,7 +20,7 @@ const plexMono = IBM_Plex_Mono({
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.dbdiagramr.space"),
   title: {
-    default: "PostgreSQL ER Diagram Tool, Generate Diagrams in 10 Seconds | dbdiagramr",
+    default: "PostgreSQL ER Diagram Tool in 10 Seconds | dbdiagramr",
     template: "%s | dbdiagramr",
   },
   description:
@@ -109,53 +109,8 @@ gtag('config', 'G-MK1QVPVPSJ');`}
       },
       "description": "Free, open-source web tool for generating interactive entity-relationship diagrams from PostgreSQL databases.",
       "sameAs": [
-        "https://github.com/VarunKvK/dbdiagramr"
-      ]
-    },
-    {
-      "@type": "SoftwareApplication",
-      "name": "dbdiagramr",
-      "applicationCategory": "WebApplication",
-      "operatingSystem": "Any",
-      "description": "Paste your PostgreSQL connection string and generate a beautiful ER diagram in seconds.",
-      "url": "https://www.dbdiagramr.space",
-      "offers": [
-        {
-          "@type": "Offer",
-          "name": "Free",
-          "price": "0",
-          "priceCurrency": "USD",
-          "description": "Unlimited diagrams, no account required."
-        }
-      ]
-    },
-    {
-      "@type": "FAQPage",
-      "mainEntity": [
-        {
-          "@type": "Question",
-          "name": "How do I get my PostgreSQL connection string?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "In your database provider's dashboard, click Connect to retrieve your connection string. It typically looks like: postgresql://user:password@host:5432/dbname."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "Which connection method should I use?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Select the Transaction pooler option. This ensures compatibility with stateless applications and allows dbdiagramr to detect connections properly."
-          }
-        },
-        {
-          "@type": "Question",
-          "name": "What if I forgot my database password?",
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": "Regenerate your password in the Shared pooler section of your database provider's dashboard and copy-paste the new credentials into your connection string."
-          }
-        }
+        "https://github.com/VarunKvK/dbdiagramr",
+        "https://x.com/im_daedalus"
       ]
     }
   ]

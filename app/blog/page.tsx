@@ -11,6 +11,21 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.dbdiagramr.space/blog",
   },
+  openGraph: {
+    title: "Blog | PostgreSQL Schema Guides & ER Diagram Tutorials",
+    description:
+      "Guides on PostgreSQL schemas, ER diagrams, and database visualization, from connection strings to Stripe and Supabase schema breakdowns.",
+    type: "website",
+    url: "https://www.dbdiagramr.space/blog",
+    images: [{ url: "/DbDiagramr-OG.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "PostgreSQL Schema Guides & ER Diagram Tutorials",
+    description:
+      "Practical guides on PostgreSQL schemas, ER diagrams, and connection strings.",
+    images: ["/DbDiagramr-OG.png"],
+  },
 };
 
 export default function BlogHubPage() {

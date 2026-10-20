@@ -5,7 +5,7 @@ import ToolPageShell, {
 import PrismaErd from "@/components/PrismaErd";
 
 const URL = "https://www.dbdiagramr.space/prisma-erd-generator";
-const TITLE = "Prisma ERD Generator | Schema to ER Diagram | dbdiagramr";
+const TITLE = "Prisma ERD Generator | Schema to ER Diagram";
 const DESCRIPTION =
   "Paste your schema.prisma and see every model and relation as an interactive ER diagram. Free, instant, no signup, runs in your browser.";
 
@@ -65,7 +65,7 @@ export default function PrismaErdPage() {
       h1="Prisma schema to ER diagram"
       intro="Paste schema.prisma and see every model and relation as an interactive ER diagram, no generator to install, no database to connect, results live as you type."
       current="/prisma-erd-generator"
-      siblings={["/sql-to-prisma", "/sql-to-typescript", "/postgres-er-diagram"]}
+      siblings={["/sql-to-prisma", "/sql-to-typescript", "/"]}
       faqs={faqs}
       exploreLinks={[
         { href: "/schema/nextauth", label: "NextAuth schema diagram" },

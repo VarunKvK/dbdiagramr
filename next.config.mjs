@@ -25,6 +25,7 @@ const nextConfig = {
     // Ship the font files with the OG image function.
     outputFileTracingIncludes: {
       "/api/og": ["./app/fonts/**"],
+      "/schema/[slug]/diagram.png": ["./app/fonts/**"],
     },
   },
   async rewrites() {
@@ -46,18 +47,39 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/postgres-er-diagram",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/blog/dbdiagram-tools-compared",
+        destination: "/alternatives",
+        permanent: true,
+      },
+      {
+        source: "/blog/visualize-postgres-schema-5-ways",
+        destination: "/blog/database-schema-diagram-tool",
+        permanent: true,
+      },
+      {
         source: "/free-schema-generator",
-        destination: "/postgres-er-diagram",
+        destination: "/",
         permanent: true,
       },
       {
         source: "/database-diagram-online",
-        destination: "/postgres-er-diagram",
+        destination: "/",
         permanent: true,
       },
       {
         source: "/postgres-schema-visualizer",
-        destination: "/postgres-er-diagram",
+        destination: "/",
+        permanent: true,
+      },
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "dbdiagramr.vercel.app" }],
+        destination: "https://www.dbdiagramr.space/:path*",
         permanent: true,
       },
       {

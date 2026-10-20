@@ -4,6 +4,7 @@ export type BlogPost = {
   description: string;
   keywords: string[];
   date: string; // YYYY-MM-DD
+  updated?: string; // YYYY-MM-DD, when the body changed after publication
   readingMinutes: number;
   tags: string[];
   // Canonical: where the primary version lives (dev.to initially, self later)
@@ -14,22 +15,6 @@ export type BlogPost = {
 };
 
 export const blogPosts: BlogPost[] = [
-  {
-    slug: "visualize-postgres-schema-5-ways",
-    title: "How to Visualize a PostgreSQL Schema: 5 Ways Compared",
-    description:
-      "Compare five practical ways to turn a Postgres database into a readable schema diagram: from psql to a live connection string, and pick the one that fits.",
-    keywords: [
-      "visualize postgres schema",
-      "postgresql er diagram",
-      "postgres schema diagram",
-      "how to visualize postgres database",
-    ],
-    date: "2026-08-18",
-    readingMinutes: 6,
-    tags: ["postgres", "database", "tutorial"],
-    devtoUrl: undefined,
-  },
   {
     slug: "postgres-connection-string-supabase-neon-railway",
     title: "PostgreSQL Connection String: Supabase, Neon, Railway",
@@ -213,21 +198,6 @@ export const blogPosts: BlogPost[] = [
     devtoUrl: undefined,
   },
   {
-    slug: "dbdiagram-tools-compared",
-    title: "dbdiagram.io vs dbdiagramr vs DrawSQL: Honest Comparison",
-    description:
-      "The real differences between dbdiagram.io, dbdiagramr, and DrawSQL: pricing, features, Supabase integration, and which one fits your workflow.",
-    keywords: [
-      "dbdiagram.io vs dbdiagramr",
-      "dbdiagram tools comparison",
-      "drawsql alternative",
-    ],
-    date: "2026-09-08",
-    readingMinutes: 5,
-    tags: ["database", "tutorial", "tools"],
-    devtoUrl: undefined,
-  },
-  {
     slug: "free-online-database-diagram-tool",
     title: "Free Online Database Diagram Tool: Visualize Your Schema in Seconds",
     description:
@@ -272,6 +242,7 @@ export const blogPosts: BlogPost[] = [
       "database visualization tool",
     ],
     date: "2026-09-28",
+    updated: "2026-10-20",
     readingMinutes: 6,
     tags: ["postgres", "database", "tutorial"],
   },

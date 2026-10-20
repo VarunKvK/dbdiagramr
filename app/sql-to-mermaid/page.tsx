@@ -5,7 +5,7 @@ import ToolPageShell, {
 import SqlToMermaid from "@/components/SqlToMermaid";
 
 const URL = "https://www.dbdiagramr.space/sql-to-mermaid";
-const TITLE = "SQL to Mermaid ER Diagram Converter | Free | dbdiagramr";
+const TITLE = "SQL to Mermaid ER Diagram Converter | Free";
 const DESCRIPTION =
   "Paste CREATE TABLE statements and get Mermaid erDiagram code instantly. Copy it into GitHub, Notion, or your docs. Free, no signup.";
 
@@ -65,11 +65,11 @@ export default function SqlToMermaidPage() {
       h1="SQL to Mermaid ER diagram converter"
       intro="Paste PostgreSQL CREATE TABLE statements and get Mermaid erDiagram code instantly, entities, attributes, keys, and relationships ready for GitHub, Notion, or your docs."
       current="/sql-to-mermaid"
-      siblings={["/sql-formatter", "/postgres-er-diagram", "/database-schema-analyzer"]}
+      siblings={["/sql-formatter", "/", "/database-schema-analyzer"]}
       faqs={faqs}
       exploreLinks={[
         { href: "/blog/what-is-an-er-diagram", label: "How to Read an ER Diagram" },
-        { href: "/postgres-er-diagram", label: "PostgreSQL ER Diagram Tool" },
+        { href: "/", label: "PostgreSQL ER Diagram Tool" },
       ]}
     >
       <script

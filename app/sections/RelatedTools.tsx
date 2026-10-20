@@ -1,20 +1,76 @@
 import Link from "next/link";
 
 const allTools = [
-  { href: "/postgres-er-diagram", label: "PostgreSQL ER Diagram" },
-  { href: "/database-schema-analyzer", label: "Schema Health Analyzer" },
-  { href: "/sql-formatter", label: "SQL Formatter" },
-  { href: "/csv-to-sql", label: "CSV to SQL" },
-  { href: "/json-to-sql", label: "JSON to SQL" },
-  { href: "/sql-validator", label: "SQL Validator" },
-  { href: "/sql-to-mermaid", label: "SQL to Mermaid" },
-  { href: "/sql-to-typescript", label: "SQL to TypeScript" },
-  { href: "/sql-to-prisma", label: "SQL to Prisma" },
-  { href: "/postgres-connection-string", label: "Connection String Builder" },
-  { href: "/sql-schema-diff", label: "Schema Diff" },
-  { href: "/dbml-to-sql", label: "DBML to SQL" },
-  { href: "/prisma-erd-generator", label: "Prisma ERD" },
-  { href: "/github-schema-action", label: "PR Schema Diff Action" },
+  {
+    href: "/",
+    label: "PostgreSQL ER Diagram",
+    description: "Paste a connection string or SQL and explore tables and foreign keys.",
+  },
+  {
+    href: "/database-schema-analyzer",
+    label: "Schema Health Analyzer",
+    description: "Find missing primary keys, orphan tables, and schema issues.",
+  },
+  {
+    href: "/sql-formatter",
+    label: "SQL Formatter",
+    description: "Format messy PostgreSQL queries into readable SQL.",
+  },
+  {
+    href: "/csv-to-sql",
+    label: "CSV to SQL",
+    description: "Turn a CSV file into CREATE TABLE and INSERT statements.",
+  },
+  {
+    href: "/json-to-sql",
+    label: "JSON to SQL",
+    description: "Convert JSON objects into PostgreSQL tables and rows.",
+  },
+  {
+    href: "/sql-validator",
+    label: "SQL Validator",
+    description: "Check PostgreSQL syntax and catch errors before running it.",
+  },
+  {
+    href: "/sql-to-mermaid",
+    label: "SQL to Mermaid",
+    description: "Generate a Mermaid ER diagram from CREATE TABLE statements.",
+  },
+  {
+    href: "/sql-to-typescript",
+    label: "SQL to TypeScript",
+    description: "Generate TypeScript types and Zod schemas from tables.",
+  },
+  {
+    href: "/sql-to-prisma",
+    label: "SQL to Prisma",
+    description: "Convert PostgreSQL tables into a Prisma schema.",
+  },
+  {
+    href: "/postgres-connection-string",
+    label: "Connection String Builder",
+    description: "Build, parse, and debug PostgreSQL connection strings.",
+  },
+  {
+    href: "/sql-schema-diff",
+    label: "Schema Diff",
+    description: "Compare two schemas and get the ALTER statements to sync them.",
+  },
+  {
+    href: "/dbml-to-sql",
+    label: "DBML to SQL",
+    description: "Convert DBML diagrams into PostgreSQL DDL.",
+  },
+  {
+    href: "/prisma-erd-generator",
+    label: "Prisma ERD",
+    description: "Visualize a Prisma schema as an entity-relationship diagram.",
+  },
+  {
+    href: "/github-schema-action",
+    label: "PR Schema Diff Action",
+    description: "Post schema changes and ER diagrams on every pull request.",
+  },
 ];
 
 export default function RelatedTools({
@@ -45,7 +101,7 @@ export default function RelatedTools({
               {tool.label} <span className="text-accent">→</span>
             </div>
             <div className="mt-1 text-sm text-muted">
-              Free, no signup. Visualize your PostgreSQL schema in seconds.
+              {tool.description}
             </div>
           </Link>
         ))}

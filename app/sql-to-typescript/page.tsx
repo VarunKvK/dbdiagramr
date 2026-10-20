@@ -5,7 +5,7 @@ import ToolPageShell, {
 import SqlToTypescript from "@/components/SqlToTypescript";
 
 const URL = "https://www.dbdiagramr.space/sql-to-typescript";
-const TITLE = "SQL to TypeScript Types & Zod Schemas | dbdiagramr";
+const TITLE = "SQL to TypeScript Types & Zod Schemas";
 const DESCRIPTION =
   "Generate TypeScript interfaces and Zod schemas from PostgreSQL CREATE TABLE statements. Handles nullables and enums. Free, no signup.";
 

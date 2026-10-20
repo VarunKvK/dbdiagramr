@@ -163,7 +163,7 @@ export default function GithubSchemaActionPage() {
       intro="A free GitHub Action that comments what your migration changed — added and dropped tables, column changes, a ready-to-review ALTER preview, and a Mermaid ER diagram — the moment a PR touches Postgres migrations. No database, no API keys."
       badge="GitHub Action"
       current="/github-schema-action"
-      siblings={["/sql-schema-diff", "/database-schema-analyzer", "/postgres-er-diagram"]}
+      siblings={["/sql-schema-diff", "/database-schema-analyzer", "/"]}
       faqs={faqs}
       exploreLinks={[
         { href: "/sql-schema-diff", label: "Schema Diff in the browser" },

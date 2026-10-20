@@ -5,7 +5,7 @@ import ToolPageShell, {
 import CsvToSql from "@/components/CsvToSql";
 
 const URL = "https://www.dbdiagramr.space/csv-to-sql";
-const TITLE = "CSV to SQL Converter | Free, No Upload | dbdiagramr";
+const TITLE = "CSV to SQL Converter | Free, No Upload";
 const DESCRIPTION =
   "Drop in a CSV and get CREATE TABLE and INSERT statements with column types detected. Your file never leaves the browser. No signup.";
 

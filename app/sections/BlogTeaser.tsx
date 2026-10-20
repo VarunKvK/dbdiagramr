@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { getAllPosts } from "@/data/blog/posts";
+import { getAllSchemaEntries } from "@/data/schemas/registry";
 import { MetaPill } from "@/components/ui/pills";
 import LinkExplorer from "@/app/sections/LinkExplorer";
 
 const toolLinks = [
-  { href: "/postgres-er-diagram", label: "PostgreSQL ER Diagram" },
+  { href: "/", label: "PostgreSQL ER Diagram" },
   { href: "/database-schema-analyzer", label: "Schema Health Analyzer" },
   { href: "/sql-formatter", label: "SQL Formatter" },
   { href: "/csv-to-sql", label: "CSV to SQL" },
@@ -20,16 +21,10 @@ const toolLinks = [
   { href: "/github-schema-action", label: "PR Schema Diff Action" },
 ];
 
-const schemaLinks = [
-  { href: "/schema/supabase", label: "Supabase" },
-  { href: "/schema/nextauth", label: "NextAuth.js" },
-  { href: "/schema/chinook", label: "Chinook" },
-  { href: "/schema/pagila", label: "Pagila" },
-  { href: "/schema/rbac", label: "RBAC" },
-  { href: "/schema/dvd-rental", label: "DVD Rental" },
-  { href: "/schema/stripe", label: "Stripe" },
-  { href: "/schema/ecommerce", label: "E-commerce" },
-];
+const schemaLinks = getAllSchemaEntries().map((entry) => ({
+  href: `/schema/${entry.slug}`,
+  label: entry.name,
+}));
 
 function BlogCard({
   post,

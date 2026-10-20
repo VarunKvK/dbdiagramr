@@ -35,7 +35,7 @@ const tools = [
     tags: ["Supabase", "Security", "New"],
   },
   {
-    href: "/postgres-er-diagram",
+    href: "/",
     name: "PostgreSQL ER Diagram",
     description:
       "Paste a connection string and see your live PostgreSQL schema as an interactive ER diagram in under 10 seconds.",

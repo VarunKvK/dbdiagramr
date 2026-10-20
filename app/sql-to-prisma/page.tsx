@@ -5,7 +5,7 @@ import ToolPageShell, {
 import SqlToPrisma from "@/components/SqlToPrisma";
 
 const URL = "https://www.dbdiagramr.space/sql-to-prisma";
-const TITLE = "SQL to Prisma Schema Converter | Free Online | dbdiagramr";
+const TITLE = "SQL to Prisma Schema Converter | Free Online";
 const DESCRIPTION =
   "Turn CREATE TABLE statements into a ready-to-use schema.prisma with types and relations mapped. Free, instant, no signup.";
 
@@ -65,7 +65,7 @@ export default function SqlToPrismaPage() {
       h1="SQL to Prisma schema converter"
       intro="Turn PostgreSQL CREATE TABLE statements into a ready-to-use schema.prisma, models, native type mappings, ids, defaults, and relations on both sides."
       current="/sql-to-prisma"
-      siblings={["/sql-to-typescript", "/postgres-er-diagram", "/sql-formatter"]}
+      siblings={["/sql-to-typescript", "/", "/sql-formatter"]}
       faqs={faqs}
       exploreLinks={[
         { href: "/schema/nextauth", label: "NextAuth schema diagram" },

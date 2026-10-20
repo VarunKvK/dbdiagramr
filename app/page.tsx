@@ -5,41 +5,9 @@ import About from "@/app/sections/About";
 import Comparison from "@/app/sections/Comparison";
 import CtaBand from "@/app/sections/CtaBand";
 import BlogTeaser from "@/app/sections/BlogTeaser";
+import PostgresGuide, { postgresFaqs, postgresHowToSteps } from "@/app/sections/PostgresGuide";
 import Footer from "@/app/sections/Footer";
-
-const howToJsonLd = {
-  "@context": "https://schema.org",
-  "@type": "HowTo",
-  name: "How to generate an ER diagram from a PostgreSQL database",
-  description:
-    "Generate an interactive entity-relationship diagram from your PostgreSQL connection string in three steps.",
-  totalTime: "PT10S",
-  step: [
-    {
-      "@type": "HowToStep",
-      position: 1,
-      name: "Get your connection string",
-      text: "In your database provider's dashboard, click Connect to retrieve the PostgreSQL connection string.",
-    },
-    {
-      "@type": "HowToStep",
-      position: 2,
-      name: "Select the Transaction pooler",
-      text:
-        "Under Connection method, select the Transaction pooler option. This ensures compatibility with stateless applications and allows dbdiagramr to detect connections properly.",
-    },
-    {
-      "@type": "HowToStep",
-      position: 3,
-      name: "Paste it into dbdiagramr",
-      text:
-        "Paste the connection string into dbdiagramr and generate a navigable ER diagram in under 10 seconds.",
-    },
-  ],
-};
-
 const softwareJsonLd = {
-  "@context": "https://schema.org",
   "@type": "SoftwareApplication",
   name: "dbdiagramr",
   applicationCategory: "DeveloperApplication",
@@ -69,16 +37,45 @@ const softwareJsonLd = {
   ],
 };
 
+const homepageJsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    softwareJsonLd,
+    {
+      "@type": "FAQPage",
+      "@id": "https://www.dbdiagramr.space/#faq",
+      mainEntity: postgresFaqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.q,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: faq.a,
+        },
+      })),
+    },
+    {
+      "@type": "HowTo",
+      "@id": "https://www.dbdiagramr.space/#howto",
+      name: "How to generate a PostgreSQL ER diagram",
+      description:
+        "Turn a live PostgreSQL database or SQL dump into an interactive ER diagram.",
+      totalTime: "PT1M",
+      step: postgresHowToSteps.map((step, index) => ({
+        "@type": "HowToStep",
+        position: index + 1,
+        name: step.name,
+        text: step.text,
+      })),
+    },
+  ],
+};
+
 export default function Home() {
   return (
     <main className="">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(howToJsonLd) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageJsonLd) }}
       />
       <div id="hero" className="scroll-mt-16">
         <Hero />
@@ -95,6 +92,7 @@ export default function Home() {
       <div id="comparison" className="scroll-mt-16">
         <Comparison />
       </div>
+      <PostgresGuide />
       <CtaBand />
       <BlogTeaser />
       <Footer />

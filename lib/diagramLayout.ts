@@ -51,11 +51,14 @@ export function tableSize(table: Table): { width: number; height: number } {
   return { width, height };
 }
 
-export function layoutSchema(schema: Schema): Record<string, Rect> {
+export function layoutSchema(
+  schema: Schema,
+  rankdir: "LR" | "TB" = "LR"
+): Record<string, Rect> {
   const g = new dagre.graphlib.Graph();
   g.setDefaultEdgeLabel(() => ({}));
   g.setGraph({
-    rankdir: "LR",
+    rankdir,
     nodesep: LAYOUT.nodesep,
     ranksep: LAYOUT.ranksep,
     marginx: LAYOUT.margin,

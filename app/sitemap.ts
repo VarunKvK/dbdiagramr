@@ -8,19 +8,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // Do NOT use today's date on every build — Google treats that as noise
   // and stops trusting lastmod. Dates below = last git change per route.
   const staticLastmod: Record<string, string> = {
-    "/": "2026-09-10",
+    "/": "2026-10-20",
     "/visualize": "2026-09-08",
     "/supabase-rls-check": "2026-10-19",
     "/schema": "2026-09-27",
-    "/blog": "2026-09-17",
-    "/alternatives": "2026-08-30",
+    "/blog": "2026-10-20",
+    "/alternatives": "2026-10-20",
     "/dbdiagram-io-vs-dbdiagramr": "2026-09-17",
     "/drawsql-vs-dbdiagramr": "2026-09-28",
     "/chartdb-alternative": "2026-10-20",
-    "/postgres-er-diagram": "2026-10-16",
     "/supabase-er-diagram": "2026-10-20",
     "/database-schema-analyzer": "2026-09-25",
-    "/tools": "2026-10-10",
+    "/tools": "2026-10-20",
     "/sql-formatter": "2026-09-25",
     "/csv-to-sql": "2026-09-28",
     "/json-to-sql": "2026-09-28",
@@ -45,7 +44,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
 
   const blogPostUrls = getAllPosts().map((post) => ({
     url: `${base}/blog/${post.slug}`,
-    lastModified: post.date,
+    lastModified: post.updated ?? post.date,
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
@@ -103,12 +102,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: `${base}/blog`,
       lastModified: staticLastmod["/blog"],
       changeFrequency: "weekly",
-      priority: 0.8,
-    },
-    {
-      url: `${base}/postgres-er-diagram`,
-      lastModified: staticLastmod["/postgres-er-diagram"],
-      changeFrequency: "monthly",
       priority: 0.8,
     },
     {

@@ -2,77 +2,6 @@
 // Keep each body self-contained: headings, tables, code blocks, FAQ.
 
 export const blogBodies: Record<string, string> = {
-  "visualize-postgres-schema-5-ways": `
-    <h2>The short version</h2>
-    <p>Your Postgres schema is perfectly readable to the database and almost unreadable to a human. The tables, columns, and foreign keys you need are spread across <code>pg_catalog</code>, <code>information_schema</code>, and a few hundred lines of migration SQL. Visualization means collapsing all of that into a picture you can actually reason about.</p>
-    <p>There are five practical ways to get there. They are not equivalent. Each makes a different trade between speed, depth, and how current the diagram stays.</p>
-
-    <h2>The five ways at a glance</h2>
-    <table>
-      <thead><tr><th>Method</th><th>Setup</th><th>Interactive</th><th>Stays current</th><th>Best for</th></tr></thead>
-      <tbody>
-        <tr><td><code>psql</code> + <code>pg_catalog</code></td><td>Zero</td><td>No</td><td>Always (it's live)</td><td>Quick inspection</td></tr>
-        <tr><td>IDE built-ins (pgAdmin, DBeaver)</td><td>Already installed</td><td>Partly</td><td>Snapshot, manual re-run</td><td>One-off look</td></tr>
-        <tr><td>Manual diagramming (draw.io, dbdiagram.io)</td><td>Short</td><td>Yes</td><td>Drifts (you maintain it)</td><td>Designing a new schema</td></tr>
-        <tr><td>Migrations → DDL (Prisma, Rails)</td><td>Medium</td><td>No</td><td>Re-run on change</td><td>Documenting from code</td></tr>
-        <tr><td>Live connection string (dbdiagramr)</td><td>None (paste URL)</td><td>Yes</td><td>Regenerate in 10 seconds</td><td>Understanding a real DB</td></tr>
-      </tbody>
-    </table>
-
-    <h2>1. psql and pg_catalog: the baseline</h2>
-    <p>The fastest text-only view is <code>psql</code>. <code>\\dt</code> lists all tables, <code>\\d table_name</code> shows one table's structure including its foreign keys. To see every relationship in one shot, query <code>information_schema</code> directly:</p>
-    <pre><code>SELECT tc.table_name, kcu.column_name,
-       ccu.table_name AS foreign_table_name,
-       ccu.column_name AS foreign_column_name
-FROM information_schema.table_constraints tc
-JOIN information_schema.key_column_usage kcu
-  ON tc.constraint_name = kcu.constraint_name
-JOIN information_schema.constraint_column_usage ccu
-  ON ccu.constraint_name = tc.constraint_name
-WHERE tc.constraint_type = 'FOREIGN KEY'
-  AND tc.table_schema = 'public';</code></pre>
-    <p>Precise and always available. But it's a list, not a picture. Past a dozen tables you're reconstructing the graph in your head, which is exactly what visualization is supposed to remove.</p>
-
-    <h2>2. IDE built-ins: pgAdmin, DBeaver, DataGrip</h2>
-    <p>If you already have a GUI client, it probably ships with an ER diagram generator:</p>
-    <ul>
-      <li><strong>pgAdmin 4</strong>: right-click the database → <em>ERD For Database</em>. Free, already installed. Auto-layout struggles past a few dozen tables.</li>
-      <li><strong>DBeaver</strong> (Community is enough): open the <em>ER Diagram</em> tab. Genuinely free, cross-platform, exports PNG/SVG.</li>
-      <li><strong>DataGrip</strong>: <em>Diagrams → Show Visualization</em>. Best interactive feel; paid, single-user.</li>
-    </ul>
-    <p>The honest limitation they all share: <strong>any IDE-based diagram is a snapshot</strong>. Nothing to share but an exported image, and it drifts the moment someone runs a migration.</p>
-
-    <h2>3. Manual diagramming: draw.io, dbdiagram.io, DrawSQL</h2>
-    <p>Great for designing a schema you haven't built yet. dbdiagram.io and DrawSQL are excellent editors, write DBML or drag tables, get a clean diagram.</p>
-    <p>The catch is <strong>drift</strong>. The diagram is a hand-made copy at one moment in time. The day someone adds a column or foreign key, the diagram is wrong. A wrong diagram is worse than none, because people trust it. Building it takes 30 minutes to an hour, and it's stale the moment a migration lands. Use these when you're <em>designing</em>. They struggle to <em>document a real schema over time</em>.</p>
-
-    <h2>4. Generate from your migrations</h2>
-    <p>If your schema lives in migration files (Prisma, Drizzle, Rails, Flyway), derive structure from code instead of a live connection:</p>
-    <pre><code>pg_dump --schema-only mydb &gt; schema.sql</code></pre>
-    <p>Then feed the DDL to any SQL-to-diagram tool. This documents the migrations, not necessarily what's actually deployed. Regenerating on every change is automation you have to build and maintain.</p>
-
-    <h2>5. Paste a live connection string: the "always current in 10 seconds" option</h2>
-    <p>Point a tool at the <strong>real database</strong> and let it introspect the schema itself. No schema code, no hand-arranging, nothing to keep in sync. The diagram <em>is</em> what's in your database right now.</p>
-    <p>That's what <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> does. You paste a PostgreSQL connection string and it queries <code>information_schema</code> for tables, columns, primary keys, and foreign keys, then renders an interactive ER diagram you can pan, zoom, drag, and export as SVG or PNG. Because it introspects the live database, there's no drift, change a migration, paste the same string again, up-to-date in under 10 seconds.</p>
-    <p>Not sure what an ER diagram looks like yet? The <a href="https://www.dbdiagramr.space/schema">schema library</a> has live diagrams of Supabase, NextAuth.js, Laravel, and Django schemas you can explore before connecting your own database.</p>
-
-    <h2>Why you should care about "stays current"</h2>
-    <p>Every method above the last one shares the same failure mode: the diagram is a snapshot, and keeping it current is your problem. Walk into any team that's been around a while and you'll find a "schema diagram" in a wiki from eight months ago. A wrong diagram is worse than none, it's confidently wrong.</p>
-    <p>The test that settles it: <strong>how much work does it take to make this picture true again?</strong> If the answer is "re-export from my IDE" or "drag the boxes by hand," humans will stop doing it and the diagram will lie to you.</p>
-
-    <h2>FAQ</h2>
-    <p><strong>What's the easiest way to generate an ER diagram from a Postgres database?</strong><br/>If you have a GUI client open, its built-in diagram is fastest. For a shareable diagram that matches your database <em>as it is right now</em>, a live-introspection tool is fastest because there's nothing to maintain.</p>
-    <p><strong>Can I create a Postgres ERD without connecting to the live database?</strong><br/>Yes. Run <code>pg_dump --schema-only</code> and feed the DDL to a SQL-to-diagram tool, or parse migration files. Safer when you can't expose production credentials.</p>
-    <p><strong>How do I keep a schema diagram up to date?</strong><br/>Manual tools require manual regeneration, so they drift. The reliable fix is introspection: regenerate straight from the live database or wire documentation generation into CI.</p>
-    <p><strong>Does pgAdmin make ER diagrams?</strong><br/>Yes. pgAdmin 4 includes an ERD tool, right-click the database → <em>ERD For Database</em>, or <em>Tools → ERD Tool</em>. Free and built in, best on small-to-medium schemas.</p>
-
-    <h2>How to choose</h2>
-    <ul>
-      <li>Just want a quick look? <code>psql</code> or your IDE's built-in diagram. Fast, local, gone tomorrow.</li>
-      <li>Designing a new schema? draw.io, dbdiagram.io, or DrawSQL are the right tools.</li>
-      <li>Need to <em>understand a database that already exists</em>, or document one that keeps changing? Introspect the live schema.</li>
-    </ul>
-  `,
   "postgres-connection-string-supabase-neon-railway": `
     <h2>The short version</h2>
     <p>A PostgreSQL connection string is a single URL that tells a client how to reach your database. It looks like this:</p>
@@ -241,7 +170,7 @@ join auth.sessions  s on s.user_id = u.id;</code></pre>
       <li><strong>Read PKs first.</strong> The PK tells you what makes a row unique.</li>
     </ol>
     <p>Example: In the <a href="https://www.dbdiagramr.space/schema/supabase">Supabase auth diagram</a>, <code>auth.users</code> is the core. Lines radiate to <code>identities</code> and <code>sessions</code>, one user, many identities and many sessions. Each line is a foreign key you can follow with a query. Two more worked examples at different scales: the 11-table <a href="https://www.dbdiagramr.space/schema/chinook">Chinook music-store diagram</a> (note the composite-key join table <code>playlist_track</code>) and the 16-table <a href="https://www.dbdiagramr.space/schema/pagila">Pagila rental-store diagram</a> (note the partitioned <code>payment</code> table).</p>
-    <p>If you are choosing tooling rather than learning notation, compare the options in <a href="https://www.dbdiagramr.space/blog/database-schema-diagram-tool">5 database schema diagram tools</a>, or skip straight to the <a href="https://www.dbdiagramr.space/postgres-er-diagram">PostgreSQL ER diagram tool</a> and read a live diagram.</p>
+    <p>If you are choosing tooling rather than learning notation, compare the options in <a href="https://www.dbdiagramr.space/blog/database-schema-diagram-tool">5 database schema diagram tools</a>, or skip straight to the <a href="https://www.dbdiagramr.space/">PostgreSQL ER diagram tool</a> and read a live diagram.</p>
 
     <h2>Why ER diagrams matter for PostgreSQL</h2>
     <p>PostgreSQL doesn't show you relationships, <code>\\d</code> shows one table at a time, <code>information_schema</code> is a wall of text. An ER diagram collapses that into one picture where you can see at a glance: which tables exist, how they connect, where the join tables are, and what you'd need to <code>JOIN</code> to answer a question.</p>
@@ -678,39 +607,6 @@ WHERE ug.user_id = 42 OR up.user_id = 42;</code></pre>
     <p><strong>Does the pooler affect performance?</strong><br/>~1-2ms latency per query. Negligible for most web apps.</p>
   `,
 
-  "dbdiagram-tools-compared": `
-    <h2>The short version</h2>
-    <p>dbdiagram.io is the original, great for writing schemas in code (DBML), but no live database connection. DrawSQL is a paid desktop GUI with good auto-generation. dbdiagramr is free, runs in the browser, connects directly to Supabase/Neon/Railway, and generates diagrams from your live database in seconds.</p>
-
-    <h2>Feature comparison</h2>
-    <table>
-      <thead><tr><th>Feature</th><th>dbdiagram.io</th><th>dbdiagramr</th><th>DrawSQL</th></tr></thead>
-      <tbody>
-        <tr><td>Pricing</td><td>Free (1 diagram), $9/mo</td><td>Free (unlimited)</td><td>$8/mo individual</td></tr>
-        <tr><td>Live database connection</td><td>No</td><td>Yes (Supabase, Neon, Railway)</td><td>Yes (MySQL, Postgres)</td></tr>
-        <tr><td>DBML support</td><td>Yes (native)</td><td>No</td><td>No</td></tr>
-        <tr><td>Auto-generate from DB</td><td>No</td><td>Yes</td><td>Yes (desktop)</td></tr>
-        <tr><td>Supabase integration</td><td>No</td><td>Yes</td><td>No</td></tr>
-        <tr><td>Browser-based</td><td>Yes</td><td>Yes</td><td>No (desktop)</td></tr>
-        <tr><td>AI context (llms.txt)</td><td>No</td><td>Yes</td><td>No</td></tr>
-      </tbody>
-    </table>
-
-    <h2>Which one should you use?</h2>
-    <ul>
-      <li><strong>Diagram an existing Supabase/Neon database:</strong> dbdiagramr</li>
-      <li><strong>Design a schema from scratch in code:</strong> dbdiagram.io</li>
-      <li><strong>Desktop GUI with export options:</strong> DrawSQL</li>
-      <li><strong>Free, unlimited diagrams:</strong> dbdiagramr</li>
-      <li><strong>Team collaboration:</strong> dbdiagram.io or DrawSQL</li>
-      <li><strong>AI context for your schema:</strong> dbdiagramr</li>
-    </ul>
-
-    <h2>FAQ</h2>
-    <p><strong>Can I import a dbdiagram.io diagram into dbdiagramr?</strong><br/>Not directly. Deploy your DBML schema to a database first, then connect dbdiagramr to it.</p>
-    <p><strong>Does dbdiagramr support MySQL?</strong><br/>Not yet. PostgreSQL only. MySQL support is planned.</p>
-    <p><strong>Is DrawSQL worth the money?</strong><br/>If you need a desktop GUI with exports and team collaboration, yes. If you just need to see your schema, dbdiagramr does it for free.</p>
-  `,
   "free-online-database-diagram-tool": `
     <h2>The short version</h2>
     <p>You need a database diagram. You don't want to pay for it, sign up for another account, or install anything. A free online database diagram tool should let you paste SQL or connect to your database and get a visual schema in seconds.</p>
@@ -927,6 +823,20 @@ CREATE TABLE posts (
     <p><strong>Pros:</strong> Free, no signup, no limits, live connection, SVG/PNG export, search tables/columns.</p>
     <p><strong>Cons:</strong> PostgreSQL only (for now).</p>
 
+    <h2>Beyond dedicated tools: IDEs and migrations</h2>
+    <p>Dedicated diagram tools are not the only option. Your database client may already draw a diagram, and your migrations already contain the schema in code.</p>
+    <h3>IDE and client built-ins</h3>
+    <ul>
+      <li><strong>pgAdmin 4</strong>: right-click the database and choose <em>ERD For Database</em>. Free and already installed, but the auto-layout struggles past a few dozen tables.</li>
+      <li><strong>DBeaver</strong> (Community is enough): open the <em>ER Diagram</em> tab. Free, cross-platform, and exports PNG or SVG.</li>
+      <li><strong>DataGrip</strong>: choose <em>Diagrams &rarr; Show Visualization</em>. The best interactive feel, but paid and single-user.</li>
+    </ul>
+    <p>All three share the same limitation: the diagram is a snapshot. There is nothing to share but an exported image, and it drifts the moment someone runs a migration.</p>
+    <h3>Generate from migrations</h3>
+    <p>If your schema lives in migration files (Prisma, Drizzle, Rails, Flyway), you can derive a diagram from code instead of a live connection:</p>
+    <pre><code>pg_dump --schema-only mydb &gt; schema.sql</code></pre>
+    <p>Then feed the DDL to any SQL-to-diagram tool. This documents the migrations, not necessarily what is deployed, and regenerating on every change is automation you have to build and maintain.</p>
+
     <h2>Which tool should you choose?</h2>
     <ul>
       <li><strong>Just need a quick look?</strong> <code>psql</code> or pgAdmin. Fast, local, no sharing.</li>
@@ -944,6 +854,8 @@ CREATE TABLE posts (
     <p><strong>Can I use dbdiagram.io without learning DBML?</strong><br/>Not really. DBML is the input format. If you prefer raw SQL, dbdiagramr accepts it directly.</p>
     <p><strong>Is pgAdmin's ERD tool good enough?</strong><br/>For small schemas and quick inspection, yes. For anything you need to share or keep current, use a dedicated tool.</p>
     <p><strong>Does DrawSQL support live PostgreSQL connections?</strong><br/>Yes, but only on paid plans. The free tier is limited to 10 diagrams.</p>
+    <p><strong>Can I create a Postgres ERD without connecting to the live database?</strong><br/>Yes. Run <code>pg_dump --schema-only</code> and feed the DDL to a SQL-to-diagram tool, or parse migration files. This is safer when you cannot expose production credentials.</p>
+    <p><strong>How do I keep a schema diagram up to date?</strong><br/>Manual tools require manual regeneration, so they drift. The reliable fix is introspection: regenerate straight from the live database, or wire documentation generation into CI.</p>
   `,
   "database-schema-health-check": `
     <h2>The short version</h2>

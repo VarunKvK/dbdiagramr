@@ -2,11 +2,26 @@ import type { Metadata } from "next";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "dbdiagram.io vs dbdiagramr | Compared (2026)",
+  title: { absolute: "dbdiagram.io vs dbdiagramr (2026): Which Is Better?" },
   description:
     "dbdiagram.io vs dbdiagramr: DBML code-first diagram design vs instant visualization from a live PostgreSQL connection string. Feature-by-feature comparison with FAQs.",
   alternates: {
     canonical: "https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr",
+  },
+  openGraph: {
+    title: "dbdiagram.io vs dbdiagramr (2026): Which Is Better?",
+    description:
+      "DBML code-first design versus instant diagrams from a live PostgreSQL connection.",
+    type: "website",
+    url: "https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr",
+    images: [{ url: "/DbDiagramr-OG.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "dbdiagram.io vs dbdiagramr (2026)",
+    description:
+      "DBML code-first design versus instant diagrams from a live PostgreSQL connection.",
+    images: ["/DbDiagramr-OG.png"],
   },
 };
 

@@ -1,9 +1,11 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
+import Image from "next/image";
 import { getAllSchemaEntries, getSchemaEntry, type SchemaEntry } from "@/data/schemas/registry";
 import Footer from "@/app/sections/Footer";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import SchemaCopyButtons from "@/components/SchemaCopyButtons";
+import type { ForeignKey } from "@/lib/diagram";
 import { schemaToMermaid, schemaToSql } from "@/lib/schemaExport";
 
 export function generateStaticParams() {
@@ -23,10 +25,8 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
   if (!entry) return {};
 
   const url = `https://www.dbdiagramr.space/schema/${entry.slug}`;
-  const image = ogImages[entry.slug];
-  const ogImage = image
-    ? [{ url: image, width: 1800, height: 945, alt: entry.title }]
-    : undefined;
+  const image = ogImages[entry.slug] ?? "/DbDiagramr-OG.png";
+  const ogImage = [{ url: image, width: 1200, height: 630, alt: entry.title }];
 
   return {
     title: entry.title,
@@ -44,7 +44,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
       card: "summary_large_image",
       title: entry.title,
       description: entry.description,
-      images: image ? [image] : undefined,
+      images: [image],
     },
   };
 }
@@ -57,7 +57,7 @@ const relatedBlogBySchema: Record<string, { href: string; label: string }[]> = {
   ],
   nextauth: [
     { href: "/blog/nextauth-auth-schema-explained", label: "NextAuth Schema Explained" },
-    { href: "/blog/visualize-postgres-schema-5-ways", label: "5 Ways to Visualize a Postgres Schema" },
+    { href: "/blog/database-schema-diagram-tool", label: "Database Schema Diagram Tools" },
   ],
   laravel: [
     { href: "/blog/laravel-database-schema-explained", label: "Laravel Tables Explained" },
@@ -113,7 +113,7 @@ const relatedBlogBySchema: Record<string, { href: string; label: string }[]> = {
   ],
   "spring-batch": [
     { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
-    { href: "/blog/visualize-postgres-schema-5-ways", label: "5 Ways to Visualize a Postgres Schema" },
+    { href: "/blog/database-schema-diagram-tool", label: "Database Schema Diagram Tools" },
   ],
 };
 
@@ -123,16 +123,26 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
 
   const allEntries = getAllSchemaEntries();
   const bySlug = new Map(allEntries.map((e) => [e.slug, e]));
-  const topical: SchemaEntry[] = [];
+  const relatedSchemas: SchemaEntry[] = [];
   for (const slug of entry.related ?? []) {
     const e = bySlug.get(slug);
-    if (e && e.slug !== entry.slug) topical.push(e);
+    if (e && e.slug !== entry.slug && !relatedSchemas.some((r) => r.slug === e.slug)) {
+      relatedSchemas.push(e);
+    }
   }
-  const relatedSchemas =
-    topical.length > 0
-      ? topical.slice(0, 3)
-      : allEntries.filter((e) => e.slug !== entry.slug).slice(0, 3);
+  for (const e of allEntries) {
+    if (relatedSchemas.length >= 5) break;
+    if (e.slug !== entry.slug && !relatedSchemas.some((r) => r.slug === e.slug)) {
+      relatedSchemas.push(e);
+    }
+  }
   const relatedBlogs = relatedBlogBySchema[entry.slug] ?? [];
+  const relationships = entry.schema.tables.flatMap((table) =>
+    table.foreignKeys.map((fk) => ({
+      from: `${table.name}.${fk.column}`,
+      to: `${fk.referencesTable}.${fk.referencesColumn}`,
+    }))
+  );
   const schemaSql = schemaToSql(entry.schema);
   const schemaMermaid = schemaToMermaid(entry.schema);
 
@@ -146,6 +156,7 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
         headline: entry.title,
         description: entry.description,
         dateModified: entry.lastUpdated,
+        image: `${url}/diagram.png`,
         mainEntityOfPage: url,
         author: {
           "@type": "Person",
@@ -276,6 +287,23 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
               </div>
             ))}
           </div>
+          {entry.slug === "supabase" && (
+            <div className="mt-6 rounded-[20px] border border-accent bg-accent-soft p-5">
+              <p className="text-sm leading-relaxed text-ink">
+                This page documents Supabase&apos;s built-in{" "}
+                <code className="font-mono">auth</code> schema, not your
+                app&apos;s public tables. To diagram your own Supabase project
+                and see Row Level Security status, use the{" "}
+                <a
+                  href="/supabase-er-diagram"
+                  className="font-medium text-accent hover:text-accent-hover"
+                >
+                  Supabase ER diagram tool
+                </a>
+                .
+              </p>
+            </div>
+          )}
         </div>
 
         <div className="overflow-hidden rounded-[20px] bg-ink shadow-lg">
@@ -295,12 +323,44 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
           slug={entry.slug}
         />
 
+        <section className="mt-10">
+          <div className="flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h2 className="text-2xl font-semibold tracking-tight text-ink">
+                Download the {entry.name} schema diagram
+              </h2>
+              <p className="mt-2 text-sm leading-relaxed text-muted">
+                A static 1200 x 630 PNG of the full diagram, ready for docs,
+                README files, or a slide.
+              </p>
+            </div>
+            <a
+              href={`/schema/${entry.slug}/diagram.png`}
+              className="inline-block rounded-[10px] bg-accent px-5 py-2.5 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
+            >
+              Download PNG
+            </a>
+          </div>
+          <a
+            href={`/schema/${entry.slug}/diagram.png`}
+            className="mt-4 block overflow-hidden rounded-[20px] border border-border bg-white shadow-sm"
+          >
+            <Image
+              src={`/schema/${entry.slug}/diagram.png`}
+              alt={`${entry.name} database schema diagram showing tables, columns, and foreign keys`}
+              width={1200}
+              height={630}
+              className="h-auto w-full"
+            />
+          </a>
+        </section>
+
         <section className="mt-16">
           <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">
             Tables in the {entry.name} schema
           </h2>
-          <div className="overflow-hidden rounded-[20px] border border-border bg-white shadow-sm">
-            <table className="w-full text-sm">
+          <div className="overflow-x-auto rounded-[20px] border border-border bg-white shadow-sm">
+            <table className="w-full min-w-[720px] text-sm">
               <thead>
                 <tr className="border-b border-border bg-surface text-left">
                   <th className="px-4 py-3 font-medium text-ink">Column</th>
@@ -315,12 +375,47 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
                     key={table.name}
                     tableName={table.name}
                     rows={table.columns}
+                    foreignKeys={table.foreignKeys}
                   />
                 ))}
               </tbody>
             </table>
           </div>
         </section>
+
+        {relationships.length > 0 && (
+          <section className="mt-16">
+            <h2 className="mb-3 text-2xl font-semibold tracking-tight text-ink">
+              Foreign key relationships
+            </h2>
+            <p className="mb-6 max-w-3xl leading-relaxed text-muted">
+              {relationships.length} foreign keys connect the tables in this
+              schema. Each row shows the child column and the parent column it
+              references.
+            </p>
+            <div className="overflow-x-auto rounded-[20px] border border-border bg-white shadow-sm">
+              <table className="w-full min-w-[640px] text-sm">
+                <thead>
+                  <tr className="border-b border-border bg-surface text-left">
+                    <th className="px-4 py-3 font-medium text-ink">From</th>
+                    <th className="px-4 py-3 font-medium text-ink">References</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {relationships.map((rel, index) => (
+                    <tr
+                      key={`${rel.from}-${rel.to}-${index}`}
+                      className="border-b border-border last:border-b-0"
+                    >
+                      <td className="px-4 py-2.5 font-mono text-ink">{rel.from}</td>
+                      <td className="px-4 py-2.5 font-mono text-muted">{rel.to}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </section>
+        )}
 
         <section className="mt-16">
           <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">
@@ -341,9 +436,9 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
 
         <section className="mt-16">
           <h2 className="mb-4 text-2xl font-semibold tracking-tight text-ink">
-            Explore more schemas
+            Related schema diagrams
           </h2>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {relatedSchemas.map((rel) => (
               <a
                 key={rel.slug}
@@ -401,10 +496,19 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
 function TableRows({
   tableName,
   rows,
+  foreignKeys,
 }: {
   tableName: string;
   rows: { name: string; type: string; nullable: string; isPrimaryKey: boolean }[];
+  foreignKeys: ForeignKey[];
 }) {
+  const fksByColumn = new Map<string, ForeignKey[]>();
+  for (const fk of foreignKeys) {
+    const existing = fksByColumn.get(fk.column) ?? [];
+    existing.push(fk);
+    fksByColumn.set(fk.column, existing);
+  }
+
   return (
     <>
       <tr className="border-b border-border bg-accent-soft/50">
@@ -415,24 +519,38 @@ function TableRows({
           {tableName}
         </td>
       </tr>
-      {rows.map((column) => (
-        <tr key={`${tableName}-${column.name}`} className="border-b border-border last:border-b-0">
-          <td className="px-4 py-2.5 font-mono text-ink">{column.name}</td>
-          <td className="px-4 py-2.5 font-mono text-muted">{column.type}</td>
-          <td className="px-4 py-2.5 text-muted">
-            {column.nullable === "NO" ? "No" : "Yes"}
-          </td>
-          <td className="px-4 py-2.5">
-            {column.isPrimaryKey ? (
-              <span className="rounded-[20px] border border-accent bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
-                PK
-              </span>
-            ) : (
-              <span className="text-xs text-muted">-</span>
-            )}
-          </td>
-        </tr>
-      ))}
+      {rows.map((column) => {
+        const fks = fksByColumn.get(column.name) ?? [];
+        return (
+          <tr key={`${tableName}-${column.name}`} className="border-b border-border last:border-b-0">
+            <td className="px-4 py-2.5 font-mono text-ink">{column.name}</td>
+            <td className="px-4 py-2.5 font-mono text-muted">{column.type}</td>
+            <td className="px-4 py-2.5 text-muted">
+              {column.nullable === "NO" ? "No" : "Yes"}
+            </td>
+            <td className="px-4 py-2.5">
+              <div className="flex flex-wrap gap-1">
+                {column.isPrimaryKey && (
+                  <span className="whitespace-nowrap rounded-[20px] border border-accent bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
+                    PK
+                  </span>
+                )}
+                {fks.map((fk) => (
+                  <span
+                    key={`${fk.column}-${fk.referencesTable}-${fk.referencesColumn}`}
+                    className="whitespace-nowrap rounded-[20px] border border-border bg-surface px-2 py-0.5 text-xs font-medium text-muted"
+                  >
+                    FK → {fk.referencesTable}.{fk.referencesColumn}
+                  </span>
+                ))}
+                {!column.isPrimaryKey && fks.length === 0 && (
+                  <span className="text-xs text-muted">-</span>
+                )}
+              </div>
+            </td>
+          </tr>
+        );
+      })}
     </>
   );
 }

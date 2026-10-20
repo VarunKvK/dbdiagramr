@@ -8,6 +8,21 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.dbdiagramr.space/chartdb-alternative",
   },
+  openGraph: {
+    title: "ChartDB Alternative | Live PostgreSQL ER Diagrams (2026)",
+    description:
+      "Compare ChartDB and dbdiagramr: query-based import versus a direct PostgreSQL connection.",
+    type: "website",
+    url: "https://www.dbdiagramr.space/chartdb-alternative",
+    images: [{ url: "/DbDiagramr-OG.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "ChartDB Alternative | Live PostgreSQL ER Diagrams",
+    description:
+      "Compare ChartDB and dbdiagramr: query-based import versus a direct PostgreSQL connection.",
+    images: ["/DbDiagramr-OG.png"],
+  },
 };
 
 const comparisonRows = [

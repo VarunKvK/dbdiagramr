@@ -14,7 +14,7 @@ const SqlValidator = dynamic(() => import("@/components/SqlValidator"), {
 });
 
 const URL = "https://www.dbdiagramr.space/sql-validator";
-const TITLE = "PostgreSQL SQL Validator & Syntax Checker | dbdiagramr";
+const TITLE = "PostgreSQL SQL Validator & Syntax Checker";
 const DESCRIPTION =
   "Check PostgreSQL syntax online using the real Postgres parser. Get line-level errors and clear fixes. Free, instant, no signup.";
 

@@ -65,7 +65,7 @@ export default function BlogPostPage({
         headline: post.title,
         description: post.description,
         datePublished: post.date,
-        dateModified: post.date,
+        dateModified: post.updated ?? post.date,
         author: {
           "@type": "Person",
           name: "dbdiagramr",
@@ -103,19 +103,6 @@ export default function BlogPostPage({
             position: 3,
             name: post.title,
             item: postUrl,
-          },
-        ],
-      },
-      {
-        "@type": "FAQPage",
-        mainEntity: [
-          {
-            "@type": "Question",
-            name: `What is ${post.title.toLowerCase()}?`,
-            acceptedAnswer: {
-              "@type": "Answer",
-              text: post.description,
-            },
           },
         ],
       },
@@ -218,7 +205,7 @@ export default function BlogPostPage({
             Try it on your database
           </h2>
           <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
-            <Link href="/postgres-er-diagram" className="font-medium text-accent hover:text-accent-hover">
+            <Link href="/" className="font-medium text-accent hover:text-accent-hover">
               PostgreSQL ER Diagram →
             </Link>
             <Link href="/database-schema-analyzer" className="font-medium text-accent hover:text-accent-hover">

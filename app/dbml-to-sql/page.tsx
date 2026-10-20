@@ -5,7 +5,7 @@ import ToolPageShell, {
 import DbmlConverter from "@/components/DbmlConverter";
 
 const URL = "https://www.dbdiagramr.space/dbml-to-sql";
-const TITLE = "DBML to SQL Converter (and SQL to DBML) | dbdiagramr";
+const TITLE = "DBML to SQL Converter (and SQL to DBML)";
 const DESCRIPTION =
   "Convert DBML to PostgreSQL DDL, or SQL back to DBML, in one click. Free online converter that runs in your browser. No signup.";
 
@@ -69,7 +69,7 @@ export default function DbmlToSqlPage() {
       faqs={faqs}
       exploreLinks={[
         { href: "/dbdiagram-io-vs-dbdiagramr", label: "dbdiagram.io vs dbdiagramr" },
-        { href: "/postgres-er-diagram", label: "PostgreSQL ER Diagram Tool" },
+        { href: "/", label: "PostgreSQL ER Diagram Tool" },
       ]}
     >
       <script

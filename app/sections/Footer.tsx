@@ -79,7 +79,7 @@ export default function Footer() {
                   <a href="/supabase-rls-check" className="transition-colors hover:text-white">Supabase RLS Check</a>
                 </li>
                 <li>
-                  <a href="/postgres-er-diagram" className="transition-colors hover:text-white">PostgreSQL ER Diagram</a>
+                  <a href="/" className="transition-colors hover:text-white">PostgreSQL ER Diagram</a>
                 </li>
                 <li>
                   <a href="/database-schema-analyzer" className="transition-colors hover:text-white">Schema Health Analyzer</a>

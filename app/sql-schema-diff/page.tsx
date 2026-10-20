@@ -5,7 +5,7 @@ import ToolPageShell, {
 import SchemaDiff from "@/components/SchemaDiff";
 
 const URL = "https://www.dbdiagramr.space/sql-schema-diff";
-const TITLE = "SQL Schema Diff | Compare Schemas, Get ALTERs | dbdiagramr";
+const TITLE = "SQL Schema Diff | Compare Schemas, Get ALTERs";
 const DESCRIPTION =
   "Paste two versions of a schema to see added, removed, and changed tables and columns, plus the ALTER statements to migrate. Free.";
 

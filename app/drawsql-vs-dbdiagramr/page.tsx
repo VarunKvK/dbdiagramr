@@ -2,11 +2,26 @@ import type { Metadata } from "next";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "DrawSQL vs dbdiagramr | Which ER Diagram Tool? (2026)",
+  title: { absolute: "DrawSQL vs dbdiagramr (2026): Which ER Diagram Tool?" },
   description:
     "DrawSQL vs dbdiagramr: team collaboration and visual schema editing vs instant ER diagrams from a live PostgreSQL connection string. Feature comparison with FAQs.",
   alternates: {
     canonical: "https://www.dbdiagramr.space/drawsql-vs-dbdiagramr",
+  },
+  openGraph: {
+    title: "DrawSQL vs dbdiagramr (2026): Which ER Diagram Tool?",
+    description:
+      "Team collaboration and visual editing versus instant diagrams from a live PostgreSQL connection.",
+    type: "website",
+    url: "https://www.dbdiagramr.space/drawsql-vs-dbdiagramr",
+    images: [{ url: "/DbDiagramr-OG.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "DrawSQL vs dbdiagramr (2026)",
+    description:
+      "Team collaboration and visual editing versus instant diagrams from a live PostgreSQL connection.",
+    images: ["/DbDiagramr-OG.png"],
   },
 };
 

@@ -5,7 +5,7 @@ import ToolPageShell, {
 import ConnStringBuilder from "@/components/ConnStringBuilder";
 
 const URL = "https://www.dbdiagramr.space/postgres-connection-string";
-const TITLE = "PostgreSQL Connection String Builder & Parser | dbdiagramr";
+const TITLE = "PostgreSQL Connection String Builder & Parser";
 const DESCRIPTION =
   "Build or decode a PostgreSQL connection URI, with presets for Supabase, Neon, and Railway plus SSL options. Runs entirely in your browser.";
 
@@ -65,10 +65,10 @@ export default function ConnStringPage() {
       h1="PostgreSQL connection string builder"
       intro="Build a PostgreSQL connection URI from parts, or paste one to decode every field. Presets for Supabase, Neon, and Railway. Passwords never leave your browser."
       current="/postgres-connection-string"
-      siblings={["/postgres-er-diagram", "/visualize"]}
+      siblings={["/", "/visualize"]}
       faqs={faqs}
       exploreLinks={[
-        { href: "/postgres-er-diagram", label: "PostgreSQL ER Diagram Tool" },
+        { href: "/", label: "PostgreSQL ER Diagram Tool" },
       ]}
     >
       <script

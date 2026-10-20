@@ -5,7 +5,7 @@ import ToolPageShell, {
 import JsonToSql from "@/components/JsonToSql";
 
 const URL = "https://www.dbdiagramr.space/json-to-sql";
-const TITLE = "JSON to SQL Converter | CREATE TABLE + INSERT | dbdiagramr";
+const TITLE = "JSON to SQL Converter | CREATE TABLE + INSERT";
 const DESCRIPTION =
   "Paste JSON and get a PostgreSQL CREATE TABLE with inferred types, plus INSERT statements. Handles nested objects. Free, no signup.";
 

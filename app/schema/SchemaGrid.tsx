@@ -1,6 +1,3 @@
-"use client";
-
-import { useState } from "react";
 import Link from "next/link";
 
 export type SchemaGridEntry = {
@@ -11,16 +8,11 @@ export type SchemaGridEntry = {
   svg: string;
 };
 
-const PAGE = 6;
-
 export default function SchemaGrid({ entries }: { entries: SchemaGridEntry[] }) {
-  const [expanded, setExpanded] = useState(false);
-  const visible = expanded ? entries : entries.slice(0, PAGE);
-
   return (
     <>
       <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-        {visible.map((entry) => (
+        {entries.map((entry) => (
           <Link
             key={entry.slug}
             href={`/schema/${entry.slug}`}
@@ -51,21 +43,6 @@ export default function SchemaGrid({ entries }: { entries: SchemaGridEntry[] }) 
           </Link>
         ))}
       </div>
-
-      {entries.length > PAGE && (
-        <div className="mt-10 text-center">
-          <button
-            type="button"
-            onClick={() => setExpanded((v) => !v)}
-            aria-expanded={expanded}
-            className="rounded-[10px] border border-accent px-8 py-3 text-xs font-medium text-accent transition-colors hover:bg-accent-soft"
-          >
-            {expanded
-              ? "Show less"
-              : `Show more (${entries.length - PAGE} more)`}
-          </button>
-        </div>
-      )}
     </>
   );
 }

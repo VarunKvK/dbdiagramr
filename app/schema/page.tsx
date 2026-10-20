@@ -11,6 +11,21 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://www.dbdiagramr.space/schema",
   },
+  openGraph: {
+    title: "Popular Database Schema Diagrams & ERDs",
+    description:
+      "Browse free interactive ER diagrams of popular PostgreSQL schemas: Supabase, NextAuth.js, Laravel, Django.",
+    type: "website",
+    url: "https://www.dbdiagramr.space/schema",
+    images: [{ url: "/DbDiagramr-OG.png", width: 1200, height: 630 }],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Popular Database Schema Diagrams & ERDs",
+    description:
+      "Browse free interactive ER diagrams of popular PostgreSQL schemas.",
+    images: ["/DbDiagramr-OG.png"],
+  },
 };
 
 export default function SchemaHubPage() {

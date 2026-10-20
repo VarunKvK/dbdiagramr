@@ -15,6 +15,7 @@ const ogImages: Record<string, string> = {
   nextauth: "/NextAuthJS-DbDiagramr-OG.png",
   laravel: "/Laravel-DbDiagramr-OG.png",
   django: "/Django-DbDiagramr-OG.png",
+  "better-auth": "/BetterAuth-DbDiagramr-OG.png",
 };
 
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {

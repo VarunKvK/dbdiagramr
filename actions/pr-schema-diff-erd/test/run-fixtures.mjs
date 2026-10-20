@@ -1,5 +1,7 @@
 // Fixture tests: render the comment for each pair and assert key markers.
 import { execFileSync } from "node:child_process";
+import { mkdtempSync, writeFileSync } from "node:fs";
+import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
 
@@ -77,6 +79,38 @@ for (const c of cases) {
     console.log(out.split("\n").map((l) => `  ${l}`).join("\n"));
   } else {
     console.log(`ok   ${c.name}`);
+  }
+}
+
+// README ERD: append the marked block, then re-run and expect no change.
+const readmeFile = join(mkdtempSync(join(tmpdir(), "erd-")), "README.md");
+writeFileSync(readmeFile, "# Demo\n\nIntro paragraph.\n");
+const readmeArgs = [
+  join(root, "dist", "cli.js"),
+  join(root, "fixtures", "add-column", "base"),
+  join(root, "fixtures", "add-column", "head"),
+  "--readme",
+  readmeFile,
+];
+const first = execFileSync(process.execPath, readmeArgs, { encoding: "utf8" });
+const problems = [];
+if (!first.includes("<!-- dbdiagramr:erd:start -->")) problems.push("missing start marker");
+if (!first.includes("<!-- dbdiagramr:erd:end -->")) problems.push("missing end marker");
+if (!first.includes("erDiagram")) problems.push("missing mermaid");
+if (!first.includes("## Database schema")) problems.push("missing appended section");
+if (!first.startsWith("# Demo")) problems.push("lost existing content");
+if (problems.length) {
+  failed++;
+  console.log("FAIL readme-upsert");
+  for (const p of problems) console.log(`  - ${p}`);
+} else {
+  writeFileSync(readmeFile, first);
+  const second = execFileSync(process.execPath, readmeArgs, { encoding: "utf8" });
+  if (second !== first) {
+    failed++;
+    console.log("FAIL readme-idempotent: second run changed the file");
+  } else {
+    console.log("ok   readme-upsert");
   }
 }
 

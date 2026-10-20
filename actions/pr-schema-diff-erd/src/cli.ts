@@ -1,10 +1,13 @@
 // Test/CLI entry: render the PR comment from two directories.
 // Usage: node dist/cli.js <baseDir> <headDir> [--glob "<glob>"] [--base-sha X --head-sha Y]
+import { readFileSync } from "node:fs";
 import {
   collectSqlFiles,
   readFiles,
   parseFileMap,
   renderComment,
+  renderErdBlock,
+  upsertErdBlock,
 } from "./core";
 
 function arg(name: string, fallback: string): string {
@@ -38,6 +41,22 @@ const removed = basePaths.filter((p) => !headSet.has(p));
 const modified = headPaths.filter(
   (p) => baseSet.has(p) && readFiles(baseDir, [p]).get(p) !== readFiles(headDir, [p]).get(p)
 );
+
+const readmePath = arg("--readme", "");
+
+if (readmePath) {
+  const headParse = parseFileMap(readFiles(headDir, headPaths));
+  const block = renderErdBlock(headParse.schema);
+  if (!block) {
+    console.error("No ERD block: schema is empty or exceeds the size limit.");
+    process.exit(4);
+  }
+  const current = readFileSync(readmePath, "utf8");
+  const { content, changed } = upsertErdBlock(current, block);
+  console.error(`readme: changed=${changed}`);
+  process.stdout.write(content);
+  process.exit(0);
+}
 
 const comment = renderComment({
   baseSha,

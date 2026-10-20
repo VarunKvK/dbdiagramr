@@ -1,23 +1,45 @@
 "use client";
 
-import { useState, useCallback, useEffect, useRef } from "react";
+import { useState, useCallback, useEffect, useMemo, useRef } from "react";
 import type { Schema } from "@/lib/diagram";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import TryModal from "@/components/TryModal";
 import { getSchemaEntry } from "@/data/schemas/registry";
 import { schemaToSql } from "@/lib/schemaExport";
+import { decodeSchema } from "@/lib/share";
+
+function schemaNameOf(tableName: string): string {
+  const dot = tableName.lastIndexOf(".");
+  return dot === -1 ? "public" : tableName.slice(0, dot);
+}
 
 export default function TryPage() {
   const [schema, setSchema] = useState<Schema | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [mode, setMode] = useState<"sql" | "connection">("sql");
   const [initialSql, setInitialSql] = useState<string | undefined>(undefined);
+  const [initialSchema, setInitialSchema] = useState<Schema | undefined>(undefined);
   const [initialConn, setInitialConn] = useState<string | undefined>(undefined);
+  const [activeSchemas, setActiveSchemas] = useState<string[] | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
 
-  // Support /visualize?schema=<slug> ("Open in DBdiagramr to edit")
+  // Support /visualize#s=<payload> (private share links),
+  // /visualize?schema=<slug> ("Open in DBdiagramr to edit")
   // and sessionStorage handoffs from converter tools (preload-sql / preload-conn)
   useEffect(() => {
+    let cancelled = false;
+    const hashMatch = window.location.hash.match(/[#&]s=([^&]+)/);
+    if (hashMatch) {
+      decodeSchema(decodeURIComponent(hashMatch[1])).then((decoded) => {
+        if (!cancelled && decoded) {
+          setMode("sql");
+          setInitialSchema(decoded);
+        }
+      });
+      return () => {
+        cancelled = true;
+      };
+    }
     const slug = new URLSearchParams(window.location.search).get("schema");
     if (slug) {
       const entry = getSchemaEntry(slug);
@@ -49,6 +71,53 @@ export default function TryPage() {
   const handleSchemaGenerated = useCallback((s: Schema) => {
     setSchema(s);
   }, []);
+
+  // Group tables by schema. public is implicit, everything else keeps the
+  // "schema." prefix added by the parser and the introspection API.
+  const schemaGroups = useMemo(() => {
+    if (!schema) return [];
+    const counts = new Map<string, number>();
+    for (const t of schema.tables) {
+      const name = schemaNameOf(t.name);
+      counts.set(name, (counts.get(name) ?? 0) + 1);
+    }
+    const order = ["public", "auth", "storage"];
+    return Array.from(counts.entries())
+      .sort(([a], [b]) => {
+        const ia = order.indexOf(a);
+        const ib = order.indexOf(b);
+        if (ia !== -1 || ib !== -1) return (ia === -1 ? 99 : ia) - (ib === -1 ? 99 : ib);
+        return a.localeCompare(b);
+      })
+      .map(([name, count]) => ({ name, count }));
+  }, [schema]);
+
+  // Supabase connections start on public so the diagram looks like before;
+  // auth and storage are one click away.
+  useEffect(() => {
+    if (!schema) {
+      setActiveSchemas(null);
+      return;
+    }
+    const names = Array.from(new Set(schema.tables.map((t) => schemaNameOf(t.name))));
+    setActiveSchemas(names.includes("public") ? ["public"] : names);
+  }, [schema]);
+
+  const toggleSchema = useCallback((name: string) => {
+    setActiveSchemas((current) => {
+      const list = current ?? [];
+      if (list.includes(name)) {
+        return list.length === 1 ? list : list.filter((s) => s !== name);
+      }
+      return [...list, name];
+    });
+  }, []);
+
+  const visibleSchema = useMemo(() => {
+    if (!schema) return null;
+    if (!activeSchemas) return schema;
+    return { ...schema, tables: schema.tables.filter((t) => activeSchemas.includes(schemaNameOf(t.name))) };
+  }, [schema, activeSchemas]);
 
   const handleSchemaCleared = useCallback(() => {
     setSchema(null);
@@ -85,6 +154,7 @@ export default function TryPage() {
             onSchemaGenerated={handleSchemaGenerated}
             onSchemaCleared={handleSchemaCleared}
             initialSql={initialSql}
+            initialSchema={initialSchema}
             initialConnString={initialConn}
             fill
           />
@@ -105,7 +175,7 @@ export default function TryPage() {
               aria-label="Search tables"
               className="flex-1 bg-transparent font-mono text-xs font-medium text-ink placeholder:text-muted outline-none"
             />
-            <span className="hidden rounded-full bg-ink px-2.5 py-0.5 font-mono text-[11px] font-medium text-white sm:inline">{schema.tables.length} tables</span>
+            <span className="hidden rounded-full bg-ink px-2.5 py-0.5 font-mono text-[11px] font-medium text-white sm:inline">{visibleSchema?.tables.length ?? 0} tables</span>
             {searchQuery ? (
               <button onClick={() => setSearchQuery("")} className="rounded-full bg-accent px-2.5 py-1 font-mono text-[11px] font-bold text-white hover:bg-accent-hover">Clear</button>
             ) : (
@@ -114,9 +184,27 @@ export default function TryPage() {
           </div>
         )}
 
+        {schema && schemaGroups.length > 1 && (
+          <div className="absolute left-4 right-4 top-[60px] z-20 flex flex-wrap gap-1.5 sm:left-1/2 sm:right-auto sm:-translate-x-1/2">
+            {schemaGroups.map((group) => {
+              const on = activeSchemas?.includes(group.name) ?? false;
+              return (
+                <button
+                  key={group.name}
+                  onClick={() => toggleSchema(group.name)}
+                  aria-pressed={on}
+                  className={`rounded-full border px-2.5 py-1 font-mono text-[11px] font-medium shadow-sm transition-colors ${on ? "border-accent bg-accent text-white" : "border-border bg-white/95 text-muted hover:text-ink"}`}
+                >
+                  {group.name} <span className={on ? "text-white/70" : "text-muted/70"}>{group.count}</span>
+                </button>
+              );
+            })}
+          </div>
+        )}
+
         <div className="flex flex-1">
-          {schema ? (
-            <SchemaDiagram schema={schema} className="h-full w-full" searchQuery={searchQuery} />
+          {visibleSchema ? (
+            <SchemaDiagram schema={visibleSchema} className="h-full w-full" searchQuery={searchQuery} />
           ) : (
             <div className="flex h-full w-full items-center justify-center overflow-y-auto p-8">
               <div className="max-w-sm rounded-[20px] border border-border bg-white p-8 text-center shadow-xl">

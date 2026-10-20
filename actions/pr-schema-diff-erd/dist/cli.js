@@ -1,5 +1,8 @@
 "use strict";
 
+// src/cli.ts
+var import_node_fs2 = require("node:fs");
+
 // src/core.ts
 var import_node_fs = require("node:fs");
 var import_node_path = require("node:path");
@@ -710,8 +713,37 @@ function matchGlob(path, glob2) {
 
 // src/core.ts
 var COMMENT_MARKER = "<!-- pr-schema-diff-erd -->";
+var ERD_START = "<!-- dbdiagramr:erd:start -->";
+var ERD_END = "<!-- dbdiagramr:erd:end -->";
 var MAX_MERMAID_TABLES = 60;
 var MAX_COMMENT_CHARS = 6e4;
+function renderErdBlock(schema) {
+  const tableCount = schema.tables.length;
+  if (tableCount === 0 || tableCount > MAX_MERMAID_TABLES) return null;
+  const mermaid = schemaToMermaid(schema).trimEnd();
+  if (mermaid.split("\n").length >= 500) return null;
+  return `${ERD_START}
+\`\`\`mermaid
+${mermaid}
+\`\`\`
+${ERD_END}`;
+}
+function upsertErdBlock(readme, block) {
+  const start = readme.indexOf(ERD_START);
+  const end = readme.indexOf(ERD_END);
+  let next;
+  if (start !== -1 && end > start) {
+    next = readme.slice(0, start) + block + readme.slice(end + ERD_END.length);
+  } else {
+    next = `${readme.trimEnd()}
+
+## Database schema
+
+${block}
+`;
+  }
+  return { content: next, changed: next !== readme };
+}
 function collectSqlFiles(root, glob2) {
   const out = [];
   walk(root, "", glob2, out);
@@ -903,6 +935,20 @@ var removed = basePaths.filter((p) => !headSet.has(p));
 var modified = headPaths.filter(
   (p) => baseSet.has(p) && readFiles(baseDir, [p]).get(p) !== readFiles(headDir, [p]).get(p)
 );
+var readmePath = arg("--readme", "");
+if (readmePath) {
+  const headParse = parseFileMap(readFiles(headDir, headPaths));
+  const block = renderErdBlock(headParse.schema);
+  if (!block) {
+    console.error("No ERD block: schema is empty or exceeds the size limit.");
+    process.exit(4);
+  }
+  const current = (0, import_node_fs2.readFileSync)(readmePath, "utf8");
+  const { content, changed } = upsertErdBlock(current, block);
+  console.error(`readme: changed=${changed}`);
+  process.stdout.write(content);
+  process.exit(0);
+}
 var comment = renderComment({
   baseSha,
   headSha,

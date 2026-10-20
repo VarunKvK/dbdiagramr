@@ -7,7 +7,15 @@ import type { Schema, Table } from "@/lib/diagram";
 export const runtime = "nodejs";
 
 const MAX_TABLES = 500;
+// Supabase keeps app tables in public, auth and storage. public stays implicit
+// so existing diagrams and share links keep their names.
+const INTROSPECT_SCHEMAS = ["public", "auth", "storage"] as const;
+const SCHEMA_SQL = INTROSPECT_SCHEMAS.map((s) => `'${s}'`).join(", ");
 const WINDOW_MS = 10 * 60 * 1000;
+
+function tableKey(schema: string, name: string): string {
+  return schema === "public" ? name : `${schema}.${name}`;
+}
 const MAX_REQUESTS = 10;
 const buckets = new Map<string, { count: number; resetAt: number }>();
 
@@ -263,17 +271,19 @@ export async function POST(request: NextRequest) {
     await client.connect();
   } catch (err) {
     const described = describeConnectError(err, port, host);
-    return fail(described.status, described.body);
+    return fail(described.status, { ...described.body, code: errorCode(err) || undefined });
   }
 
   try {
     const tablesResult = await client.query<{
+      schema_name: string;
       table_name: string;
       rls_enabled: boolean;
       rls_forced: boolean;
       policy_count: number;
     }>(
-      `SELECT c.relname AS table_name,
+      `SELECT n.nspname AS schema_name,
+              c.relname AS table_name,
               c.relrowsecurity AS rls_enabled,
               c.relforcerowsecurity AS rls_forced,
               (SELECT count(*)::int
@@ -281,23 +291,24 @@ export async function POST(request: NextRequest) {
                 WHERE p.polrelid = c.oid) AS policy_count
        FROM pg_catalog.pg_class c
        JOIN pg_catalog.pg_namespace n ON n.oid = c.relnamespace
-       WHERE n.nspname = 'public'
+       WHERE n.nspname IN (${SCHEMA_SQL})
          AND c.relkind IN ('r', 'p')
-       ORDER BY c.relname
+       ORDER BY n.nspname, c.relname
        LIMIT ${MAX_TABLES + 1}`
     );
 
     if (tablesResult.rows.length > MAX_TABLES) {
       return fail(422, {
         error: "Too many tables",
-        details: `This database has more than ${MAX_TABLES} tables in the public schema. Use paste-SQL mode, or connect to a schema with fewer tables.`,
+        details: `This database has more than ${MAX_TABLES} tables across public, auth and storage. Use paste-SQL mode, or connect to a schema with fewer tables.`,
       });
     }
 
     const tableMap = new Map<string, Table>();
     for (const row of tablesResult.rows) {
-      tableMap.set(row.table_name, {
-        name: row.table_name,
+      const key = tableKey(row.schema_name, row.table_name);
+      tableMap.set(key, {
+        name: key,
         columns: [],
         foreignKeys: [],
         rls: {
@@ -309,13 +320,15 @@ export async function POST(request: NextRequest) {
     }
 
     const columnsResult = await client.query<{
+      schema_name: string;
       table_name: string;
       column_name: string;
       data_type: string;
       not_null: boolean;
       column_default: string | null;
     }>(
-      `SELECT c.relname AS table_name,
+      `SELECT n.nspname AS schema_name,
+              c.relname AS table_name,
               a.attname AS column_name,
               pg_catalog.format_type(a.atttypid, a.atttypmod) AS data_type,
               a.attnotnull AS not_null,
@@ -325,17 +338,17 @@ export async function POST(request: NextRequest) {
        JOIN pg_catalog.pg_attribute a ON a.attrelid = c.oid
        LEFT JOIN pg_catalog.pg_attrdef d
          ON d.adrelid = c.oid AND d.adnum = a.attnum
-       WHERE n.nspname = 'public'
+       WHERE n.nspname IN (${SCHEMA_SQL})
          AND c.relkind IN ('r', 'p')
          AND a.attnum > 0
          AND NOT a.attisdropped
-       ORDER BY c.relname, a.attnum`
+       ORDER BY n.nspname, c.relname, a.attnum`
     );
 
     const primaryKeys = new Map<string, Set<string>>();
 
     for (const row of columnsResult.rows) {
-      const table = tableMap.get(row.table_name);
+      const table = tableMap.get(tableKey(row.schema_name, row.table_name));
       if (!table) continue;
 
       table.columns.push({
@@ -348,15 +361,19 @@ export async function POST(request: NextRequest) {
     }
 
     const constraintsResult = await client.query<{
+      schema_name: string;
       table_name: string;
       constraint_type: string;
       column_name: string;
+      foreign_schema_name: string | null;
       foreign_table_name: string | null;
       foreign_column_name: string | null;
     }>(
-      `SELECT c.relname AS table_name,
+      `SELECT n.nspname AS schema_name,
+              c.relname AS table_name,
               con.contype AS constraint_type,
               a.attname AS column_name,
+              fn.nspname AS foreign_schema_name,
               fc.relname AS foreign_table_name,
               fa.attname AS foreign_column_name
        FROM pg_catalog.pg_constraint con
@@ -369,30 +386,37 @@ export async function POST(request: NextRequest) {
        LEFT JOIN LATERAL unnest(con.confkey) WITH ORDINALITY AS fk(attnum, ord)
          ON con.contype = 'f' AND fk.ord = k.ord
        LEFT JOIN pg_catalog.pg_class fc ON fc.oid = con.confrelid
+       LEFT JOIN pg_catalog.pg_namespace fn ON fn.oid = fc.relnamespace
        LEFT JOIN pg_catalog.pg_attribute fa
          ON fa.attrelid = con.confrelid AND fa.attnum = fk.attnum
-       WHERE n.nspname = 'public'
+       WHERE n.nspname IN (${SCHEMA_SQL})
          AND con.contype IN ('p', 'f')
-       ORDER BY c.relname, con.conname, k.ord`
+       ORDER BY n.nspname, c.relname, con.conname, k.ord`
     );
 
     for (const row of constraintsResult.rows) {
+      const key = tableKey(row.schema_name, row.table_name);
       if (row.constraint_type === "p") {
-        const keys = primaryKeys.get(row.table_name) ?? new Set<string>();
+        const keys = primaryKeys.get(key) ?? new Set<string>();
         keys.add(row.column_name);
-        primaryKeys.set(row.table_name, keys);
+        primaryKeys.set(key, keys);
         continue;
       }
 
+      const foreignKey =
+        row.foreign_schema_name && row.foreign_table_name
+          ? tableKey(row.foreign_schema_name, row.foreign_table_name)
+          : null;
+
       if (
         row.constraint_type === "f" &&
-        row.foreign_table_name &&
+        foreignKey &&
         row.foreign_column_name &&
-        tableMap.has(row.foreign_table_name)
+        tableMap.has(foreignKey)
       ) {
-        tableMap.get(row.table_name)?.foreignKeys.push({
+        tableMap.get(key)?.foreignKeys.push({
           column: row.column_name,
-          referencesTable: row.foreign_table_name,
+          referencesTable: foreignKey,
           referencesColumn: row.foreign_column_name,
         });
       }
@@ -410,7 +434,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(schema, { status: 200 });
   } catch (err) {
     const described = describeQueryError(err);
-    return fail(described.status, described.body);
+    return fail(described.status, { ...described.body, code: errorCode(err) || undefined });
   } finally {
     await client.end().catch(() => {});
   }

@@ -19,6 +19,14 @@ const nextConfig = {
     }
     return config;
   },
+  experimental: {
+    // Native addon: must be required at runtime, not bundled by webpack.
+    serverComponentsExternalPackages: ["@resvg/resvg-js"],
+    // Ship the font files with the OG image function.
+    outputFileTracingIncludes: {
+      "/api/og": ["./app/fonts/**"],
+    },
+  },
   async rewrites() {
     return [
       // libpg-query (WASM) resolves its binary relative to the JS chunk URL

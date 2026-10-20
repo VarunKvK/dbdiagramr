@@ -23,8 +23,35 @@ export type ParseResult = {
 };
 
 export const COMMENT_MARKER = "<!-- pr-schema-diff-erd -->";
+export const ERD_START = "<!-- dbdiagramr:erd:start -->";
+export const ERD_END = "<!-- dbdiagramr:erd:end -->";
 const MAX_MERMAID_TABLES = 60;
 const MAX_COMMENT_CHARS = 60000;
+
+/** Mermaid block for a README, wrapped in stable markers. Null when unsuited. */
+export function renderErdBlock(schema: Schema): string | null {
+  const tableCount = schema.tables.length;
+  if (tableCount === 0 || tableCount > MAX_MERMAID_TABLES) return null;
+  const mermaid = schemaToMermaid(schema).trimEnd();
+  if (mermaid.split("\n").length >= 500) return null;
+  return `${ERD_START}\n\`\`\`mermaid\n${mermaid}\n\`\`\`\n${ERD_END}`;
+}
+
+/** Replace the marked block in place, or append it when no markers exist. */
+export function upsertErdBlock(
+  readme: string,
+  block: string
+): { content: string; changed: boolean } {
+  const start = readme.indexOf(ERD_START);
+  const end = readme.indexOf(ERD_END);
+  let next: string;
+  if (start !== -1 && end > start) {
+    next = readme.slice(0, start) + block + readme.slice(end + ERD_END.length);
+  } else {
+    next = `${readme.trimEnd()}\n\n## Database schema\n\n${block}\n`;
+  }
+  return { content: next, changed: next !== readme };
+}
 
 export function collectSqlFiles(root: string, glob: string): string[] {
   const out: string[] = [];

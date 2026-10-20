@@ -65,15 +65,25 @@ export function generateDiagramSVG(schema: Schema): string {
   return renderDiagramSVG(schema, layout);
 }
 
-export function renderDiagramSVG(schema: Schema, layout: Record<string, Rect>): string {
-  const { tables } = schema;
+export function diagramBounds(layout: Record<string, Rect>): {
+  minX: number;
+  minY: number;
+  vw: number;
+  vh: number;
+} {
   const all = Object.values(layout) as Rect[];
   const minX = Math.min(...all.map((p) => p.x)) - 40;
   const minY = Math.min(...all.map((p) => p.y)) - 40;
   const maxX = Math.max(...all.map((p) => p.x + p.w)) + 40;
   const maxY = Math.max(...all.map((p) => p.y + p.h)) + 40;
-  const vw = maxX - minX;
-  const vh = maxY - minY;
+  return { minX, minY, vw: maxX - minX, vh: maxY - minY };
+}
+
+export function renderDiagramSVG(schema: Schema, layout: Record<string, Rect>): string {
+  const { tables } = schema;
+  const { minX, minY, vw, vh } = diagramBounds(layout);
+  const maxX = minX + vw;
+  const maxY = minY + vh;
   const rls = rlsSummary(schema);
 
   const connections: string[] = [];
@@ -197,6 +207,10 @@ ${colLines.join("\n")}
     legend.push("</g>");
     parts.push(legend.join("\n"));
   }
+
+  parts.push(
+    `  <g id="credit"><a href="https://www.dbdiagramr.space" target="_blank" rel="noopener"><text x="${maxX - 10}" y="${maxY - 16}" textAnchor="end" fill="#8a8a8a" fontSize="11" fontFamily="Inter, sans-serif">Made with dbdiagramr</text></a></g>`
+  );
 
   parts.push("</svg>");
 

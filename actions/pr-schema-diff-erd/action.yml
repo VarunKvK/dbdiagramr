@@ -14,6 +14,10 @@ inputs:
     description: "Token used to create/update the PR comment"
     required: false
     default: ${{ github.token }}
+  readme-path:
+    description: "Keep a Mermaid ER diagram in this file (e.g. README.md). Empty disables. Requires permissions: contents: write."
+    required: false
+    default: ""
 
 outputs:
   changed:

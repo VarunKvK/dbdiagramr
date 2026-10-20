@@ -27,6 +27,7 @@ import { LAYOUT, layoutSchema, tableSize } from "@/lib/diagramLayout";
 import type { Rect } from "@/lib/diagramLayout";
 import { formatType } from "@/lib/formatType";
 import { RLS_META, rlsHint, rlsStatus, rlsSummary } from "@/lib/rls";
+import { MAX_PUBLIC_PAYLOAD, encodeSchema } from "@/lib/share";
 import { track } from "@/lib/analytics";
 
 function downloadBlob(blob: Blob, filename: string) {
@@ -288,6 +289,11 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
   const [hovered, setHovered] = useState<string | null>(null);
   const [downloadOpen, setDownloadOpen] = useState(false);
   const downloadRef = useRef<HTMLDivElement>(null);
+  const [shareOpen, setShareOpen] = useState(false);
+  const [shareBusy, setShareBusy] = useState(false);
+  const [sharePayload, setSharePayload] = useState("");
+  const [shareCopied, setShareCopied] = useState<"private" | "public" | null>(null);
+  const shareRef = useRef<HTMLDivElement>(null);
   const rls = useMemo(() => rlsSummary(schema), [schema]);
   const lastRlsTracked = useRef("");
 
@@ -319,12 +325,15 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
       if (downloadRef.current && !downloadRef.current.contains(e.target as Node)) {
         setDownloadOpen(false);
       }
+      if (shareRef.current && !shareRef.current.contains(e.target as Node)) {
+        setShareOpen(false);
+      }
     }
-    if (downloadOpen) {
+    if (downloadOpen || shareOpen) {
       document.addEventListener("mousedown", handleClick);
       return () => document.removeEventListener("mousedown", handleClick);
     }
-  }, [downloadOpen]);
+  }, [downloadOpen, shareOpen]);
 
   const normalizedSearch = searchQuery.trim().toLowerCase();
   const searchActive = normalizedSearch.length > 0;
@@ -491,6 +500,44 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
     img.src = url;
   }, [schema, positionsForExport, rls.hasRls]);
 
+  const shareTooLong = sharePayload.length > MAX_PUBLIC_PAYLOAD;
+
+  const handleToggleShare = useCallback(() => {
+    const next = !shareOpen;
+    setShareOpen(next);
+    if (next && !sharePayload) {
+      setShareBusy(true);
+      encodeSchema(schema)
+        .then(setSharePayload)
+        .catch(() => setSharePayload(""))
+        .finally(() => setShareBusy(false));
+    }
+  }, [shareOpen, sharePayload, schema]);
+
+  const handleCopyShare = useCallback(
+    async (kind: "private" | "public") => {
+      if (!sharePayload) return;
+      const origin = window.location.origin;
+      const url =
+        kind === "private"
+          ? `${origin}/visualize#s=${sharePayload}`
+          : `${origin}/s/${sharePayload}`;
+      track("share_clicked", {
+        kind,
+        table_count: schema.tables.length,
+        length: sharePayload.length,
+      });
+      try {
+        await navigator.clipboard.writeText(url);
+        setShareCopied(kind);
+        setTimeout(() => setShareCopied(null), 2000);
+      } catch {
+        window.prompt("Copy this link", url);
+      }
+    },
+    [sharePayload, schema.tables.length]
+  );
+
   return (
     <div className={`relative ${className}`}>
       <ReactFlow
@@ -545,6 +592,58 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
         )}
         <Panel position="top-right">
           {!minimal && (
+          <div className="flex items-center gap-2">
+          <div ref={shareRef} className="relative">
+            <button
+              onClick={handleToggleShare}
+              title="Share link"
+              aria-label="Share diagram link"
+              className="flex h-8 w-8 items-center justify-center rounded-[10px] border border-border bg-white text-ink shadow-md transition-colors hover:bg-accent-soft"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="18" cy="5" r="3" />
+                <circle cx="6" cy="12" r="3" />
+                <circle cx="18" cy="19" r="3" />
+                <line x1="8.59" y1="13.51" x2="15.42" y2="17.49" />
+                <line x1="15.41" y1="6.51" x2="8.59" y2="10.49" />
+              </svg>
+            </button>
+            {shareOpen && (
+              <div className="absolute right-0 top-10 z-20 w-64 rounded-[10px] border border-border bg-white p-1.5 shadow-xl">
+                {shareBusy ? (
+                  <p className="px-2 py-2 text-xs text-muted">Preparing link…</p>
+                ) : (
+                  <>
+                    <button
+                      onClick={() => handleCopyShare("private")}
+                      className="flex w-full flex-col items-start gap-0.5 rounded-[8px] px-2.5 py-2 text-left transition-colors hover:bg-surface"
+                    >
+                      <span className="text-xs font-medium text-ink">
+                        {shareCopied === "private" ? "Copied!" : "Copy private link"}
+                      </span>
+                      <span className="text-[11px] leading-snug text-muted">
+                        Keeps the schema in the URL after #. Never sent to a server.
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => handleCopyShare("public")}
+                      disabled={shareTooLong}
+                      className="flex w-full flex-col items-start gap-0.5 rounded-[8px] px-2.5 py-2 text-left transition-colors hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
+                    >
+                      <span className="text-xs font-medium text-ink">
+                        {shareCopied === "public" ? "Copied!" : "Copy public link"}
+                      </span>
+                      <span className="text-[11px] leading-snug text-muted">
+                        {shareTooLong
+                          ? "Diagram is too large to embed in a link."
+                          : "Opens a read-only view with a preview image for Slack, X, GitHub."}
+                      </span>
+                    </button>
+                  </>
+                )}
+              </div>
+            )}
+          </div>
           <div ref={downloadRef} className="relative">
             <button
               onClick={() => setDownloadOpen((v) => !v)}
@@ -573,6 +672,7 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
                 </button>
               </div>
             )}
+          </div>
           </div>
           )}
         </Panel>

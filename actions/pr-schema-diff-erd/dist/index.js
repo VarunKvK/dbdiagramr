@@ -707,8 +707,37 @@ function globToRegExp(glob) {
 
 // src/core.ts
 var COMMENT_MARKER = "<!-- pr-schema-diff-erd -->";
+var ERD_START = "<!-- dbdiagramr:erd:start -->";
+var ERD_END = "<!-- dbdiagramr:erd:end -->";
 var MAX_MERMAID_TABLES = 60;
 var MAX_COMMENT_CHARS = 6e4;
+function renderErdBlock(schema) {
+  const tableCount = schema.tables.length;
+  if (tableCount === 0 || tableCount > MAX_MERMAID_TABLES) return null;
+  const mermaid = schemaToMermaid(schema).trimEnd();
+  if (mermaid.split("\n").length >= 500) return null;
+  return `${ERD_START}
+\`\`\`mermaid
+${mermaid}
+\`\`\`
+${ERD_END}`;
+}
+function upsertErdBlock(readme, block) {
+  const start = readme.indexOf(ERD_START);
+  const end = readme.indexOf(ERD_END);
+  let next;
+  if (start !== -1 && end > start) {
+    next = readme.slice(0, start) + block + readme.slice(end + ERD_END.length);
+  } else {
+    next = `${readme.trimEnd()}
+
+## Database schema
+
+${block}
+`;
+  }
+  return { content: next, changed: next !== readme };
+}
 function parseFileMap(files) {
   const paths = Array.from(files.keys()).sort();
   const joined = paths.map((p) => files.get(p) ?? "").join("\n");
@@ -908,7 +937,7 @@ async function api(token, method, url, body) {
     const text = await res.text().catch(() => "");
     if (res.status === 403) {
       process.stdout.write(
-        `::notice::Token is read-only (fork PR?) \u2014 skipping comment. Copy the workflow's permissions block or run from a branch in the base repo.
+        `::notice::Token is read-only (fork PR, or missing permissions: pull-requests/contents write) \u2014 skipping write. Copy the workflow's permissions block or run from a branch in the base repo.
 `
       );
       process.exit(0);
@@ -916,6 +945,52 @@ async function api(token, method, url, body) {
     fail(`GitHub API ${method} ${url} \u2192 ${res.status}: ${text.slice(0, 300)}`);
   }
   return await res.json();
+}
+async function repoFile(token, repo, filePath, ref) {
+  const encoded = filePath.split("/").map(encodeURIComponent).join("/");
+  const res = await fetch(
+    `${API}/repos/${repo}/contents/${encoded}?ref=${encodeURIComponent(ref)}`,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        accept: "application/vnd.github+json",
+        "user-agent": "pr-schema-diff-erd"
+      }
+    }
+  );
+  if (res.status === 404) return null;
+  if (!res.ok) fail(`GitHub API GET contents ${filePath} \u2192 ${res.status}`);
+  return await res.json();
+}
+async function updateReadme(args) {
+  const { token, repo, pr, readmePath, headSchema } = args;
+  if (pr.head.repo?.full_name !== repo) {
+    info("Fork PR \u2014 skipping README update (the token cannot write to the fork).");
+    return;
+  }
+  const block = renderErdBlock(headSchema);
+  if (!block) {
+    info("README ERD skipped: no tables, or the schema exceeds the render limit.");
+    return;
+  }
+  const existing = await repoFile(token, repo, readmePath, pr.head.sha);
+  if (existing && !existing.content) {
+    info(`${readmePath} is too large for the contents API \u2014 skipping README update.`);
+    return;
+  }
+  const current = existing?.content ? Buffer.from(existing.content, "base64").toString("utf8") : "";
+  const { content, changed } = upsertErdBlock(current, block);
+  if (!changed) {
+    info(`${readmePath} ER diagram is already up to date.`);
+    return;
+  }
+  await api(token, "PUT", `https://api.github.com/repos/${repo}/contents/${readmePath}`, {
+    message: "docs: update ER diagram [skip ci]",
+    content: Buffer.from(content).toString("base64"),
+    branch: pr.head.ref,
+    ...existing ? { sha: existing.sha } : {}
+  });
+  info(`Updated the ER diagram in ${readmePath} on ${pr.head.ref}.`);
 }
 async function main() {
   const glob = getInput("migrations-path", "**/migrations/**/*.sql");
@@ -966,12 +1041,14 @@ async function main() {
     const c = showFile(headSha, p);
     if (c !== null) headMap.set(p, c);
   }
+  const baseParse = parseFileMap(baseMap);
+  const headParse = parseFileMap(headMap);
   const comment = renderComment({
     baseSha,
     headSha,
     stats: { added, modified, removed },
-    base: parseFileMap(baseMap),
-    head: parseFileMap(headMap),
+    base: baseParse,
+    head: headParse,
     repoUrl
   });
   const perPage = 100;
@@ -991,6 +1068,16 @@ async function main() {
       body: comment
     });
     info(`Posted schema-diff comment on PR #${prNumber}.`);
+  }
+  const readmePath = getInput("readme-path");
+  if (readmePath) {
+    await updateReadme({
+      token,
+      repo,
+      pr,
+      readmePath,
+      headSchema: headParse.schema
+    });
   }
 }
 main().catch((err) => fail(String(err instanceof Error ? err.stack ?? err.message : err)));

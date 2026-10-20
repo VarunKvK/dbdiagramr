@@ -78,6 +78,19 @@ jobs:
           fetch-depth: 0   # the action reads the base commit
       - uses: VarunKvK/dbdiagramr/actions/pr-schema-diff-erd@main`;
 
+const readmeWorkflow = `# Same action, plus a committed ER diagram in README.md
+permissions:
+  contents: write        # commit the README block
+  pull-requests: write   # post the diff comment
+
+steps:
+  - uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+  - uses: VarunKvK/dbdiagramr/actions/pr-schema-diff-erd@main
+    with:
+      readme-path: README.md`;
+
 function CodeBlock({ code }: { code: string }) {
   return (
     <pre className="overflow-x-auto rounded-[20px] border border-border bg-ink p-6 font-mono text-xs leading-relaxed text-white/90">
@@ -215,6 +228,26 @@ export default function GithubSchemaActionPage() {
           Advanced: set the <code className="font-mono text-sm">migrations-path</code> input to
           match your folder (for example{" "}
           <code className="font-mono text-sm">db/migration/*.sql</code> for Flyway).
+        </p>
+      </section>
+
+      <section className="mb-12">
+        <h2 className="mb-4 text-2xl font-semibold tracking-tight text-ink">
+          Keep the ER diagram in your README
+        </h2>
+        <p className="mb-4 max-w-3xl leading-relaxed text-muted">
+          Add <code className="font-mono text-sm">readme-path: README.md</code> and grant{" "}
+          <code className="font-mono text-sm">contents: write</code>. The action rewrites a
+          marked Mermaid block with the head schema and commits it to the PR branch. Repeat
+          runs only touch that block, and nothing is committed when the diagram is unchanged.
+        </p>
+        <CodeBlock code={readmeWorkflow} />
+        <p className="mt-4 text-sm text-muted">
+          The block is wrapped in{" "}
+          <code className="font-mono text-sm">{"<!-- dbdiagramr:erd:start -->"}</code> and{" "}
+          <code className="font-mono text-sm">{"<!-- dbdiagramr:erd:end -->"}</code>. If the
+          markers are missing, the action appends a “Database schema” section. Fork PRs are
+          skipped because the token cannot write to the fork.
         </p>
       </section>
 

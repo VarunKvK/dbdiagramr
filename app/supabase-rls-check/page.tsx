@@ -57,7 +57,7 @@ const faqs = [
   },
   {
     q: "Which schemas do you check?",
-    a: "The public schema today. Supabase internal schemas such as auth and storage are not included. Multi-schema support is planned.",
+    a: "public, auth and storage. public is shown first, and you can switch auth or storage on with one click. Everything else is ignored so the diagram stays readable.",
   },
   {
     q: "Why does pasted SQL show RLS as unknown?",
@@ -120,8 +120,9 @@ export default function SupabaseRlsCheckPage() {
         </h1>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
           Connect with a read-only role. dbdiagramr reads the RLS flags and
-          policy counts from PostgreSQL, draws your public schema, and marks
-          every table. No signup, no storage.
+          policy counts from PostgreSQL, draws your public schema (auth and
+          storage are one click away), and marks every table. No signup, no
+          storage.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <TrackedLink
@@ -241,7 +242,7 @@ GRANT USAGE ON SCHEMA public TO dbdiagramr_reader;`}</pre>
       <section className="mx-auto max-w-6xl px-6 pb-20 lg:px-8">
         <div className="rounded-[20px] bg-ink px-6 py-10 text-center text-white md:px-12">
           <h2 className="text-3xl font-semibold tracking-tight md:text-4xl">
-            Check your public schema in 10 seconds.
+            Check your schema in 10 seconds.
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-sm leading-relaxed text-white/60">
             See every table, its foreign keys, and whether RLS is on. Free, no

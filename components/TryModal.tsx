@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { toast } from "sonner";
 import type { Schema } from "@/lib/diagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
+import { schemaToSql } from "@/lib/schemaExport";
 import { ECOMMERCE_SQL, SUPABASE_SQL } from "@/lib/sql/pgDumpSamples";
 import { RLS_META, rlsSummary, type RlsSummary } from "@/lib/rls";
 import { track } from "@/lib/analytics";
@@ -19,13 +20,15 @@ interface TryModalProps {
   onModeChange?: (mode: Mode) => void;
   /** Preload SQL (e.g. from /visualize?schema=slug); parsed via the normal live path */
   initialSql?: string;
+  /** Preload a full schema object (share links) — rendered as-is, RLS metadata kept */
+  initialSchema?: Schema;
   /** Preload a connection string (e.g. staged by the conn-string builder) */
   initialConnString?: string;
   /** Stretch to fill the parent on both tabs (used by the full-screen /visualize rail) */
   fill?: boolean;
 }
 
-export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: controlledMode, onModeChange, initialSql, initialConnString, fill }: TryModalProps) {
+export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: controlledMode, onModeChange, initialSql, initialSchema, initialConnString, fill }: TryModalProps) {
   const [internalMode, setInternalMode] = useState<Mode>("sql");
   const mode = controlledMode ?? internalMode;
   const setMode = onModeChange ?? setInternalMode;
@@ -44,6 +47,8 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const initialApplied = useRef(false);
+  const initialSchemaApplied = useRef(false);
+  const suppressParseForRef = useRef<string | null>(null);
   const lastTrackedSigRef = useRef("");
   const pendingSourceRef = useRef<"sql" | "sample" | "file">("sql");
 
@@ -55,6 +60,19 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
       setActiveFile("schema");
     }
   }, [initialSql]);
+
+  // Preload a decoded share schema once: render it exactly (RLS included) and
+  // show its SQL, but skip the parse round-trip that would drop RLS metadata.
+  useEffect(() => {
+    if (!initialSchema || initialSchemaApplied.current) return;
+    initialSchemaApplied.current = true;
+    const sql = schemaToSql(initialSchema);
+    suppressParseForRef.current = sql;
+    setSqlText(sql);
+    setActiveFile("schema");
+    setSqlError(null);
+    onSchemaGenerated(initialSchema);
+  }, [initialSchema, onSchemaGenerated]);
 
   // Preload a staged connection string once (e.g. from the conn-string builder)
   const connApplied = useRef(false);
@@ -136,7 +154,14 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
     if (mode !== "sql") return;
     if (debounceRef.current) clearTimeout(debounceRef.current);
     const delay = sqlText.length > 8000 ? 500 : 250;
-    debounceRef.current = setTimeout(() => handleSqlLive(sqlText), delay);
+    debounceRef.current = setTimeout(() => {
+      if (suppressParseForRef.current !== null) {
+        const pending = suppressParseForRef.current;
+        suppressParseForRef.current = null;
+        if (sqlText === pending) return;
+      }
+      handleSqlLive(sqlText);
+    }, delay);
     return () => {
       if (debounceRef.current) clearTimeout(debounceRef.current);
     };
@@ -216,6 +241,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
     setErrorHint(null);
     const cs = connectionString.trim();
     const isLocal = cs.includes("localhost") || cs.includes("127.0.0.1");
+    let errorTracked = false;
     try {
       const res = await fetch("/api/schema", {
         method: "POST",
@@ -241,6 +267,12 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
           });
         }
         if (data.hint === "pooler") setErrorHint("pooler");
+        track("schema_error", {
+          mode: "live",
+          code: typeof data.code === "string" ? data.code : "",
+          reason: typeof data.error === "string" ? data.error : "unknown",
+        });
+        errorTracked = true;
         throw new Error(data.details || data.error || "API error");
       }
       const schema = data as Schema;
@@ -256,6 +288,9 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
       setResultRls(rls);
       onSchemaGenerated(schema);
     } catch (err: unknown) {
+      if (!errorTracked) {
+        track("schema_error", { mode: "live", code: "", reason: "fetch_failed" });
+      }
       const msg = err instanceof Error ? err.message : "Something went wrong";
       setErrorMsg(msg);
       setPhase("error");

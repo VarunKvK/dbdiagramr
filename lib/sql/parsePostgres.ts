@@ -96,14 +96,24 @@ function splitStatements(sql: string): string[] {
   return stmts;
 }
 
+function qualifyTableName(raw: string): string {
+  // public is the default schema, so it stays implicit. Everything else is
+  // prefixed so auth.users and public.users cannot collide.
+  const parts = raw
+    .split(".")
+    .map((p) => p.replace(/^"|"$/g, "").trim())
+    .filter(Boolean);
+  if (parts.length <= 1) return parts[0] ?? "";
+  const name = parts[parts.length - 1];
+  const schema = parts.slice(0, -1).join(".");
+  return schema.toLowerCase() === "public" ? name : `${schema}.${name}`;
+}
+
 function extractTableName(createStmt: string): string | null {
   // CREATE TABLE [IF NOT EXISTS] [schema.]name (
   const m = createStmt.match(/CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?(?:ONLY\s+)?(?:"([^"]+)"|([A-Za-z0-9_."]+))\s*\(/i);
   if (!m) return null;
-  const raw = m[1] ?? m[2];
-  // Handle schema-qualified like public.users or "public"."users" or auth.users
-  const parts = raw.split(".").map((p) => p.replace(/^"|"$/g, "").trim());
-  return parts[parts.length - 1];
+  return qualifyTableName(m[1] ?? m[2]);
 }
 
 function findMatchingParen(str: string, startIdx: number): number {
@@ -176,8 +186,7 @@ function extractRefTableAndCol(referencesClause: string): { table: string; col: 
   if (!m) return null;
   const rawTable = m[1] ?? m[2];
   const col = m[3] ?? "id";
-  const tableParts = rawTable.split(".").map((p) => p.replace(/^"|"$/g, "").trim());
-  const table = tableParts[tableParts.length - 1];
+  const table = qualifyTableName(rawTable);
   return { table, col: normalizeIdent(col) };
 }
 
@@ -288,8 +297,7 @@ function handleTableConstraint(def: string, columns: Column[], foreignKeys: Fore
       const refColsRaw = fkMatch[4];
       const localCols = localColsRaw.split(",").map((c) => normalizeIdent(c.trim()));
       const refCols = refColsRaw ? refColsRaw.split(",").map((c) => normalizeIdent(c.trim())) : localCols.map(() => "id");
-      const refTableParts = refTableRaw.split(".").map((p) => p.replace(/^"|"$/g, "").trim());
-      const refTable = refTableParts[refTableParts.length - 1];
+      const refTable = qualifyTableName(refTableRaw);
       localCols.forEach((lc, i) => {
         const rc = refCols[i] ?? refCols[0] ?? "id";
         foreignKeys.push({ column: lc, referencesTable: refTable, referencesColumn: rc });
@@ -382,8 +390,7 @@ export function parseSqlToSchema(sql: string): { schema: Schema; warnings: strin
         const addColMatch = stmt.match(/ALTER\s+TABLE\s+(?:ONLY\s+)?(?:"([^"]+)"|([A-Za-z0-9_."]+))\s+ADD\s+COLUMN\s+([\s\S]*)$/i);
         if (addColMatch) {
           const rawTable = addColMatch[1] ?? addColMatch[2];
-          const tParts = rawTable.split(".").map((p) => p.replace(/^"|"$/g, "").trim());
-          const tName = tParts[tParts.length - 1];
+          const tName = qualifyTableName(rawTable);
           const colDef = addColMatch[3].replace(/;$/, "").trim();
           const tbl = tableMap.get(tName);
           if (tbl) {
@@ -398,8 +405,7 @@ export function parseSqlToSchema(sql: string): { schema: Schema; warnings: strin
       }
       const rawTable = am[1] ?? am[2];
       let rest = am[3].trim();
-      const tParts = rawTable.split(".").map((p) => p.replace(/^"|"$/g, "").trim());
-      const tName = tParts[tParts.length - 1];
+      const tName = qualifyTableName(rawTable);
       const tbl = tableMap.get(tName);
       if (!tbl) {
         warnings.push(`ALTER TABLE for unknown table ${tName} - create it before altering`);

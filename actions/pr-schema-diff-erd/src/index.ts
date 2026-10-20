@@ -2,7 +2,14 @@
 // head SHAs, render the comment, then create or update the sticky comment.
 import { execFileSync } from "node:child_process";
 import { readFileSync, appendFileSync } from "node:fs";
-import { parseFileMap, renderComment, COMMENT_MARKER } from "./core";
+import type { Schema } from "./lib/types";
+import {
+  parseFileMap,
+  renderComment,
+  renderErdBlock,
+  upsertErdBlock,
+  COMMENT_MARKER,
+} from "./core";
 import { globToRegExp } from "./lib/glob";
 
 // --- tiny @actions/core replacement (zero dependencies) -------------------
@@ -88,13 +95,83 @@ async function api<T>(token: string, method: string, url: string, body?: unknown
     // Fork PRs get a read-only token → 403 on comment writes. Not a code error.
     if (res.status === 403) {
       process.stdout.write(
-        `::notice::Token is read-only (fork PR?) — skipping comment. Copy the workflow's permissions block or run from a branch in the base repo.\n`
+        `::notice::Token is read-only (fork PR, or missing permissions: pull-requests/contents write) — skipping write. Copy the workflow's permissions block or run from a branch in the base repo.\n`
       );
       process.exit(0);
     }
     fail(`GitHub API ${method} ${url} → ${res.status}: ${text.slice(0, 300)}`);
   }
   return (await res.json()) as T;
+}
+
+// --- README ERD -----------------------------------------------------------
+
+type RepoFile = { content?: string; sha: string };
+
+async function repoFile(
+  token: string,
+  repo: string,
+  filePath: string,
+  ref: string
+): Promise<RepoFile | null> {
+  const encoded = filePath.split("/").map(encodeURIComponent).join("/");
+  const res = await fetch(
+    `${API}/repos/${repo}/contents/${encoded}?ref=${encodeURIComponent(ref)}`,
+    {
+      headers: {
+        authorization: `Bearer ${token}`,
+        accept: "application/vnd.github+json",
+        "user-agent": "pr-schema-diff-erd",
+      },
+    }
+  );
+  if (res.status === 404) return null;
+  if (!res.ok) fail(`GitHub API GET contents ${filePath} → ${res.status}`);
+  return (await res.json()) as RepoFile;
+}
+
+async function updateReadme(args: {
+  token: string;
+  repo: string;
+  pr: { head: { sha: string; ref: string; repo: { full_name?: string } | null } };
+  readmePath: string;
+  headSchema: Schema;
+}): Promise<void> {
+  const { token, repo, pr, readmePath, headSchema } = args;
+
+  if (pr.head.repo?.full_name !== repo) {
+    info("Fork PR — skipping README update (the token cannot write to the fork).");
+    return;
+  }
+
+  const block = renderErdBlock(headSchema);
+  if (!block) {
+    info("README ERD skipped: no tables, or the schema exceeds the render limit.");
+    return;
+  }
+
+  const existing = await repoFile(token, repo, readmePath, pr.head.sha);
+  if (existing && !existing.content) {
+    info(`${readmePath} is too large for the contents API — skipping README update.`);
+    return;
+  }
+
+  const current = existing?.content
+    ? Buffer.from(existing.content, "base64").toString("utf8")
+    : "";
+  const { content, changed } = upsertErdBlock(current, block);
+  if (!changed) {
+    info(`${readmePath} ER diagram is already up to date.`);
+    return;
+  }
+
+  await api(token, "PUT", `https://api.github.com/repos/${repo}/contents/${readmePath}`, {
+    message: "docs: update ER diagram [skip ci]",
+    content: Buffer.from(content).toString("base64"),
+    branch: pr.head.ref,
+    ...(existing ? { sha: existing.sha } : {}),
+  });
+  info(`Updated the ER diagram in ${readmePath} on ${pr.head.ref}.`);
 }
 
 // --- main -----------------------------------------------------------------
@@ -157,12 +234,15 @@ async function main(): Promise<void> {
     if (c !== null) headMap.set(p, c);
   }
 
+  const baseParse = parseFileMap(baseMap);
+  const headParse = parseFileMap(headMap);
+
   const comment = renderComment({
     baseSha,
     headSha,
     stats: { added, modified, removed },
-    base: parseFileMap(baseMap),
-    head: parseFileMap(headMap),
+    base: baseParse,
+    head: headParse,
     repoUrl,
   });
 
@@ -183,6 +263,17 @@ async function main(): Promise<void> {
       body: comment,
     });
     info(`Posted schema-diff comment on PR #${prNumber}.`);
+  }
+
+  const readmePath = getInput("readme-path");
+  if (readmePath) {
+    await updateReadme({
+      token,
+      repo,
+      pr,
+      readmePath,
+      headSchema: headParse.schema,
+    });
   }
 }
 

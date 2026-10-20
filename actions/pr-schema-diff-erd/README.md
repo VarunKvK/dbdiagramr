@@ -51,12 +51,50 @@ jobs:
 |---|---|---|
 | `migrations-path` | `**/migrations/**/*.sql` | Glob matching your SQL migration files |
 | `github-token` | `${{ github.token }}` | Token used to create/update the comment |
+| `readme-path` | `""` (off) | Keep a Mermaid ERD in this file, e.g. `README.md` |
 
 ### Outputs
 
 | Output | Values |
 |---|---|
 | `changed` | `true` if migration files changed, else `false` |
+
+## Keep the ER diagram in your README
+
+Set `readme-path` to have the action write the head schema's Mermaid ERD into
+your README and commit it to the PR branch. The block is wrapped in markers, so
+repeat runs only touch that block:
+
+````markdown
+<!-- dbdiagramr:erd:start -->
+```mermaid
+erDiagram
+  ...
+```
+<!-- dbdiagramr:erd:end -->
+````
+
+If the markers are missing, the action appends a `## Database schema` section
+with the block. Nothing is committed when the diagram is unchanged, and fork
+PRs are skipped (the token cannot write to the fork).
+
+```yaml
+permissions:
+  contents: write        # needed to commit the README
+  pull-requests: write   # needed to post the comment
+
+steps:
+  - uses: actions/checkout@v4
+    with:
+      fetch-depth: 0
+  - uses: VarunKvK/dbdiagramr/actions/pr-schema-diff-erd@main
+    with:
+      readme-path: README.md
+```
+
+The commit is authored by `github-actions[bot]` with `[skip ci]`. Protect the
+branch if you do not want automated commits, or omit `readme-path` and keep the
+diagram in the PR comment only.
 
 ## How it works
 

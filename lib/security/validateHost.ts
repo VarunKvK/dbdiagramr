@@ -18,6 +18,7 @@ export type ValidateResult =
       body: {
         error: string;
         details?: string;
+        code?: string;
         localhost?: boolean;
         dnsError?: boolean;
         hint?: string;
@@ -254,7 +255,11 @@ export async function validateConnectionString(raw: string): Promise<ValidateRes
     try {
       const records = await lookup(hostname, { all: true, verbatim: true });
       addresses = records.map((record) => record.address);
-    } catch {
+    } catch (err) {
+      const errCode =
+        typeof err === "object" && err !== null && "code" in err
+          ? (err as { code?: unknown }).code
+          : undefined;
       return {
         ok: false,
         status: 400,
@@ -262,6 +267,7 @@ export async function validateConnectionString(raw: string): Promise<ValidateRes
           error: "Database host not found",
           details:
             "We could not resolve that hostname. Check for typos and that your database is running.",
+          code: typeof errCode === "string" ? errCode : "ENOTFOUND",
           dnsError: true,
           ...(port === 5432 ? { hint: "pooler" } : {}),
         },
@@ -276,6 +282,7 @@ export async function validateConnectionString(raw: string): Promise<ValidateRes
           error: "Database host not found",
           details:
             "That hostname did not resolve to any address. Check for typos and that your database is running.",
+          code: "ENOTFOUND",
           dnsError: true,
         },
       };

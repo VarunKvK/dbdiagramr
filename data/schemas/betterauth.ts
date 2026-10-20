@@ -4,8 +4,8 @@ import { col, table } from "./helpers";
 // Better Auth core schema — user, session, account, verification.
 // Derived from the official database docs (better-auth.com/docs/concepts/database):
 // TypeScript field types mapped to PostgreSQL (string -> text, Date -> timestamptz).
-// Key modeling point: account identity is the (issuer, accountId) pair, not the
-// local id — the id is only the row identifier passed to account APIs.
+// Key modeling point: an account is identified by the (providerId, accountId)
+// pair, not the local id — the id is only the row identifier passed to account APIs.
 export const betterauthSchema: Schema = {
   tables: [
     table(
@@ -40,7 +40,6 @@ export const betterauthSchema: Schema = {
       [
         col("id", "text", { pk: true }),
         col("userId", "text"),
-        col("issuer", "text"),
         col("accountId", "text"),
         col("providerId", "text"),
         col("accessToken", "text", { nullable: true }),

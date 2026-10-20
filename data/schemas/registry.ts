@@ -624,11 +624,11 @@ export const schemaEntries: SchemaEntry[] = [
       "better auth erd",
     ],
     intro:
-      "Better Auth persists authentication in four core tables. The user table holds identity and profile fields; session rows point at users and carry the token, expiry, and device info; account rows link one authentication method (one provider) to a user with tokens and an optional password for credential logins; verification rows hold one-time values for email verification and password resets. The design detail that matters: account identity is the (issuer, accountId) pair with a unique compound index - the local id is only the row identifier you pass to account-management APIs, never the provider identity.",
+      "Better Auth persists authentication in four core tables. The user table holds identity and profile fields; session rows point at users and carry the token, expiry, and device info; account rows link one authentication method (one provider) to a user with tokens and an optional password for credential logins; verification rows hold one-time values for email verification and password resets. The design detail that matters: account identity is the (providerId, accountId) pair - the local id is only the row identifier you pass to account-management APIs, never the provider identity.",
     facts: [
       { label: "Tables", value: "4" },
       { label: "Core table", value: "user" },
-      { label: "Identity", value: "(issuer, accountId)" },
+      { label: "Identity", value: "(providerId, accountId)" },
     ],
     faqs: [
       {
@@ -637,14 +637,14 @@ export const schemaEntries: SchemaEntry[] = [
       },
       {
         q: "How does Better Auth identify an OAuth account?",
-        a: "By the unique pair of issuer and accountId - the identity namespace plus the provider's stable identifier for that user. The account row's own id is a local identifier for API calls, not the provider identity.",
+        a: "By the unique pair of providerId and accountId - the provider's identifier (for example google or github) plus its stable user id. The account row's own id is a local identifier for API calls, not the provider identity.",
       },
       {
         q: "How is Better Auth's schema different from NextAuth's?",
-        a: "The shapes are close cousins - both have users, sessions, accounts, and a verification table. Better Auth names the token table verification (NextAuth calls it verification_tokens), stores the provider identity as issuer plus accountId, and supports custom table and column names via modelName and fields config.",
+        a: "The shapes are close cousins - both have users, sessions, accounts, and a verification table. Better Auth names the token table verification (NextAuth calls it verification_tokens), stores the provider identity as providerId plus accountId, and supports custom table and column names via modelName and fields config.",
       },
     ],
-    lastUpdated: "2026-09-27",
+    lastUpdated: "2026-10-20",
     schema: betterauthSchema,
     source: {
       label: "Better Auth core schema docs (better-auth.com/docs/concepts/database)",

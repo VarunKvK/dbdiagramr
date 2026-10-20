@@ -5,7 +5,7 @@ exists today. Facts verified 2026-10-20 against:
 
 - Better Auth changelog and 1.7 upgrade guide (issuer identity, 1.7.0 → 1.7.3)
 - `better-auth.com/docs/concepts/database`
-- This repo: `data/schemas/betterauth.ts`, `/tools` (15 entries), pricing.md
+- This repo: `data/schemas/betterauth.ts`, `/tools` (15 entries), `lib/plans.ts`
 - `app/api/schema/route.ts` (pg_catalog queries, no body logging)
 
 Corrections applied vs the first draft:
@@ -15,14 +15,12 @@ Corrections applied vs the first draft:
 | v1.8 beta adds issuer fields | **Stable 1.7.10 has no `issuer`**: identity is `(providerId, accountId)`. 1.7.0–1.7.2 briefly required `issuer`; 1.7.3 reverted it. 1.8 beta docs describe issuer, but the `main` source at 2026-10-20 still does not implement it. |
 | 14 free SQL tools | 15 free tools |
 | "3 things surprised me" | 4 things |
-| "No signup, no limits, no catch" | "No signup. Free tier: 5 diagrams/month." |
+| "No signup, no limits, no catch" | Accurate: free plan is unlimited diagrams with no account (`lib/plans.ts`). Keep the claim. |
 | route reads `information_schema` | route reads Postgres system catalogs (`pg_catalog`) |
 | "Nothing is stored" | "We don't persist your connection string or schema" |
 
-**Important:** the live `/schema/better-auth` diagram currently shows an `issuer`
-column and claims `(issuer, accountId)` is the identity. That is wrong for
-stable 1.7.10. Wave 2 must remove `issuer` from `data/schemas/betterauth.ts` and
-fix the registry intro/FAQ before any launch post links to it.
+**Done:** `issuer` removed from `data/schemas/betterauth.ts` and the registry
+intro/facts/FAQ now say `(providerId, accountId)` (2026-10-20).
 
 ---
 
@@ -348,7 +346,7 @@ Topics:      postgresql, postgres, er-diagram, erd, database-schema,
 
 ## Publishing checklist
 
-- [ ] Wave 2 merged: **diagram corrected (remove `issuer`), registry FAQ fixed**, blog post live, schema page updated, "no limits" copy fixed
+- [ ] Wave 2 merged: diagram corrected (`issuer` removed, registry FAQ fixed), blog post live, schema page updated, "no limits" copy verified accurate
 - [ ] OG images resolve on the live page
 - [ ] Every claim dated and sourced
 - [ ] dev.to canonical points at the schema page

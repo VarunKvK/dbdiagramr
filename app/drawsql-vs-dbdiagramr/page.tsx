@@ -4,7 +4,7 @@ import Footer from "@/app/sections/Footer";
 export const metadata: Metadata = {
   title: { absolute: "DrawSQL vs dbdiagramr (2026): Which ER Diagram Tool?" },
   description:
-    "DrawSQL vs dbdiagramr: team collaboration and visual schema editing vs instant ER diagrams from a live PostgreSQL connection string. Feature comparison with FAQs.",
+    "DrawSQL vs dbdiagramr: visual editing and team collaboration vs instant diagrams from a live PostgreSQL connection string. Compared with FAQs.",
   alternates: {
     canonical: "https://www.dbdiagramr.space/drawsql-vs-dbdiagramr",
   },

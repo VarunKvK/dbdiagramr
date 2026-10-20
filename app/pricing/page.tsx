@@ -7,7 +7,7 @@ import { plans } from "@/lib/plans";
 const URL = "https://www.dbdiagramr.space/pricing";
 const TITLE = "Pricing";
 const DESCRIPTION =
-  "dbdiagramr is free: unlimited diagrams, live PostgreSQL and Supabase introspection, RLS status, and SVG/PNG export. A private-repo CI plan is in development.";
+  "dbdiagramr is free: unlimited diagrams, live PostgreSQL and Supabase introspection, RLS status, and SVG/PNG export. CI plan in development.";
 
 export const metadata: Metadata = {
   title: TITLE,

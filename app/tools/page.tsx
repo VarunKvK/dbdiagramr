@@ -3,16 +3,16 @@ import Link from "next/link";
 import Footer from "@/app/sections/Footer";
 
 export const metadata: Metadata = {
-  title: "Free Database Tools | ER Diagrams, Converters & Validators",
+  title: "Free PostgreSQL Tools: ER Diagrams & Converters",
   description:
-    "Every free dbdiagramr tool in one place: ER diagrams, SQL validator, CSV/JSON to SQL, SQL to Prisma/TypeScript/Mermaid, connection string builder. No signup.",
+    "Free dbdiagramr tools: ER diagrams, SQL validator, CSV/JSON to SQL, SQL to Prisma/TypeScript/Mermaid, and a connection string builder.",
   keywords:
     "free database tools, postgres tools, er diagram tool, sql validator, csv to sql, json to sql, sql to prisma, sql to typescript",
   alternates: {
     canonical: "https://www.dbdiagramr.space/tools",
   },
   openGraph: {
-    title: "Free Database Tools | ER Diagrams, Converters & Validators",
+    title: "Free PostgreSQL Tools: ER Diagrams & Converters",
     description:
       "Every free dbdiagramr tool in one place: ER diagrams, SQL validator, CSV/JSON to SQL, SQL to Prisma/TypeScript/Mermaid. No signup.",
     type: "website",
@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Free Database Tools | ER Diagrams, Converters & Validators",
+    title: "Free PostgreSQL Tools: ER Diagrams & Converters",
     description:
       "Every free dbdiagramr tool in one place: ER diagrams, SQL validator, CSV/JSON to SQL, SQL to Prisma/TypeScript/Mermaid. No signup.",
   },

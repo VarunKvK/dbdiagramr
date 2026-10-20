@@ -4,7 +4,7 @@ import Footer from "@/app/sections/Footer";
 export const metadata: Metadata = {
   title: { absolute: "dbdiagram.io vs dbdiagramr (2026): Which Is Better?" },
   description:
-    "dbdiagram.io vs dbdiagramr: DBML code-first diagram design vs instant visualization from a live PostgreSQL connection string. Feature-by-feature comparison with FAQs.",
+    "dbdiagram.io vs dbdiagramr: DBML design vs instant diagrams from a live PostgreSQL connection string. Feature comparison and FAQs.",
   alternates: {
     canonical: "https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr",
   },

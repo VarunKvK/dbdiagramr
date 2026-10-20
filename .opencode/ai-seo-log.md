@@ -58,3 +58,11 @@ Re-measure on: 2026-11-13.
 - Retargeted `/supabase-schema-diagram` 308 from `/schema/supabase` to the new landing.
 - Internal links: /schema/supabase related links, sitemap priority 0.9.
 - Query map: Supabase rows 11-15 and 18 move from gap to cover; score 46 cover / 4 gap.
+
+## 2026-10-20 · URL Inspection pass + metadata cleanup
+
+- GSC URL Inspection on 58 sitemap URLs: **1 indexed**, **28 crawled - currently not indexed**, **27 unknown**, **1 duplicate without user-selected canonical**, **1 timeout**.
+- The duplicate was `/blog/django-auth-schema-explained`; Google selected an external gambling domain (`747live.bet`) as canonical. The post is now 308-redirected to `/schema/django`, and its permission-system explanation and SQL moved onto that page.
+- Removed the root `| dbdiagramr` title template and shortened metadata. All 57 sitemap titles are now <=60 chars and descriptions <=151; local audit shows 0 canonical/H1/JSON-LD/old-link issues.
+- Fixed the duplicate spring-batch related-guide link.
+- Next: deploy, request indexing for the priority URLs in GSC UI, then run the outreach list.

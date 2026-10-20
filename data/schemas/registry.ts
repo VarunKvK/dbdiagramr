@@ -45,6 +45,13 @@ export type SchemaEntry = {
   source?: SchemaSource;
   /** Topical related schema slugs; falls back to first 3 other entries */
   related?: string[];
+  /** Optional deep-dive notes rendered after the relationship table */
+  guide?: {
+    title: string;
+    paragraphs: string[];
+    sql?: string;
+    sqlNote?: string;
+  };
 };
 
 export const schemaEntries: SchemaEntry[] = [
@@ -205,8 +212,33 @@ export const schemaEntries: SchemaEntry[] = [
         q: "How do Django users relate to groups and permissions?",
         a: "Users relate to groups through the auth_user_groups join table and to permissions through auth_user_user_permissions. Groups relate to permissions through auth_group_permissions. All three are many-to-many relationships.",
       },
+      {
+        q: "What is the difference between is_superuser and is_staff?",
+        a: "is_superuser bypasses every permission check. is_staff only controls whether the user can sign in to the Django admin. A staff user still needs the relevant permissions, or superuser status, to change anything.",
+      },
+      {
+        q: "Does Django create these tables automatically?",
+        a: "Yes. Running python manage.py migrate creates django_content_type first, then the auth tables and join tables, then django_admin_log. You get all of them even if you only use users without groups.",
+      },
     ],
-    lastUpdated: "2026-08-03",
+    lastUpdated: "2026-10-20",
+    guide: {
+      title: "How Django's permission tables work",
+      paragraphs: [
+        "Django attaches permissions to models, not tables. Every model gets four rows in auth_permission, one each for add, change, delete, and view, and each row points at the model through django_content_type. That indirection is why adding a model and running migrations silently creates four new permissions.",
+        "A user can receive permissions through a group or directly. auth_user_groups plus auth_group_permissions carry role-like membership; auth_user_user_permissions carries one-off grants. The two paths are separate, so a query that checks only groups will miss direct permissions.",
+        "The tables arrive in migration order: django_content_type first, then auth_user, auth_group, auth_permission, and the three join tables, then django_admin_log from the admin app.",
+      ],
+      sql: `SELECT DISTINCT p.codename
+FROM auth_permission p
+JOIN django_content_type ct ON ct.id = p.content_type_id
+LEFT JOIN auth_group_permissions gp ON gp.permission_id = p.id
+LEFT JOIN auth_user_groups ug ON ug.group_id = gp.group_id AND ug.user_id = 42
+LEFT JOIN auth_user_user_permissions up ON up.permission_id = p.id AND up.user_id = 42
+WHERE ug.user_id = 42 OR up.user_id = 42;`,
+      sqlNote:
+        "This lists every permission for user 42 through both groups and direct grants.",
+    },
     schema: djangoSchema,
     source: {
       label: "Django contrib.auth migrations (django/django)",
@@ -302,7 +334,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Library Management System ER Diagram (PostgreSQL)",
     h1: "Library Management System ER Diagram",
     description:
-      "Interactive ER diagram of a library management system database - books, authors, physical copies, members, loans, reservations, and fines with all columns and foreign keys, plus copyable PostgreSQL DDL.",
+      "Library management ER diagram: books, authors, copies, members, loans, reservations, and fines, with every column and foreign key.",
     keywords: [
       "library management system er diagram",
       "library management system database schema",
@@ -346,7 +378,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Hospital Management System Database Schema (PostgreSQL)",
     h1: "Hospital Management System Database Schema",
     description:
-      "Interactive ER diagram of a hospital management system database - patients, staff, appointments, medical records, prescriptions, admissions, billing, and payments with all foreign keys, plus copyable PostgreSQL DDL.",
+      "Hospital management ER diagram: patients, staff, appointments, records, prescriptions, admissions, billing, and payments with foreign keys.",
     keywords: [
       "hospital management system database schema",
       "hospital management system er diagram",
@@ -387,10 +419,10 @@ export const schemaEntries: SchemaEntry[] = [
   {
     slug: "rbac",
     name: "RBAC",
-    title: "RBAC Database Schema - Roles, Permissions & Joins (PostgreSQL)",
+    title: "RBAC Database Schema: Roles, Permissions & Joins",
     h1: "RBAC Database Schema",
     description:
-      "Interactive ER diagram of a role-based access control database schema - users, organizations, roles, permissions, and the two join tables with all foreign keys, plus copyable PostgreSQL DDL.",
+      "RBAC schema diagram: users, organizations, roles, permissions, and join tables, with every column and foreign key.",
     keywords: [
       "rbac database schema",
       "role based access control database design",
@@ -431,10 +463,10 @@ export const schemaEntries: SchemaEntry[] = [
   {
     slug: "multi-tenant-saas",
     name: "Multi-Tenant SaaS",
-    title: "Multi-Tenant SaaS Database Schema for PostgreSQL (Shared Schema)",
+    title: "Multi-Tenant SaaS Database Schema (PostgreSQL)",
     h1: "Multi-Tenant SaaS Database Schema",
     description:
-      "Interactive ER diagram of a multi-tenant SaaS database schema for PostgreSQL - shared-schema pattern with a leading tenant_id on every table and composite keys, plus copyable PostgreSQL DDL.",
+      "Multi-tenant SaaS schema diagram: shared-schema PostgreSQL design with tenant_id on every table and composite keys.",
     keywords: [
       "multi tenant saas database schema postgres",
       "multi tenant database design postgres",
@@ -478,7 +510,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Chinook Database Schema Diagram (PostgreSQL)",
     h1: "Chinook Database Schema Diagram",
     description:
-      "Interactive ER diagram of the Chinook sample database - artists, albums, tracks, customers, invoices, and playlists with all columns and foreign keys, plus copyable PostgreSQL DDL.",
+      "Chinook database diagram: artists, albums, tracks, customers, invoices, and playlists with every column and foreign key.",
     keywords: [
       "chinook database schema",
       "chinook database diagram",
@@ -524,7 +556,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Spring Batch Metadata Tables Diagram (PostgreSQL)",
     h1: "Spring Batch Metadata Tables Diagram",
     description:
-      "Interactive ER diagram of the Spring Batch metadata tables - BATCH_JOB_INSTANCE, BATCH_JOB_EXECUTION, step executions, and contexts with all foreign keys, plus copyable PostgreSQL DDL.",
+      "Spring Batch metadata diagram: job instances, executions, step executions, and contexts with every column and foreign key.",
     keywords: [
       "spring batch metadata tables",
       "spring batch schema",
@@ -570,7 +602,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Pagila Database Schema Diagram (PostgreSQL)",
     h1: "Pagila Database Schema Diagram",
     description:
-      "Interactive ER diagram of the Pagila sample database - the PostgreSQL port of Sakila with film, inventory, rental, customer, and payment tables, all foreign keys, plus copyable PostgreSQL DDL.",
+      "Pagila database diagram: film, inventory, rental, customer, and payment tables with every column and foreign key.",
     keywords: [
       "pagila database schema",
       "pagila erd",
@@ -614,7 +646,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Better Auth Database Schema Diagram (PostgreSQL)",
     h1: "Better Auth Database Schema Diagram",
     description:
-      "Interactive ER diagram of the Better Auth core schema - user, session, account, and verification tables with all columns and foreign keys, plus copyable PostgreSQL DDL.",
+      "Better Auth schema diagram: user, session, account, and verification tables with every column and foreign key.",
     keywords: [
       "better auth database schema",
       "better auth schema",
@@ -660,7 +692,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "DVD Rental Database ER Diagram (PostgreSQL)",
     h1: "DVD Rental Database ER Diagram",
     description:
-      "Interactive ER diagram of the DVD Rental sample database from the PostgreSQL tutorial - film, inventory, rental, customer, payment, and staff tables with all foreign keys, plus copyable PostgreSQL DDL.",
+      "DVD Rental database diagram: film, inventory, rental, customer, payment, and staff tables with every column and foreign key.",
     keywords: [
       "dvdrental database er diagram",
       "dvd rental database schema",
@@ -706,7 +738,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Northwind Database Diagram (PostgreSQL)",
     h1: "Northwind Database Diagram",
     description:
-      "Interactive ER diagram of the Northwind Traders sample database for PostgreSQL - customers, orders, products, suppliers, and employees with all foreign keys, plus copyable PostgreSQL DDL.",
+      "Northwind database diagram: customers, orders, products, suppliers, and employees with every column and foreign key.",
     keywords: [
       "northwind database diagram",
       "northwind database schema",

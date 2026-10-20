@@ -10,15 +10,15 @@ Status: cover | gap | out of scope
 
 | # | Query | Intent | Format to beat | Our page | Status |
 |---|---|---|---|---|---|
-| 1 | postgres er diagram | tool | tool landing page | /postgres-er-diagram | cover |
-| 2 | postgresql er diagram | tool | tool landing page | /postgres-er-diagram | cover |
-| 3 | database diagram tool | tool | listicle | /postgres-er-diagram | cover |
-| 4 | free er diagram tool | tool | listicle | /postgres-er-diagram | cover |
+| 1 | postgres er diagram | tool | tool landing page | / | cover |
+| 2 | postgresql er diagram | tool | tool landing page | / | cover |
+| 3 | database diagram tool | tool | listicle | / | cover |
+| 4 | free er diagram tool | tool | listicle | / | cover |
 | 5 | er diagram generator from sql | tool | tool page | /visualize | cover |
 | 6 | sql to er diagram | tool | tool page | /visualize | cover |
 | 7 | database schema visualizer | tool | tool page | /visualize | cover |
-| 8 | visualize postgres schema | tool | tutorial + tool | /blog/visualize-postgres-schema-5-ways | cover |
-| 9 | postgres schema diagram | tool | tool page | /postgres-er-diagram | cover |
+| 8 | visualize postgres schema | tool | tutorial + tool | /blog/database-schema-diagram-tool | cover |
+| 9 | postgres schema diagram | tool | tool page | / | cover |
 | 10 | database schema diagram online | tool | tool page | /visualize | cover |
 
 ## B. Supabase (11-18)
@@ -68,10 +68,10 @@ Status: cover | gap | out of scope
 
 | # | Query | Intent | Format to beat | Our page | Status |
 |---|---|---|---|---|---|
-| 39 | how to visualize postgres schema | learn | tutorial | /blog/visualize-postgres-schema-5-ways | cover |
+| 39 | how to visualize postgres schema | learn | tutorial | /blog/database-schema-diagram-tool | cover |
 | 40 | how to create er diagram from sql | learn | tutorial | /blog/sql-to-schema-diagram-online | cover |
 | 41 | how to document database schema | learn | tutorial | /blog/database-schema-documentation | cover |
-| 42 | postgres show table relationships | learn | tutorial | /blog/visualize-postgres-schema-5-ways | cover |
+| 42 | postgres show table relationships | learn | tutorial | /blog/database-schema-diagram-tool | cover |
 | 43 | information_schema vs pg_catalog | learn | explainer | /blog/information-schema-vs-pg-catalog | cover |
 | 44 | supabase connection string ipv6 enotfound | fix | troubleshooting post | /blog/supabase-connection-string-ipv6-enotfound | cover |
 | 45 | postgres connection string supabase neon railway | learn | reference post | /blog/postgres-connection-string-supabase-neon-railway | cover |
@@ -85,6 +85,10 @@ Status: cover | gap | out of scope
 | 48 | sql to prisma schema | tool | tool page | /sql-to-prisma | cover |
 | 49 | prisma erd generator | tool | tool page | /prisma-erd-generator | cover |
 | 50 | sql schema diff | tool | tool page | /sql-schema-diff | cover |
+
+## Coverage check (2026-10-20)
+
+GSC URL Inspection on all 58 sitemap URLs before the 2026-10-20 cleanup: **1 indexed**, **28 crawled - currently not indexed**, **27 unknown to Google**, **1 duplicate without user-selected canonical**, **1 timeout**. The duplicate was `/blog/django-auth-schema-explained`, whose Google-selected canonical was an external gambling domain; it is now 308-redirected to `/schema/django`, with the permission explanation moved onto that page. The sitemap is now 57 URLs.
 
 ## Score
 
@@ -105,4 +109,4 @@ Status: cover | gap | out of scope
 4. Add internal links from the two strongest pages to the page being refreshed.
 5. Re-check the same 6 AI prompts on the 13th of each month and log the count in ai-seo-log.md.
 
-Search Console is not set up for dbdiagramr.space yet, so step 1 is blocked. Verify the domain (DNS TXT or the HTML file Vercel serves) before the first weekly loop.
+Search Console is verified for `sc-domain:dbdiagramr.space`; use `~/Odyssey/Content/scripts/gsc/weekly.sh` for the 28-day query export.

@@ -62,6 +62,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/blog/django-auth-schema-explained",
+        destination: "/schema/django",
+        permanent: true,
+      },
+      {
         source: "/free-schema-generator",
         destination: "/",
         permanent: true,

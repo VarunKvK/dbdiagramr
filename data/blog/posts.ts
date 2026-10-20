@@ -64,7 +64,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "stripe-billing-schema-postgres",
-    title: "Stripe Billing Schema for PostgreSQL: Customers to Payment Intents",
+    title: "Stripe Billing Schema for PostgreSQL",
     description:
       "Model Stripe's billing objects as PostgreSQL tables: customers, products, prices, subscriptions, invoices, and payment intents with foreign keys.",
     keywords: [
@@ -79,7 +79,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "ecommerce-database-schema-postgres",
-    title: "E-commerce Database Schema for PostgreSQL: The 11 Tables Every Store Needs",
+    title: "E-commerce Database Schema for PostgreSQL",
     description:
       "The 11-table PostgreSQL schema that powers Shopify and WooCommerce: customers, products, carts, orders, payments, and reviews with relationships.",
     keywords: [
@@ -123,25 +123,10 @@ export const blogPosts: BlogPost[] = [
     devtoUrl: undefined,
   },
   {
-    slug: "django-auth-schema-explained",
-    title: "Django Auth Tables and Permissions Explained",
-    description:
-      "Every table Django creates for authentication: auth_user, auth_group, auth_permission, what each one does and how the permission system works.",
-    keywords: [
-      "django auth schema",
-      "django auth_user table",
-      "django permission system database",
-    ],
-    date: "2026-09-28",
-    readingMinutes: 7,
-    tags: ["django", "database", "tutorial"],
-    devtoUrl: undefined,
-  },
-  {
     slug: "database-schema-documentation",
     title: "How to Document Your Database Schema for a Team",
     description:
-      "A practical guide to documenting your database schema so your team actually reads it: naming conventions, inline comments, and the one-page cheat sheet.",
+      "A practical guide to documenting your database schema so your team reads it: naming conventions, inline comments, and a one-page cheat sheet.",
     keywords: [
       "database schema documentation",
       "how to document database schema",
@@ -171,7 +156,7 @@ export const blogPosts: BlogPost[] = [
     slug: "schema-documentation-drift",
     title: "Why Schema Diagrams Go Stale (and the Fix)",
     description:
-      "Schema diagrams drift out of sync within weeks. Here's why it happens, the three fixes that actually work, and how to make your diagram self-healing.",
+      "Schema diagrams drift out of sync within weeks. Here is why, the three fixes that work, and how to make your diagram self-healing.",
     keywords: [
       "schema documentation drift",
       "database diagram out of date",
@@ -184,7 +169,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "supabase-connection-string-ipv6-enotfound",
-    title: "Supabase Connection String: IPv6, ENOTFOUND, and the Transaction Pooler Fix",
+    title: "Supabase Connection String: IPv6 & ENOTFOUND Fix",
     description:
       "Why Supabase throws ENOTFOUND and ETIMEDOUT errors, the IPv6 vs IPv4 problem, and how the transaction pooler port (6543) fixes most connection issues.",
     keywords: [
@@ -199,7 +184,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "free-online-database-diagram-tool",
-    title: "Free Online Database Diagram Tool: Visualize Your Schema in Seconds",
+    title: "Free Online Database Diagram Tool",
     description:
       "Need a free database diagram tool? Paste SQL or connect to PostgreSQL to generate ER diagrams instantly. No signup, no limits, no catch.",
     keywords: [
@@ -248,7 +233,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "database-schema-health-check",
-    title: "Database Schema Health Check: 7 Things to Audit Before You Ship",
+    title: "Database Schema Health Check: 7 Checks Before Ship",
     description:
       "Run a 60-second health check on your PostgreSQL schema: missing primary keys, unindexed foreign keys, naming drift, and the fixes for each.",
     keywords: [
@@ -264,7 +249,7 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "how-to-format-sql-postgres",
-    title: "How to Format SQL in PostgreSQL: Styles, Tools, and Team Standards",
+    title: "How to Format SQL in PostgreSQL: A Practical Guide",
     description:
       "Messy single-line SQL slows everyone down. How to format PostgreSQL properly, which style to pick, and a free formatter that runs in your browser.",
     keywords: [

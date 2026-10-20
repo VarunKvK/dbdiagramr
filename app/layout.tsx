@@ -19,10 +19,7 @@ const plexMono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://www.dbdiagramr.space"),
-  title: {
-    default: "PostgreSQL ER Diagram Tool in 10 Seconds | dbdiagramr",
-    template: "%s | dbdiagramr",
-  },
+  title: "PostgreSQL ER Diagram Tool in 10 Seconds | dbdiagramr",
   description:
     "Paste a PostgreSQL connection string and generate an interactive ER diagram in under 10 seconds. No signup, no setup, no diagram limit.",
   keywords:

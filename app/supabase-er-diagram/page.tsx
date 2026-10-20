@@ -11,7 +11,7 @@ const schema = parseSqlToSchema(SUPABASE_SQL).schema;
 export const metadata: Metadata = {
   title: "Supabase Schema Diagram | ERD From Your Live Database",
   description:
-    "Connect your Supabase database and see public, auth, and storage tables as an interactive ER diagram in under 10 seconds. Free, no signup, no diagram limit.",
+    "Connect Supabase and see public, auth, and storage tables as an interactive ER diagram in seconds. Free, no signup, no diagram limit.",
   keywords:
     "supabase schema diagram, supabase er diagram, supabase erd, supabase database diagram, visualize supabase schema, supabase auth schema",
   alternates: {

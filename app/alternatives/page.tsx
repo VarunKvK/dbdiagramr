@@ -5,7 +5,7 @@ import Footer from "@/app/sections/Footer";
 export const metadata: Metadata = {
   title: { absolute: "dbdiagramr Alternatives: ER Diagram Tools Compared (2026)" },
   description:
-    "Compare dbdiagramr to dbdiagram.io, DrawSQL, and ChartDB. Paste a PostgreSQL connection string and get an interactive ER diagram in under 10 seconds - no signup.",
+    "Compare dbdiagramr to dbdiagram.io, DrawSQL, and ChartDB. Connect a PostgreSQL database and get an interactive ER diagram in seconds, no signup.",
   alternates: {
     canonical: "https://www.dbdiagramr.space/alternatives",
   },

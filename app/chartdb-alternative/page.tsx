@@ -4,7 +4,7 @@ import Footer from "@/app/sections/Footer";
 export const metadata: Metadata = {
   title: "ChartDB Alternative | Live PostgreSQL ER Diagrams (2026)",
   description:
-    "Looking for a ChartDB alternative? dbdiagramr connects straight to PostgreSQL and draws the live schema in under 10 seconds. Free, MIT licensed, no signup. Compared side by side.",
+    "ChartDB needs a metadata query. dbdiagramr connects straight to PostgreSQL and draws the live schema in seconds. Compare features and pricing.",
   alternates: {
     canonical: "https://www.dbdiagramr.space/chartdb-alternative",
   },

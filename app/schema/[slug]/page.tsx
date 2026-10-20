@@ -64,7 +64,7 @@ const relatedBlogBySchema: Record<string, { href: string; label: string }[]> = {
     { href: "/blog/sql-to-schema-diagram-online", label: "SQL to Schema Diagram Online" },
   ],
   django: [
-    { href: "/blog/django-auth-schema-explained", label: "Django Auth Tables Explained" },
+    { href: "/blog/what-is-an-er-diagram", label: "How to Read an ER Diagram" },
     { href: "/blog/database-schema-diagram-tool", label: "Database Schema Diagram Tools" },
   ],
   stripe: [
@@ -84,7 +84,7 @@ const relatedBlogBySchema: Record<string, { href: string; label: string }[]> = {
     { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
   ],
   rbac: [
-    { href: "/blog/django-auth-schema-explained", label: "Django Auth Tables and Permissions" },
+    { href: "/schema/django", label: "Django Auth Schema" },
     { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
   ],
   "multi-tenant-saas": [
@@ -109,10 +109,10 @@ const relatedBlogBySchema: Record<string, { href: string; label: string }[]> = {
   ],
   "better-auth": [
     { href: "/blog/nextauth-auth-schema-explained", label: "NextAuth Schema Explained" },
-    { href: "/blog/django-auth-schema-explained", label: "Django Auth Tables and Permissions" },
+    { href: "/schema/django", label: "Django Auth Schema" },
   ],
   "spring-batch": [
-    { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
+    { href: "/blog/what-is-an-er-diagram", label: "How to Read an ER Diagram" },
     { href: "/blog/database-schema-diagram-tool", label: "Database Schema Diagram Tools" },
   ],
 };
@@ -414,6 +414,31 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
                 </tbody>
               </table>
             </div>
+          </section>
+        )}
+
+        {entry.guide && (
+          <section className="mt-16 max-w-3xl">
+            <h2 className="mb-4 text-2xl font-semibold tracking-tight text-ink">
+              {entry.guide.title}
+            </h2>
+            <div className="space-y-4 leading-relaxed text-muted">
+              {entry.guide.paragraphs.map((paragraph) => (
+                <p key={paragraph}>{paragraph}</p>
+              ))}
+            </div>
+            {entry.guide.sql && (
+              <div className="mt-6 overflow-hidden rounded-[20px] border border-border bg-ink shadow-sm">
+                <pre className="overflow-x-auto p-5 font-mono text-xs leading-relaxed text-white/80">
+                  <code>{entry.guide.sql}</code>
+                </pre>
+              </div>
+            )}
+            {entry.guide.sqlNote && (
+              <p className="mt-3 text-sm text-muted/70">
+                {entry.guide.sqlNote}
+              </p>
+            )}
           </section>
         )}
 

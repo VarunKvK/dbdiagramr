@@ -22,6 +22,7 @@ Reference ER diagrams of popular PostgreSQL schemas, each showing every table, c
 
 - Supabase auth schema (7 tables): https://www.dbdiagramr.space/schema/supabase
 - NextAuth.js / Auth.js schema (4 tables): https://www.dbdiagramr.space/schema/nextauth
+- Better Auth schema (4 tables): https://www.dbdiagramr.space/schema/better-auth
 - Laravel 11 default schema (7 tables): https://www.dbdiagramr.space/schema/laravel
 - Django auth schema (9 tables): https://www.dbdiagramr.space/schema/django
 - Stripe billing schema (9 tables): https://www.dbdiagramr.space/schema/stripe
@@ -43,4 +44,4 @@ Reference ER diagrams of popular PostgreSQL schemas, each showing every table, c
 - Paste-SQL mode parses in the browser; live connection strings are sent to the dbdiagramr backend for one request, then discarded
 - Connection strings and schemas are never stored
 - Built with Next.js, PostgreSQL, and Tailwind CSS
-- Last updated: 2026-10-19
+- Last updated: 2026-10-20

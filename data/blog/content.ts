@@ -414,6 +414,7 @@ order by o.placed_at desc;</code></pre>
 
     <h2>How they connect</h2>
     <p><code>users → accounts</code> is one-to-one per provider. <code>users → sessions</code> is one-to-many (different devices). <code>verification_tokens</code> is temporary and doesn't have a foreign key.</p>
+    <p>On Better Auth instead? It uses four similar tables with different names — see the interactive <a href="https://www.dbdiagramr.space/schema/better-auth">Better Auth database schema diagram</a>.</p>
 
     <h2>FAQ</h2>
     <p><strong>Does NextAuth store passwords?</strong><br/>No. NextAuth is OAuth-first. If you need email/password, use <code>next-auth/providers/credentials</code> with bcrypt.</p>

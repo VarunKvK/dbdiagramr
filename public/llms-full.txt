@@ -36,6 +36,8 @@ Live, interactive ER diagrams of popular PostgreSQL schemas. Each page shows eve
   Tables: users, identities, sessions, refresh_tokens, instances, audit_log_entries, schema_migrations
 - NextAuth.js / Auth.js schema (4 tables, core: users) — https://www.dbdiagramr.space/schema/nextauth
   Tables: users, accounts, sessions, verification_tokens. Relationship: User 1→N Account
+- Better Auth schema (4 tables, core: user) — https://www.dbdiagramr.space/schema/better-auth
+  Tables: user, session, account, verification. Relationship: User 1→N Session and 1→N Account. Identity is (providerId, accountId); stable 1.7.x has no issuer column.
 - Laravel 11 default schema (7 tables, core: users) — https://www.dbdiagramr.space/schema/laravel
   Tables: users, password_reset_tokens, sessions, jobs, failed_jobs, cache, cache_locks
 - Django auth schema (9 tables, core: auth_user) — https://www.dbdiagramr.space/schema/django
@@ -93,4 +95,4 @@ Supports: Supabase (direct / session pooler / transaction pooler), Neon (pooled 
 - License: MIT
 - Stack: Next.js 14, TypeScript, Tailwind CSS, PostgreSQL (pg), @xyflow/react + dagre
 - Contact / X: https://x.com/im_daedalus
-- Last updated: 2026-10-19
+- Last updated: 2026-10-20

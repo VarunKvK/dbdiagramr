@@ -135,8 +135,76 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
   const schemaSql = schemaToSql(entry.schema);
   const schemaMermaid = schemaToMermaid(entry.schema);
 
+  const url = `https://www.dbdiagramr.space/schema/${entry.slug}`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "TechArticle",
+        "@id": `${url}#article`,
+        headline: entry.title,
+        description: entry.description,
+        dateModified: entry.lastUpdated,
+        mainEntityOfPage: url,
+        author: {
+          "@type": "Person",
+          name: "Varun Krishnan",
+          url: "https://github.com/VarunKvK",
+        },
+        publisher: {
+          "@type": "Organization",
+          name: "dbdiagramr",
+          url: "https://www.dbdiagramr.space",
+          logo: {
+            "@type": "ImageObject",
+            url: "https://www.dbdiagramr.space/favicon.svg",
+          },
+        },
+      },
+      {
+        "@type": "FAQPage",
+        "@id": `${url}#faq`,
+        mainEntity: entry.faqs.map((faq) => ({
+          "@type": "Question",
+          name: faq.q,
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: faq.a,
+          },
+        })),
+      },
+      {
+        "@type": "BreadcrumbList",
+        itemListElement: [
+          {
+            "@type": "ListItem",
+            position: 1,
+            name: "Home",
+            item: "https://www.dbdiagramr.space",
+          },
+          {
+            "@type": "ListItem",
+            position: 2,
+            name: "Schema diagram library",
+            item: "https://www.dbdiagramr.space/schema",
+          },
+          {
+            "@type": "ListItem",
+            position: 3,
+            name: entry.name,
+            item: url,
+          },
+        ],
+      },
+    ],
+  };
+
   return (
     <main className="min-h-screen bg-cream">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-6xl px-4 pb-16 pt-24">
         <a
           href="/schema"

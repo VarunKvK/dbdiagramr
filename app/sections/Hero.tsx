@@ -59,7 +59,7 @@ export default function Hero() {
               Watch 30s Demo
             </a>
           </div>
-          <div className="mt-7 flex justify-center">
+          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
             <a
               href="https://www.codehype.ai/product/dbdiagramr?utm_source=codehype_badge"
               target="_blank"
@@ -74,6 +74,22 @@ export default function Hero() {
                 loading="lazy"
                 decoding="async"
                 className="block h-auto w-[180px]"
+              />
+            </a>
+            <a
+              href="https://noonlaunch.com/product/dbdiagramr"
+              target="_blank"
+              rel="noopener noreferrer dofollow"
+              className="inline-block rounded-[15px] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              <img
+                src="https://noonlaunch.com/badges/dbdiagramr.svg"
+                alt="Featured on Noonlaunch"
+                width={220}
+                height={60}
+                loading="lazy"
+                decoding="async"
+                className="block h-auto w-[220px]"
               />
             </a>
           </div>

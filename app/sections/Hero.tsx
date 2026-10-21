@@ -59,12 +59,15 @@ export default function Hero() {
               Watch 30s Demo
             </a>
           </div>
-          <div className="mt-7 flex flex-wrap items-center justify-center gap-3">
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-3 gap-y-2">
+            <span className="font-mono text-[11px] font-medium uppercase tracking-widest text-muted">
+              Featured on
+            </span>
             <a
               href="https://www.codehype.ai/product/dbdiagramr?utm_source=codehype_badge"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block rounded-[15px] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="inline-flex opacity-90 mix-blend-multiply transition-opacity hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               <img
                 src="https://www.codehype.ai/badges/dbdiagramr.svg?variant=find-us&v=20"
@@ -73,14 +76,14 @@ export default function Hero() {
                 height={65}
                 loading="lazy"
                 decoding="async"
-                className="block h-auto w-[180px]"
+                className="block h-[50px] w-auto"
               />
             </a>
             <a
               href="https://noonlaunch.com/product/dbdiagramr"
               target="_blank"
               rel="noopener noreferrer dofollow"
-              className="inline-block rounded-[15px] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+              className="inline-flex opacity-90 mix-blend-multiply transition-opacity hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
               <img
                 src="https://noonlaunch.com/badges/dbdiagramr.svg"
@@ -89,7 +92,7 @@ export default function Hero() {
                 height={60}
                 loading="lazy"
                 decoding="async"
-                className="block h-auto w-[220px]"
+                className="block h-[50px] w-auto"
               />
             </a>
           </div>

@@ -1,6 +1,9 @@
+import AskAi from "@/app/sections/AskAi";
+
 export default function Footer() {
   return (
     <div className="bg-cream px-4 pb-6 md:px-6">
+      <AskAi />
       <footer className="mx-auto max-w-7xl rounded-[20px] bg-ink px-6 py-10 text-white md:px-12">
         <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
           <div className="max-w-md">

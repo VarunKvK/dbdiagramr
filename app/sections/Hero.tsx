@@ -59,6 +59,24 @@ export default function Hero() {
               Watch 30s Demo
             </a>
           </div>
+          <div className="mt-7 flex justify-center">
+            <a
+              href="https://www.codehype.ai/product/dbdiagramr?utm_source=codehype_badge"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block rounded-[15px] transition-opacity hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
+            >
+              <img
+                src="https://www.codehype.ai/badges/dbdiagramr.svg?variant=find-us&v=20"
+                alt="Featured on CodeHype"
+                width={180}
+                height={65}
+                loading="lazy"
+                decoding="async"
+                className="block h-auto w-[180px]"
+              />
+            </a>
+          </div>
         </div>
 
         <div className="mt-12 flex flex-wrap items-center justify-between gap-3">

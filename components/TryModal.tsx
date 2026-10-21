@@ -7,7 +7,7 @@ import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
 import { schemaToSql } from "@/lib/schemaExport";
 import { ECOMMERCE_SQL, SUPABASE_SQL } from "@/lib/sql/pgDumpSamples";
 import { RLS_META, rlsSummary, type RlsSummary } from "@/lib/rls";
-import { track } from "@/lib/analytics";
+import { track, tableCountBucket, type GenerateMethod } from "@/lib/analytics";
 import TrackedLink from "@/components/TrackedLink";
 
 type Phase = "form" | "loading" | "result" | "error";
@@ -24,11 +24,23 @@ interface TryModalProps {
   initialSchema?: Schema;
   /** Preload a connection string (e.g. staged by the conn-string builder) */
   initialConnString?: string;
+  /** Why initialSql exists: tool handoffs count as a user action, samples do not */
+  initialMethod?: GenerateMethod;
   /** Stretch to fill the parent on both tabs (used by the full-screen /visualize rail) */
   fill?: boolean;
 }
 
-export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: controlledMode, onModeChange, initialSql, initialSchema, initialConnString, fill }: TryModalProps) {
+function hashInput(text: string): string {
+  const value = text.trim();
+  let hash = 2166136261;
+  for (let i = 0; i < value.length; i++) {
+    hash ^= value.charCodeAt(i);
+    hash = Math.imul(hash, 16777619);
+  }
+  return `${value.length}:${(hash >>> 0).toString(36)}`;
+}
+
+export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: controlledMode, onModeChange, initialSql, initialSchema, initialConnString, initialMethod, fill }: TryModalProps) {
   const [internalMode, setInternalMode] = useState<Mode>("sql");
   const mode = controlledMode ?? internalMode;
   const setMode = onModeChange ?? setInternalMode;
@@ -49,17 +61,18 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
   const initialApplied = useRef(false);
   const initialSchemaApplied = useRef(false);
   const suppressParseForRef = useRef<string | null>(null);
-  const lastTrackedSigRef = useRef("");
-  const pendingSourceRef = useRef<"sql" | "sample" | "file">("sql");
+  const lastFiredInputRef = useRef("");
+  const pendingMethodRef = useRef<GenerateMethod | null>(null);
 
   // Preload SQL once (e.g. "Open in DBdiagramr to edit" from a schema page)
   useEffect(() => {
     if (initialSql && !initialApplied.current) {
       initialApplied.current = true;
+      pendingMethodRef.current = initialMethod ?? null;
       setSqlText(initialSql);
       setActiveFile("schema");
     }
-  }, [initialSql]);
+  }, [initialSql, initialMethod]);
 
   // Preload a decoded share schema once: render it exactly (RLS included) and
   // show its SQL, but skip the parse round-trip that would drop RLS metadata.
@@ -124,6 +137,8 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
   const handleSqlLive = useCallback(
     (text: string) => {
       const trimmed = text.trim();
+      const method = pendingMethodRef.current;
+      pendingMethodRef.current = null;
       if (!trimmed) {
         setSqlError(null);
         onSchemaCleared();
@@ -131,14 +146,17 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
       }
       try {
         const { schema } = parseSqlToSchema(trimmed);
-        const signature = schema.tables.map((table) => table.name).join("\u0000");
-        if (signature && signature !== lastTrackedSigRef.current) {
-          lastTrackedSigRef.current = signature;
-          track("schema_generated", {
-            mode: pendingSourceRef.current,
-            table_count: schema.tables.length,
-          });
-          pendingSourceRef.current = "sql";
+        // Only user-produced input gets here: preloads and samples leave the
+        // method empty, and repeated input is deduped by a hash of the text.
+        if (method && schema.tables.length > 0) {
+          const signature = hashInput(trimmed);
+          if (signature !== lastFiredInputRef.current) {
+            lastFiredInputRef.current = signature;
+            track("schema_generated", {
+              method,
+              table_count_bucket: tableCountBucket(schema.tables.length),
+            });
+          }
         }
         setSqlError(null);
         onSchemaGenerated(schema);
@@ -179,7 +197,8 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
     let sample = "";
     if (kind === "ecommerce") sample = ECOMMERCE_SQL;
     else sample = SUPABASE_SQL;
-    pendingSourceRef.current = "sample";
+    pendingMethodRef.current = null;
+    track("sample_viewed", { sample: kind });
     setSqlText(sample);
     setActiveFile(kind);
     try {
@@ -204,7 +223,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
     const reader = new FileReader();
     reader.onload = () => {
       const text = String(reader.result || "");
-      pendingSourceRef.current = "file";
+      pendingMethodRef.current = "file";
       setSqlText(text);
       setActiveFile("schema");
     };
@@ -217,7 +236,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
     setIsDragging(false);
     const text = e.dataTransfer.getData("text/plain");
     if (text) {
-      pendingSourceRef.current = "file";
+      pendingMethodRef.current = "file";
       setSqlText(text);
       setActiveFile("schema");
       return;
@@ -226,7 +245,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        pendingSourceRef.current = "file";
+        pendingMethodRef.current = "file";
         setSqlText(String(reader.result || ""));
         setActiveFile("schema");
       };
@@ -267,10 +286,10 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
           });
         }
         if (data.hint === "pooler") setErrorHint("pooler");
-        track("schema_error", {
-          mode: "live",
-          code: typeof data.code === "string" ? data.code : "",
-          reason: typeof data.error === "string" ? data.error : "unknown",
+        track("schema_failed", {
+          method: "connection_string",
+          error_code:
+            typeof data.code === "string" && data.code ? data.code : "unknown",
         });
         errorTracked = true;
         throw new Error(data.details || data.error || "API error");
@@ -278,18 +297,26 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
       const schema = data as Schema;
       const rls = rlsSummary(schema);
       track("schema_generated", {
-        mode: "live",
-        table_count: schema.tables.length,
-        rls_disabled: rls.disabled,
-        rls_no_policies: rls.noPolicies,
-        rls_protected: rls.protected,
+        method: "connection_string",
+        table_count_bucket: tableCountBucket(schema.tables.length),
       });
+      if (rls.hasRls) {
+        track("rls_summary_viewed", {
+          table_count: schema.tables.length,
+          rls_disabled: rls.disabled,
+          rls_no_policies: rls.noPolicies,
+          rls_protected: rls.protected,
+        });
+      }
       setPhase("result");
       setResultRls(rls);
       onSchemaGenerated(schema);
     } catch (err: unknown) {
       if (!errorTracked) {
-        track("schema_error", { mode: "live", code: "", reason: "fetch_failed" });
+        track("schema_failed", {
+          method: "connection_string",
+          error_code: "fetch_failed",
+        });
       }
       const msg = err instanceof Error ? err.message : "Something went wrong";
       setErrorMsg(msg);
@@ -356,6 +383,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
               ref={textareaRef}
               value={sqlText}
               onChange={(e) => {
+                pendingMethodRef.current = "sql";
                 setSqlText(e.target.value);
                 if (activeFile !== "schema") setActiveFile("schema");
               }}

@@ -295,7 +295,6 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
   const [shareCopied, setShareCopied] = useState<"private" | "public" | null>(null);
   const shareRef = useRef<HTMLDivElement>(null);
   const rls = useMemo(() => rlsSummary(schema), [schema]);
-  const lastRlsTracked = useRef("");
 
   useEffect(() => {
     const { nodes: n, edges: e } = buildElements(schema);
@@ -304,21 +303,6 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
     const t = setTimeout(() => fitView({ padding: 0.15, duration: 200 }), 60);
     return () => clearTimeout(t);
   }, [schema, setNodes, setEdges, fitView]);
-
-  useEffect(() => {
-    if (!rls.hasRls) return;
-    const signature = schema.tables
-      .map((table) => `${table.name}:${table.rls?.enabled}:${table.rls?.policyCount}`)
-      .join("|");
-    if (lastRlsTracked.current === signature) return;
-    lastRlsTracked.current = signature;
-    track("rls_summary_viewed", {
-      table_count: schema.tables.length,
-      rls_disabled: rls.disabled,
-      rls_no_policies: rls.noPolicies,
-      rls_protected: rls.protected,
-    });
-  }, [schema, rls]);
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {

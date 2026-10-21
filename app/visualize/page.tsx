@@ -7,6 +7,7 @@ import TryModal from "@/components/TryModal";
 import { getSchemaEntry } from "@/data/schemas/registry";
 import { schemaToSql } from "@/lib/schemaExport";
 import { decodeSchema } from "@/lib/share";
+import { track, type GenerateMethod } from "@/lib/analytics";
 
 function schemaNameOf(tableName: string): string {
   const dot = tableName.lastIndexOf(".");
@@ -19,6 +20,7 @@ export default function TryPage() {
   const [mode, setMode] = useState<"sql" | "connection">("sql");
   const [initialSql, setInitialSql] = useState<string | undefined>(undefined);
   const [initialSchema, setInitialSchema] = useState<Schema | undefined>(undefined);
+  const [initialMethod, setInitialMethod] = useState<GenerateMethod | undefined>(undefined);
   const [initialConn, setInitialConn] = useState<string | undefined>(undefined);
   const [activeSchemas, setActiveSchemas] = useState<string[] | null>(null);
   const searchInputRef = useRef<HTMLInputElement>(null);
@@ -45,6 +47,7 @@ export default function TryPage() {
       const entry = getSchemaEntry(slug);
       if (entry) {
         setMode("sql");
+        track("sample_viewed", { sample: slug });
         setInitialSql(schemaToSql(entry.schema));
         return;
       }
@@ -54,6 +57,7 @@ export default function TryPage() {
       if (sql) {
         window.sessionStorage.removeItem("dbdiagramr:preload-sql");
         setMode("sql");
+        setInitialMethod("tool_handoff");
         setInitialSql(sql);
         return;
       }
@@ -155,6 +159,7 @@ export default function TryPage() {
             onSchemaCleared={handleSchemaCleared}
             initialSql={initialSql}
             initialSchema={initialSchema}
+            initialMethod={initialMethod}
             initialConnString={initialConn}
             fill
           />

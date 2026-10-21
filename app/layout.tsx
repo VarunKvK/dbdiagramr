@@ -4,7 +4,9 @@ import Script from "next/script";
 import Navbar from "@/app/sections/Navbar";
 import SmoothScroll from "@/components/SmoothScroll";
 import Popup from "@/components/Popup";
+import AnalyticsOptOut from "@/components/AnalyticsOptOut";
 import { Toaster } from "sonner";
+import { GA_MEASUREMENT_ID } from "@/lib/analytics";
 import "./globals.css";
 
 const instrument = Instrument_Sans({
@@ -61,16 +63,20 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${instrument.variable} ${plexMono.variable}`}>
       <body className="antialiased">
+        <Script id="analytics-opt-out" strategy="beforeInteractive">
+          {`(function(){try{var p=new URLSearchParams(location.search).get("notrack");if(p==="1")localStorage.setItem("dbd_notrack","1");else if(p==="0")localStorage.removeItem("dbd_notrack");if(localStorage.getItem("dbd_notrack")==="1"){window["ga-disable-${GA_MEASUREMENT_ID}"]=true;if(!window.__dbd_notrack_logged){window.__dbd_notrack_logged=1;console.log("dbdiagramr: analytics disabled in this browser");}}}catch(e){}})();`}
+        </Script>
+        <AnalyticsOptOut />
         <SmoothScroll />
         <Script
-          src="https://www.googletagmanager.com/gtag/js?id=G-MK1QVPVPSJ"
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
           strategy="lazyOnload"
         />
         <Script id="google-analytics" strategy="lazyOnload">
           {`window.dataLayer = window.dataLayer || [];
 function gtag(){dataLayer.push(arguments);}
 gtag('js', new Date());
-gtag('config', 'G-MK1QVPVPSJ');`}
+gtag('config', '${GA_MEASUREMENT_ID}');`}
         </Script>
         <Script
           src="https://analytics.ahrefs.com/analytics.js"

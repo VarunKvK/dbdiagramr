@@ -113,23 +113,23 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
     ? resultRls.disabled > 0
       ? {
           color: RLS_META.disabled.color,
-          text: `${resultRls.disabled} ${
+          text: `${resultRls.disabled} public ${
             resultRls.disabled === 1 ? "table has" : "tables have"
           } RLS off.`,
         }
       : resultRls.noPolicies > 0
         ? {
             color: RLS_META["no-policies"].color,
-            text: `${resultRls.noPolicies} ${
+            text: `${resultRls.noPolicies} public ${
               resultRls.noPolicies === 1 ? "table has" : "tables have"
             } RLS on with no policies.`,
           }
         : resultRls.protected > 0
           ? {
               color: RLS_META.protected.color,
-              text: `RLS is on for all ${resultRls.total} ${
+              text: `RLS is on for all ${resultRls.total} public ${
                 resultRls.total === 1 ? "table" : "tables"
-              }.`,
+              }. Review that the policies are restrictive.`,
             }
           : null
     : null;
@@ -281,8 +281,8 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
           toast.error("Database not found", {
             description:
               data.hint === "pooler"
-                ? "Switch to the Transaction pooler (port 6543), see guide."
-                : "Check for typos, unpause your database, or use the connection pooler (port 6543).",
+                ? "Switch to the Session pooler (5432) or Transaction pooler (6543), see guide."
+                : "Check for typos, unpause your database, or use the Session (5432) or Transaction (6543) pooler.",
           });
         }
         if (data.hint === "pooler") setErrorHint("pooler");
@@ -481,7 +481,7 @@ export default function TryModal({ onSchemaGenerated, onSchemaCleared, mode: con
 
                 {isLiveSite && !showLocalhostWarning && (
                   <p className="shrink-0 font-mono text-xs leading-relaxed text-muted">
-                    Tip: On Vercel or Netlify use your database Transaction pooler (port 6543), not direct 5432.
+                    Tip: Session pooler (5432) is the safe default. On Vercel or Netlify use the Transaction pooler (6543) with prepared statements off.
                   </p>
                 )}
 
@@ -527,8 +527,8 @@ GRANT USAGE ON SCHEMA public TO dbdiagramr_reader;`}</pre>
                 <p className="whitespace-pre-wrap break-words font-mono text-sm leading-relaxed text-red-600">{errorMsg}</p>
                 {errorHint === "pooler" && (
                   <div className="mt-3 rounded-xl border border-amber-200 bg-amber-50 p-3">
-                    <p className="font-mono text-xs font-medium text-amber-700">Try the Transaction pooler (port 6543)</p>
-                    <p className="mt-1 font-mono text-xs leading-relaxed text-amber-600">Direct connections often fail from serverless. In your dashboard go to Connect, Transaction pooler, copy the 6543 string.</p>
+                    <p className="font-mono text-xs font-medium text-amber-700">Try the shared pooler (Session 5432 or Transaction 6543)</p>
+                    <p className="mt-1 font-mono text-xs leading-relaxed text-amber-600">Session is the safe default. For serverless, use Transaction pooler (6543) with prepared statements off. Copy the string from Dashboard -&gt; Connect.</p>
                   </div>
                 )}
                 <button onClick={handleNewConnection} className="mt-4 w-full rounded-[10px] bg-accent px-4 py-2.5 font-mono text-xs font-medium text-white transition-colors hover:bg-accent-hover">Try again</button>

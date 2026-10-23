@@ -267,7 +267,7 @@ function RlsLegendItem({
 }) {
   const meta = RLS_META[status];
   const label =
-    status === "disabled" ? "off" : status === "no-policies" ? "no policies" : "on";
+    status === "disabled" ? "off" : status === "no-policies" ? "no policies" : "on, has policies";
 
   return (
     <span className="inline-flex items-center gap-1.5" title={meta.description}>

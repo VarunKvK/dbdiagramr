@@ -31,7 +31,7 @@ const tools = [
     href: "/supabase-rls-check",
     name: "Supabase RLS Check",
     description:
-      "Connect with a read-only role and see which public tables have RLS off, RLS with no policies, or protection in place.",
+      "Connect with a read-only role and see which public tables have RLS off, RLS with no policies, or RLS on with policies to review.",
     tags: ["Supabase", "Security", "New"],
   },
   {

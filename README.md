@@ -35,7 +35,7 @@ You → paste connection string → dbdiagramr reads pg_catalog → interactive 
 | **RLS-aware** | Live connections show Row Level Security status and policy counts per table. [Free Supabase RLS check →](https://www.dbdiagramr.space/supabase-rls-check) |
 | **Exportable** | Download as SVG or PNG. |
 | **Self-hostable** | Open source (MIT). Run it yourself or use the hosted version. |
-| **Any Postgres** | Works with Supabase, Neon, Railway, or any PostgreSQL provider. Handles transaction pooler (port 6543). |
+| **Any Postgres** | Works with Supabase, Neon, Railway, or any PostgreSQL provider. Handles session (5432) and transaction (6543) poolers. |
 
 ## Quick Start
 
@@ -43,7 +43,7 @@ You → paste connection string → dbdiagramr reads pg_catalog → interactive 
 
 Visit **[dbdiagramr.space](https://www.dbdiagramr.space)** → paste your connection string → done.
 
-> **Supabase users:** In your dashboard, click **Connect** → select **Transaction pooler** (port 6543) → copy that URL. Direct connections are IPv6-only and will fail from serverless hosts.
+> **Supabase users:** In your dashboard, click **Connect** → select **Session pooler** (port 5432) as the safe default. Use **Transaction pooler** (port 6543) for serverless/edge and disable prepared statements. The direct host uses IPv6 by default; IPv4 needs the paid IPv4 add-on.
 
 ### Self-hosted
 

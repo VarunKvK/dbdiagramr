@@ -9,7 +9,7 @@ dbdiagramr introspects a live PostgreSQL database via the PostgreSQL system cata
 - Input: PostgreSQL connection string (e.g. `postgresql://user:pass@host:5432/db`)
 - Output: Interactive ER diagram with auto-layout (React Flow + dagre)
 - Works with: Supabase, Neon, Railway, any PostgreSQL provider
-- Handles: Transaction pooler (port 6543) for serverless/edge compatibility, IPv4/IPv6
+- Handles: Session pooler (port 5432) and Transaction pooler (port 6543), IPv4/IPv6
 - Security: No row data is read, only schema structure. No credentials stored.
 
 ## Key Pages
@@ -76,7 +76,7 @@ Details: https://www.dbdiagramr.space/pricing and https://www.dbdiagramr.space/p
 ## How It Works (3 Steps)
 
 1. Get your connection string — In your database provider dashboard, click Connect to retrieve the PostgreSQL connection string.
-2. Select the Transaction pooler — Under Connection method, select Transaction pooler (port 6543) for serverless/edge compatibility.
+2. Select the Session pooler — Session mode (port 5432) is the safe default. For serverless/edge, use the Transaction pooler (port 6543) with prepared statements off.
 3. Paste it into dbdiagramr — Paste the connection string at https://www.dbdiagramr.space/visualize and generate a navigable ER diagram in under 10 seconds.
 
 Supports: Supabase (direct / session pooler / transaction pooler), Neon (pooled / direct), Railway, any standard PostgreSQL URL. Handles URL-encoded passwords, `?sslmode=require`, `?channel_binding=require`.
@@ -95,4 +95,4 @@ Supports: Supabase (direct / session pooler / transaction pooler), Neon (pooled 
 - License: MIT
 - Stack: Next.js 14, TypeScript, Tailwind CSS, PostgreSQL (pg), @xyflow/react + dagre
 - Contact / X: https://x.com/im_daedalus
-- Last updated: 2026-10-20
+- Last updated: 2026-10-23

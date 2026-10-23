@@ -25,6 +25,7 @@ export type RlsInfo = {
 
 export type Table = {
   name: string;
+  schema?: string;
   columns: Column[];
   foreignKeys: ForeignKey[];
   rls?: RlsInfo;
@@ -185,13 +186,13 @@ ${colLines.join("\n")}
     const items = [
       { count: rls.disabled, label: "off", color: RLS_META.disabled.color },
       { count: rls.noPolicies, label: "no policies", color: RLS_META["no-policies"].color },
-      { count: rls.protected, label: "on", color: RLS_META.protected.color },
+      { count: rls.protected, label: "on, has policies", color: RLS_META.protected.color },
     ].filter((item) => item.count > 0);
 
     let lx = minX + 10;
     const ly = maxY - 16;
     const legend: string[] = [
-      `<g id="rls-legend"><title>RLS: ${rls.disabled} off, ${rls.noPolicies} with no policies, ${rls.protected} protected</title>`,
+      `<g id="rls-legend"><title>RLS (public schema): ${rls.disabled} off, ${rls.noPolicies} with no policies, ${rls.protected} with policies to review</title>`,
     ];
 
     for (const item of items) {

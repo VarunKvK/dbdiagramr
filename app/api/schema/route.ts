@@ -75,8 +75,8 @@ function describeConnectError(
   const poolerHint = port === 5432 ? { hint: "pooler" } : {};
   const supabaseDirect = host.endsWith(".supabase.co") && port === 5432;
   const unreachableDetails = supabaseDirect
-    ? "Supabase direct connections are IPv6-only. Use the Session pooler (port 5432) or Transaction pooler (port 6543) host from Dashboard -> Connect."
-    : "We could not resolve that hostname. Check for typos, unpause your database, or use the connection pooler (port 6543).";
+    ? "The Supabase direct host uses IPv6 by default. IPv4 needs the paid IPv4 add-on. Use the Session pooler (5432) or Transaction pooler (6543) host from Dashboard -> Connect."
+    : "We could not resolve that hostname. Check for typos, unpause your database, or use the Session (5432) or Transaction (6543) pooler host from Dashboard -> Connect.";
 
   if (code === "ENOTFOUND" || code === "EAI_AGAIN") {
     return {
@@ -108,7 +108,7 @@ function describeConnectError(
         error: "Connection timed out",
         details: supabaseDirect
           ? unreachableDetails
-          : "The database did not respond in time. Check your provider's firewall, or switch to the transaction pooler (port 6543).",
+          : "The database did not respond in time. Check your provider's firewall, or switch to the shared pooler: Session (5432) or Transaction (6543).",
         ...poolerHint,
       },
     };
@@ -309,6 +309,7 @@ export async function POST(request: NextRequest) {
       const key = tableKey(row.schema_name, row.table_name);
       tableMap.set(key, {
         name: key,
+        schema: row.schema_name,
         columns: [],
         foreignKeys: [],
         rls: {

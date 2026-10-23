@@ -65,7 +65,7 @@ const comparisonRows = [
   {
     feature: "Shows the live database",
     dbdiagram: "No - renders the DBML you wrote",
-    drawsql: "Partial - renders what you import or draw",
+    drawsql: "No - imports SQL DDL; no live database connection",
     chartdb: "No - works from query output",
     dbdiagramr: "Yes - tables, columns, and foreign keys",
   },
@@ -78,9 +78,9 @@ const comparisonRows = [
   },
   {
     feature: "Free plan",
-    dbdiagram: "Limited diagrams, public by default",
-    drawsql: "Public diagrams free; private from $19/month",
-    chartdb: "Free editor tier; paid team plans",
+    dbdiagram: "Up to 10 diagrams; PDF/PNG/SVG export; public sharing, Private mode, and embedding",
+    drawsql: "Public diagrams free; private on paid plans",
+    chartdb: "Free: 1 user, 1 database, up to 10 tables",
     dbdiagramr: "Unlimited diagrams",
   },
   {
@@ -92,9 +92,9 @@ const comparisonRows = [
   },
   {
     feature: "Export",
-    dbdiagram: "PDF and PNG on paid plans",
-    drawsql: "SQL, JSON, PNG",
-    chartdb: "SQL",
+    dbdiagram: "PDF, PNG, and SVG on the free plan",
+    drawsql: "SQL, Laravel, images; JSON and SVG on paid plans",
+    chartdb: "SQL, DBML, JSON, PNG, SVG",
     dbdiagramr: "SVG and PNG",
   },
   {
@@ -261,6 +261,13 @@ export default function AlternativesPage() {
                 ))}
               </tbody>
             </table>
+            <p className="border-t border-border px-4 py-3 text-xs leading-relaxed text-muted">
+              Last verified: 2026-10-23. Sources:{" "}
+              <a href="https://dbdiagram.io/pricing" target="_blank" rel="noreferrer" className="text-accent underline">dbdiagram.io pricing</a>,{" "}
+              <a href="https://drawsql.app/pricing" target="_blank" rel="noreferrer" className="text-accent underline">DrawSQL pricing</a>,{" "}
+              <a href="https://chartdb.io/pricing" target="_blank" rel="noreferrer" className="text-accent underline">ChartDB pricing</a>.
+              Prices and limits change; check the vendor page before buying.
+            </p>
           </div>
         </section>
 

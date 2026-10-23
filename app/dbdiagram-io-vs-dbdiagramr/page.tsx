@@ -45,22 +45,22 @@ const comparisonRows = [
   {
     feature: "Signup required",
     dbdiagramr: "No",
-    dbdiagram: "Free tier works without an account for one-off diagrams",
+    dbdiagram: "No account needed for the ERD generator; sign in to save",
   },
   {
     feature: "Free plan",
     dbdiagramr: "Unlimited diagrams",
-    dbdiagram: "Up to 10 diagrams, public by default",
+    dbdiagram: "Up to 10 diagrams; free PDF/PNG/SVG export; public sharing, Private mode, and embedding",
   },
   {
-    feature: "Private diagrams on free plan",
+    feature: "Private diagrams",
     dbdiagramr: "Yes - nothing is stored or published",
-    dbdiagram: "No - free diagrams are public unless upgraded",
+    dbdiagram: "Yes - Private mode included on Free; password-protected sharing paid",
   },
   {
     feature: "Interactive hover-to-trace relationships",
     dbdiagramr: "Yes",
-    dbdiagram: "No - static visualizations",
+    dbdiagram: "Yes - drag, pan, and zoom",
   },
   {
     feature: "Export options",
@@ -70,7 +70,7 @@ const comparisonRows = [
   {
     feature: "Paid plan",
     dbdiagramr: "Pro in development, no billing yet",
-    dbdiagram: "$14/month",
+    dbdiagram: "Paid plans available - see dbdiagram.io pricing",
   },
   {
     feature: "Best for",
@@ -94,7 +94,7 @@ const faqs = [
   },
   {
     q: "Are my diagrams private on dbdiagramr?",
-    a: "Yes. Paste-SQL mode never leaves your browser. A live connection string is sent to the dbdiagramr backend for a single request and discarded; nothing is stored or published, so nothing you visualize is made public - unlike free plans that make diagrams public by default.",
+    a: "Yes. Paste-SQL mode never leaves your browser. A live connection string is sent to the dbdiagramr backend for a single request and discarded; nothing is stored or published. dbdiagram.io offers public sharing and a Private mode; dbdiagramr does not publish anything.",
   },
 ];
 
@@ -228,6 +228,11 @@ export default function DbDiagramIoVsPage() {
               ))}
             </tbody>
           </table>
+          <p className="mt-3 text-xs leading-relaxed text-muted">
+            Last verified: 2026-10-23. Sources:{" "}
+            <a href="https://dbdiagram.io/pricing" target="_blank" rel="noreferrer" className="text-accent underline">dbdiagram.io pricing</a>.
+            Prices and limits change; check the vendor page before buying.
+          </p>
         </div>
 
         <section className="mt-16">
@@ -267,8 +272,8 @@ export default function DbDiagramIoVsPage() {
                 introspect an existing database.
               </li>
               <li>
-                You want team collaboration and public diagram embedding as part
-                of a paid plan.
+                You want team collaboration and password-protected sharing on a
+                paid plan. Embedding is available on Free.
               </li>
             </ul>
           </div>
@@ -300,7 +305,7 @@ export default function DbDiagramIoVsPage() {
             <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
               <h3 className="font-medium text-ink">Pricing</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">
-                <strong>dbdiagram.io:</strong> Free tier limited to 10 diagrams, all public. Pro at $14/month removes limits and makes diagrams private.
+                <strong>dbdiagram.io:</strong> Free tier includes 10 diagrams, PDF/PNG/SVG export, public sharing, Private mode, and embedding. Paid plans add unlimited diagrams, password-protected sharing, and more collaboration.
               </p>
               <p className="mt-2 text-sm leading-relaxed text-muted">
                 <strong>dbdiagramr:</strong> Free with no diagram limit, all private. Pro (saved diagrams, version history, sharing, multiple schemas) is in development - no price and no billing yet.
@@ -309,7 +314,7 @@ export default function DbDiagramIoVsPage() {
             <div className="rounded-[20px] border border-border bg-white p-6 shadow-sm">
               <h3 className="font-medium text-ink">Privacy</h3>
               <p className="mt-2 text-sm leading-relaxed text-muted">
-                <strong>dbdiagram.io:</strong> Free diagrams are public by default. Anyone with the link can view them.
+                <strong>dbdiagram.io:</strong> Free includes public sharing and Private mode. Password-protected sharing is paid.
               </p>
               <p className="mt-2 text-sm leading-relaxed text-muted">
                 <strong>dbdiagramr:</strong> Nothing is stored or published. Paste-SQL is parsed in your browser; a live connection string is sent to our backend for one request and discarded.

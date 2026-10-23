@@ -8,15 +8,15 @@ type Preset = "custom" | "supabase-pooler" | "supabase-direct" | "neon" | "railw
 
 const PRESETS: { id: Preset; label: string; hint: string }[] = [
   { id: "custom", label: "Custom", hint: "Fill every field yourself" },
-  { id: "supabase-pooler", label: "Supabase (pooler)", hint: "Session pooler, port 5432, works everywhere" },
-  { id: "supabase-direct", label: "Supabase (direct)", hint: "Port 5432 direct, IPv6 only" },
+  { id: "supabase-pooler", label: "Supabase (pooler)", hint: "Session pooler, port 5432, IPv4 reachable; copy the host from Dashboard -> Connect" },
+  { id: "supabase-direct", label: "Supabase (direct)", hint: "Port 5432 direct, IPv6 by default; IPv4 needs the paid add-on" },
   { id: "neon", label: "Neon", hint: "Pooled host, sslmode=require" },
   { id: "railway", label: "Railway", hint: "Standard public URL" },
   { id: "local", label: "Localhost", hint: "postgres://postgres:postgres@localhost:5432/mydb" },
 ];
 
 const PRESET_DEFAULTS: Record<Exclude<Preset, "custom">, { host: string; port: string; database: string; user: string; sslmode: string }> = {
-  "supabase-pooler": { host: "aws-0-eu-central-1.pooler.supabase.com", port: "5432", database: "postgres", user: "postgres.PROJECT_REF", sslmode: "require" },
+  "supabase-pooler": { host: "aws-0-REGION.pooler.supabase.com", port: "5432", database: "postgres", user: "postgres.PROJECT_REF", sslmode: "require" },
   "supabase-direct": { host: "db.PROJECT_REF.supabase.co", port: "5432", database: "postgres", user: "postgres", sslmode: "require" },
   neon: { host: "ep-cool-darkness-123456-pooler.us-east-2.aws.neon.tech", port: "5432", database: "neondb", user: "neondb_owner", sslmode: "require" },
   railway: { host: "containers-us-west-123.railway.app", port: "5432", database: "railway", user: "postgres", sslmode: "require" },

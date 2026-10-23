@@ -4,7 +4,8 @@
 - Price: $0
 - Limits: none
 - Features: unlimited diagrams, live PostgreSQL introspection, RLS status and policy counts, paste-SQL mode, SVG and PNG export, no signup
-- RLS coverage: public schema only (Supabase auth/storage not included yet)
+- RLS coverage: public schema
+- Last verified: 2026-10-23
 - Storage: nothing is saved; diagrams exist for the current session
 
 ## Pro (in development)

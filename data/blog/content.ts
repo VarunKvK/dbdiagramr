@@ -6,7 +6,7 @@ export const blogBodies: Record<string, string> = {
     <h2>The short version</h2>
     <p>A PostgreSQL connection string is a single URL that tells a client how to reach your database. It looks like this:</p>
     <pre><code>postgresql://postgres:[YOUR-PASSWORD]@db.abcdefghij.supabase.co:5432/postgres</code></pre>
-    <p>Every provider builds on the same format, and the differences that trip people up are almost never the syntax. They're the <strong>port and host</strong> your provider hands you. Supabase alone has three different strings for the same database, and two of them won't work from serverless apps.</p>
+    <p>Every provider builds on the same format, and the differences that trip people up are almost never the syntax. They're the <strong>port and host</strong> your provider hands you. Supabase alone has three different strings for the same database, and two of them are the wrong default for serverless apps.</p>
 
     <h2>Anatomy of a connection string</h2>
     <pre><code>postgresql://  user  :  password   @     host        :  port  /  database
@@ -43,11 +43,11 @@ postgres://postgres.[project-ref]:[YOUR-PASSWORD]@aws-[REGION].pooler.supabase.c
 
 # Shared pooler transaction mode (the one most apps want)
 postgres://postgres.[project-ref]:[YOUR-PASSWORD]@aws-[REGION].pooler.supabase.com:6543/postgres</code></pre>
-    <p><strong>The gotcha:</strong> direct connections run on <strong>IPv6</strong>. On an IPv4-only network you get <code>ENOTFOUND</code>, not a friendly error. The shared pooler is IPv4-only and fixes it. For serverless (Vercel, edge, Lambda) use <strong>transaction mode (port 6543)</strong>.</p>
-    <p>This is why tools like <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> ask for the <em>transaction pooler</em> URL, otherwise the connection silently fails from IPv4-only hosts.</p>
+    <p><strong>The gotcha:</strong> direct connections use <strong>IPv6 by default</strong>; IPv4 needs the paid IPv4 add-on. On an IPv4-only network you get <code>ENOTFOUND</code>, not a friendly error. The shared pooler is IPv4-only and fixes it. For serverless (Vercel, edge, Lambda) use <strong>transaction mode (port 6543)</strong> with prepared statements off.</p>
+    <p>This is why <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> defaults to the Session pooler and also supports Transaction mode when the connection string says <code>6543</code>.</p>
 
     <h2>Neon: pooled vs direct</h2>
-    <pre><code># Pooled (through PgBouncer, use by default)
+    <pre><code># Pooled (use by default)
 postgresql://user:pass@ep-cool-rain-123456-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require
 
 # Direct
@@ -73,8 +73,8 @@ postgresql://user:pass@ep-cool-rain-123456.us-east-2.aws.neon.tech/neondb?sslmod
 
     <h2>Gotchas that will actually bite you</h2>
     <ul>
-      <li><strong>IPv4 vs IPv6.</strong> Supabase direct is IPv6. IPv4-only hosts get <code>ENOTFOUND</code>. The pooler strings are IPv4 and sidestep it.</li>
-      <li><strong>Serverless wants the transaction pooler.</strong> Long-lived backends can hold a connection; serverless functions open one per invocation. Session pooling chokes; transaction pooling (port <strong>6543</strong>) exists for it.</li>
+      <li><strong>IPv4 vs IPv6.</strong> Supabase direct uses IPv6 by default; IPv4 needs the paid IPv4 add-on. IPv4-only hosts get <code>ENOTFOUND</code>. The shared pooler strings are IPv4 and sidestep it.</li>
+      <li><strong>Serverless wants the transaction pooler.</strong> Long-lived backends can hold a connection; serverless functions open many short-lived ones. Session mode is not the best fit for that pattern; transaction pooling (port <strong>6543</strong>) exists for it.</li>
       <li><strong>A connection string is a secret.</strong> Password in plain text. Never commit it, never paste into a shared doc. Most good tools never store it beyond one request.</li>
       <li><strong>URL-encode passwords.</strong> A password with <code>@</code>, <code>:</code>, or <code>/</code> breaks the URL. Encode those.</li>
     </ul>
@@ -83,7 +83,7 @@ postgresql://user:pass@ep-cool-rain-123456.us-east-2.aws.neon.tech/neondb?sslmod
     <h2>FAQ</h2>
     <p><strong>What is a PostgreSQL connection string?</strong><br/>A single URL with everything needed to reach a Postgres database: protocol, username, password, host, port, and database name.</p>
     <p><strong>Should I use a direct connection or a pooler?</strong><br/>Persistent backend → direct is fine. Serverless/edge → use a pooler (Supabase transaction mode port 6543 or Neon <code>-pooler</code> host).</p>
-    <p><strong>Why does my Supabase connection fail with ENOTFOUND?</strong><br/>You're using the direct string over IPv4, and Supabase's direct endpoint is IPv6. Switch to a shared pooler string.</p>
+    <p><strong>Why does my Supabase connection fail with ENOTFOUND?</strong><br/>You're using the direct string on an IPv4-only network, and Supabase's direct endpoint uses IPv6 by default. Switch to a shared pooler string.</p>
     <p><strong>Is my connection string a secret?</strong><br/>Yes, password in plain text. Keep in environment variables, rotate if leaked, only hand to tools that won't store it.</p>
   `,
   "supabase-auth-schema-explained": `
@@ -498,43 +498,118 @@ order by o.placed_at desc;</code></pre>
   `,
 
   "supabase-connection-string-ipv6-enotfound": `
-    <h2>The short version</h2>
-    <p>Supabase uses IPv6 by default. Most local dev environments and many hosting providers don't support IPv6, so DNS resolution fails with <code>ENOTFOUND</code> or hangs with <code>ETIMEDOUT</code>. The fix: use the transaction pooler connection string (port <code>6543</code>) instead of the direct connection (port <code>5432</code>).</p>
+    <h2>The short answer</h2>
+    <p>The Supabase direct host uses IPv6 by default. If your app or network is IPv4-only, the hostname has no usable address and Node reports <code>getaddrinfo ENOTFOUND db.&lt;ref&gt;.supabase.co</code>. The fix is the shared pooler: Session mode (port <code>5432</code>) is the safe default, and Transaction mode (port <code>6543</code>) works for serverless if prepared statements are turned off.</p>
 
-    <h2>The error</h2>
+    <h2>What the error means</h2>
     <pre><code>Error: getaddrinfo ENOTFOUND db.xxxxxxxxx.supabase.co</code></pre>
-    <p>This means DNS can't resolve the hostname to an IPv6 address. The second form (<code>ETIMEDOUT</code>) means DNS resolved but the connection timed out because your network doesn't route IPv6.</p>
+    <p><code>ENOTFOUND</code> means the resolver returned no address your client could use. <code>ENETUNREACH</code> means an IPv6 address was returned but your network has no route to it. <code>ETIMEDOUT</code> means packets were sent but no reply came back, often because a firewall or network path is blocking IPv6.</p>
 
-    <h2>The three connection strings</h2>
-    <h3>Direct connection (port 5432)</h3>
-    <p>Full Postgres protocol support. Supports prepared statements, <code>SET</code> commands, <code>LISTEN/NOTIFY</code>. Uses IPv6, may fail locally.</p>
+    <h2>Why the direct host fails on IPv4</h2>
+    <p>The direct connection string is <code>postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres</code>. That host uses IPv6 by default. IPv4 requires Supabase's paid IPv4 add-on. <a href="https://supabase.com/docs/guides/database/connecting-to-postgres">Supabase's docs</a> describe the add-on as not dual-stack: &ldquo;enabling it swaps the project's IPv6 (AAAA) DNS record for an IPv4 (A) record, so the project endpoint becomes reachable only over IPv4.&rdquo;</p>
+    <p>That is why the same connection string can work on one host and fail on another. An IPv4-only serverless runtime or local network cannot reach the IPv6 endpoint, and a resolver with no A record has nothing to fall back to.</p>
 
-    <h3>Transaction pooler (port 6543)</h3>
-    <p>Routes through Supabase's PgBouncer. IPv4-compatible, works everywhere. <strong>Does NOT support</strong> prepared statements or <code>SET</code> commands. Best for most web apps.</p>
-
-    <h3>Session pooler (port 6543 + session_mode)</h3>
-    <p>Same as transaction pooler but preserves session state. Supports <code>SET</code> but not prepared statements. Use if you need <code>SET search_path</code>.</p>
-
-    <h2>Which one to use</h2>
+    <h2>The connection modes</h2>
     <table>
-      <thead><tr><th>Use case</th><th>Connection string</th></tr></thead>
+      <thead><tr><th>Mode</th><th>Host and port</th><th>IP version</th><th>Username</th><th>Prepared statements</th><th>Best for</th></tr></thead>
       <tbody>
-        <tr><td>Local dev (Node.js, Python)</td><td>Transaction pooler (6543)</td></tr>
-        <tr><td>Vercel / Railway / Render</td><td>Transaction pooler (6543)</td></tr>
-        <tr><td>Cloudflare Workers</td><td>Transaction pooler (6543)</td></tr>
-        <tr><td>Prisma ORM</td><td>Transaction pooler (6543) + <code>?pgbouncer=true</code></td></tr>
-        <tr><td>pg_dump / pg_restore</td><td>Direct connection (5432)</td></tr>
-        <tr><td>Migrations (Prisma, Knex)</td><td>Direct connection (5432)</td></tr>
+        <tr><td>Direct</td><td><code>db.[ref].supabase.co:5432</code></td><td>IPv6 by default; IPv4 add-on</td><td><code>postgres</code></td><td>Yes</td><td>Migrations, <code>pg_dump</code>, long-lived IPv6 backends</td></tr>
+        <tr><td>Dedicated pooler</td><td><code>db.[ref].supabase.co:6543</code></td><td>Paid plans; IPv6 by default, IPv4 add-on</td><td><code>postgres</code></td><td>No</td><td>High-performance apps on paid plans</td></tr>
+        <tr><td>Shared session</td><td><code>aws-[INDEX]-[REGION].pooler.supabase.com:5432</code></td><td>IPv4-only on every plan</td><td><code>postgres.[ref]</code></td><td>Yes</td><td>Persistent IPv4-only backends, BI tools, database GUIs</td></tr>
+        <tr><td>Shared transaction</td><td><code>aws-[INDEX]-[REGION].pooler.supabase.com:6543</code></td><td>IPv4-only on every plan</td><td><code>postgres.[ref]</code></td><td>No</td><td>Serverless and edge functions</td></tr>
       </tbody>
     </table>
+    <p>The dedicated pooler uses the same host as the direct connection, so it hits the same <code>ENOTFOUND</code> on IPv4-only networks unless the project has the IPv4 add-on.</p>
+    <p><code>[INDEX]</code> is a pooler cluster index, not part of the region name. A region can have more than one. Copy the host from Dashboard -&gt; Connect instead of composing it.</p>
 
-    <h2>The Prisma gotcha</h2>
-    <p>Prisma uses prepared statements by default. The transaction pooler doesn't support them, so you'll get <code>prepared statement "stmt_1" does not exist</code>. Fix: add <code>?pgbouncer=true</code> to your connection string.</p>
+    <h2>Fix 1: use the session pooler (recommended default)</h2>
+    <p>Session mode is IPv4-only on every plan, keeps session state, and supports prepared statements. It is the safest default for a persistent backend on an IPv4-only network.</p>
+    <ol>
+      <li>Open Supabase Dashboard -&gt; Connect.</li>
+      <li>Choose <strong>Session pooler</strong>.</li>
+      <li>Copy the whole string and replace only the password placeholder.</li>
+      <li>Keep the username as <code>postgres.[PROJECT-REF]</code>.</li>
+    </ol>
+    <pre><code>psql "postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-[INDEX]-[REGION].pooler.supabase.com:5432/postgres" -c "select 1"</code></pre>
 
-    <h2>FAQ</h2>
-    <p><strong>Why does my app work on Vercel but not locally?</strong><br/>Vercel supports IPv6. Your local machine might not. Use the pooler (6543) locally.</p>
-    <p><strong>What's the difference between transaction and session pooler?</strong><br/>Transaction pooler resets after each transaction (faster). Session pooler preserves state (needed for <code>SET</code> commands).</p>
-    <p><strong>Does the pooler affect performance?</strong><br/>~1-2ms latency per query. Negligible for most web apps.</p>
+    <h2>Fix 2: use the transaction pooler for serverless</h2>
+    <p>Transaction mode is the right fit for serverless and edge functions, which open many short-lived connections. It does not support prepared statements or session-level state such as <code>SET</code>, cursors, <code>LISTEN/NOTIFY</code>, or temporary tables. Turn prepared statements off in your driver.</p>
+
+    <h3>node-postgres</h3>
+    <p>Omit the <code>name</code> value from the query config. A named query becomes a prepared statement.</p>
+    <pre><code>import fs from "node:fs";
+import pg from "pg";
+
+const ca = fs.readFileSync("./prod-ca-2021.crt", "utf8");
+
+const pool = new pg.Pool({
+  connectionString: process.env.DATABASE_URL,
+  max: 1,
+  ssl: { rejectUnauthorized: true, ca },
+});
+
+// Do not pass a name value here in transaction mode.
+await pool.query("select 1");</code></pre>
+    <p>Download the CA certificate from Supabase Database settings and point the path at your copy. Supabase recommends TLS: <code>sslmode=require</code> encrypts but does not verify the server; for verification, use the downloaded CA (or <code>sslmode=verify-full</code> with <code>sslrootcert</code>). See <a href="https://supabase.com/docs/guides/database/connecting-to-postgres#connecting-with-ssl">Supabase: connecting with SSL</a>.</p>
+    <p><a href="https://supabase.com/docs/guides/database/connecting-to-postgres#application-side-pool-size">Supabase's serverless guidance</a>: &ldquo;Set the pool to 1 connection. The client is shared by every invocation on that warm instance, so this caps the instance, not the request.&rdquo;</p>
+
+    <h3>Prisma</h3>
+    <p>Append <code>?pgbouncer=true</code> to the transaction-pooler URL. This turns off prepared statements in Prisma.</p>
+    <pre><code>DATABASE_URL="postgresql://postgres.[PROJECT-REF]:[PASSWORD]@aws-[INDEX]-[REGION].pooler.supabase.com:6543/postgres?pgbouncer=true"</code></pre>
+    <p>Use the direct connection or session mode for migrations.</p>
+
+    <h3>Drizzle with postgres.js</h3>
+    <pre><code>import postgres from "postgres";
+import { drizzle } from "drizzle-orm/postgres-js";
+
+const client = postgres(process.env.DATABASE_URL!, { prepare: false });
+const db = drizzle({ client });</code></pre>
+
+    <h3>Python psycopg 3</h3>
+    <pre><code>import psycopg
+
+with psycopg.connect(DATABASE_URL, prepare_threshold=None) as conn:
+    with conn.cursor() as cur:
+        cur.execute("select 1")</code></pre>
+
+    <h2>Which mode should you use?</h2>
+    <ul>
+      <li><strong>Serverless or edge:</strong> shared transaction pooler on <code>6543</code>, prepared statements off.</li>
+      <li><strong>Persistent backend on IPv4-only:</strong> shared session pooler on <code>5432</code>.</li>
+      <li><strong>Persistent backend with IPv6 or the IPv4 add-on:</strong> direct connection on <code>5432</code>.</li>
+      <li><strong>High-performance app on a paid plan:</strong> dedicated pooler on <code>6543</code>, over IPv6 or IPv4 with the add-on.</li>
+      <li><strong>Migrations, <code>pg_dump</code>, backup and restore:</strong> direct connection, or session mode if you are IPv4-only.</li>
+    </ul>
+
+    <h2>Related errors</h2>
+    <p><strong><code>Tenant or user not found</code></strong><br/>The shared pooler could not match your host and username to a project. Copy the host from Dashboard -&gt; Connect, and make sure the username is <code>postgres.[PROJECT-REF]</code>, not <code>postgres</code>.</p>
+    <p><strong><code>prepared statement "s0" already exists</code></strong><br/>You are using transaction mode with prepared statements on. Add <code>?pgbouncer=true</code> for Prisma, <code>prepare: false</code> for postgres.js/Drizzle, or <code>prepare_threshold=None</code> for psycopg.</p>
+    <p><strong><code>ENETUNREACH</code> or <code>ETIMEDOUT</code></strong><br/>The name resolved, but the IPv6 path is missing or blocked. Use the shared session pooler on <code>5432</code>.</p>
+
+    <h2>Verify the fix</h2>
+    <p>Check DNS first. On Linux use <code>getent ahosts &lt;host&gt;</code>; on macOS, Windows, or Linux, <code>nslookup &lt;host&gt;</code> is a cross-platform alternative.</p>
+    <pre><code>getent ahosts aws-[INDEX]-[REGION].pooler.supabase.com
+nslookup aws-[INDEX]-[REGION].pooler.supabase.com</code></pre>
+    <p>Then test the connection and read the catalog:</p>
+    <pre><code>psql "$DATABASE_URL" -c "select 1"
+psql "$DATABASE_URL" -c "select count(*) from pg_catalog.pg_tables where schemaname = 'public'"</code></pre>
+    <p>Finally, paste the same string into <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> and confirm the tables render.</p>
+
+    <p><strong>Last updated:</strong> 2026-10-23. <strong>Tested on:</strong> 2026-10-23, Supabase shared pooler, session mode (5432) and transaction mode (6543); both introspected a 20-table test schema plus Supabase's auth and storage tables in 2-4 seconds. Paste mode is instant.</p>
+
+    <h2>Sources</h2>
+    <ul>
+      <li><a href="https://supabase.com/docs/guides/database/connecting-to-postgres">Supabase: Connect to your database</a></li>
+      <li><a href="https://supabase.com/docs/guides/troubleshooting/tenant-or-user-not-found">Supabase: Tenant or user not found</a></li>
+      <li><a href="https://supabase.com/docs/guides/troubleshooting/disabling-prepared-statements-qL8lEL">Supabase: Disabling prepared statements</a></li>
+      <li><a href="https://supabase.com/docs/guides/database/prisma/prisma-troubleshooting">Supabase: Prisma troubleshooting</a></li>
+      <li><a href="https://www.prisma.io/docs/orm/reference/prisma-cli-reference#migrate-diff">Prisma CLI: migrate diff</a></li>
+      <li><a href="https://supabase.com/docs/guides/database/connecting-to-postgres#connecting-with-ssl">Supabase: connecting with SSL</a></li>
+      <li><a href="https://node-postgres.com/features/queries#prepared-statements">node-postgres: prepared statements</a></li>
+      <li><a href="https://orm.drizzle.team/docs/connect-supabase">Drizzle: connect to Supabase</a></li>
+      <li><a href="https://www.psycopg.org/psycopg3/docs/advanced/prepare.html">psycopg 3: prepared statements</a></li>
+    </ul>
+    <p>Need to build or decode a URI first? Use the <a href="https://www.dbdiagramr.space/postgres-connection-string">PostgreSQL connection string builder</a>, then open the <a href="https://www.dbdiagramr.space/supabase-er-diagram">Supabase ER diagram guide</a>.</p>
   `,
 
   "free-online-database-diagram-tool": `
@@ -561,7 +636,7 @@ order by o.placed_at desc;</code></pre>
     <p>If you have a SQL dump or migration file, paste it directly into dbdiagramr and see your ER diagram appear instantly. Works with PostgreSQL CREATE TABLE statements, foreign keys, indexes, the whole schema.</p>
 
     <h3>Option 2: Connect to a live database</h3>
-    <p>If you have a PostgreSQL connection string, paste it into dbdiagramr. It queries <code>information_schema</code> for tables, columns, primary keys, and foreign keys, then renders an interactive ER diagram you can pan, zoom, drag, and export as SVG or PNG. Your SQL never leaves your browser, the connection happens client-side.</p>
+    <p>If you have a PostgreSQL connection string, paste it into dbdiagramr. The backend reads <code>pg_catalog</code> for tables, columns, primary keys, and foreign keys, then renders an interactive ER diagram you can pan, zoom, drag, and export as SVG or PNG. Live connection strings are sent to the backend for one request, then discarded; they are never stored. Pasted SQL is parsed in your browser.</p>
 
     <h3>Option 3: Upload a file</h3>
     <p>Drag and drop a <code>.sql</code> file or use the file picker. Same result, instant diagram.</p>
@@ -570,8 +645,8 @@ order by o.placed_at desc;</code></pre>
     <table>
       <thead><tr><th>Tool</th><th>Free tier limitations</th></tr></thead>
       <tbody>
-        <tr><td>dbdiagram.io</td><td>10 tables on free plan, export requires paid plan</td></tr>
-        <tr><td>DrawSQL</td><td>Limited to 10 diagrams, no collaboration on free plan</td></tr>
+        <tr><td>dbdiagram.io</td><td>Up to 10 diagrams; PDF/PNG/SVG export included; public sharing and Private mode</td></tr>
+        <tr><td>DrawSQL</td><td>Unlimited public diagrams, up to 15 tables each; private diagrams on paid plans</td></tr>
         <tr><td>Lucidchart</td><td>3 editable documents, 60 shapes per document</td></tr>
         <tr><td>QuickDBD</td><td>Limited diagrams, watermark on exports</td></tr>
       </tbody>
@@ -626,7 +701,7 @@ CREATE TABLE comments (
     <p><strong>Can I create a database diagram without signing up?</strong><br/>Yes. dbdiagramr requires no account. Go to the site, paste SQL, get your diagram.</p>
     <p><strong>Does it work with PostgreSQL only?</strong><br/>Currently yes. PostgreSQL is the most common target for ER diagrams, and dbdiagramr specializes in it. SQL paste works with any PostgreSQL-compatible syntax.</p>
     <p><strong>Can I export the diagram?</strong><br/>Yes. Export as SVG or PNG with one click. No paid plan required.</p>
-    <p><strong>Is my database connection secure?</strong><br/>Yes. dbdiagramr connects to your database client-side. Your connection string never leaves your browser. No data is sent to any server.</p>
+    <p><strong>Is my database connection secure?</strong><br/>Yes. Pasted SQL stays in your browser. A live connection string is sent to the dbdiagramr backend, used for one request, then discarded; it is never stored. Only schema metadata is read, never table rows.</p>
   `,
   "sql-to-schema-diagram-online": `
     <h2>The short version</h2>
@@ -697,7 +772,7 @@ CREATE TABLE posts (
       <tbody>
         <tr><td>pgAdmin ERD tool</td><td>Already installed</td><td>Medium</td><td>Snapshot, manual re-run</td></tr>
         <tr><td>Draw.io + manual</td><td>Short</td><td>Slow</td><td>Hand-draw every table</td></tr>
-        <tr><td>dbdiagram.io</td><td>Account required</td><td>Fast</td><td>Must learn DBML syntax</td></tr>
+        <tr><td>dbdiagram.io</td><td>No signup for the ERD generator</td><td>Fast</td><td>Must learn DBML syntax</td></tr>
         <tr><td>dbdiagramr</td><td>None</td><td>Instant</td><td>PostgreSQL only (for now)</td></tr>
       </tbody>
     </table>
@@ -705,7 +780,10 @@ CREATE TABLE posts (
 
     <h2>FAQ</h2>
     <p><strong>Can I convert MySQL SQL to a diagram?</strong><br/>Not yet. dbdiagramr currently supports PostgreSQL syntax only. MySQL support is planned.</p>
-    <p><strong>Does it work with Prisma schema files?</strong><br/>Not directly. Export your Prisma schema to SQL first with <code>prisma db pull</code> or <code>pg_dump</code>, then paste the SQL.</p>
+    <p><strong>Does it work with Prisma schema files?</strong><br/>Not directly. Generate SQL from your Prisma schema, then paste the SQL. Prisma 7+ uses <code>--to-schema</code> (<a href="https://github.com/prisma/prisma/releases/tag/7.0.0">Prisma 7 release notes</a>):</p>
+    <pre><code>npx prisma migrate diff --from-empty --to-schema=prisma/schema.prisma --script &gt; schema.sql</code></pre>
+    <p>Prisma 6 and earlier use <code>--to-schema-datamodel</code> (<a href="https://www.prisma.io/docs/orm/reference/prisma-cli-reference#migrate-diff">CLI reference</a>):</p>
+    <pre><code>npx prisma migrate diff --from-empty --to-schema-datamodel=prisma/schema.prisma --script &gt; schema.sql</code></pre>
     <p><strong>How large a schema can it handle?</strong><br/>dbdiagramr handles schemas with dozens of tables comfortably. Very large schemas (100+ tables) may need some manual arrangement, but the parsing works fine.</p>
     <p><strong>Is there a table limit?</strong><br/>No. Paste as many tables as you want. No signup, no limits.</p>
   `,
@@ -720,8 +798,8 @@ CREATE TABLE posts (
       <tbody>
         <tr><td><code>psql</code> + <code>pg_catalog</code></td><td>Zero</td><td>Yes</td><td>Always live</td><td>Quick inspection</td></tr>
         <tr><td>pgAdmin ERD</td><td>Already installed</td><td>Yes</td><td>Snapshot</td><td>One-off look</td></tr>
-        <tr><td>dbdiagram.io</td><td>Account required</td><td>Limited</td><td>No (DBML)</td><td>Designing new schema</td></tr>
-        <tr><td>DrawSQL</td><td>Account required</td><td>Limited</td><td>Yes (paid)</td><td>Team collaboration</td></tr>
+        <tr><td>dbdiagram.io</td><td>No signup for one-off diagrams</td><td>Yes (10 diagrams)</td><td>No (DBML)</td><td>Designing new schema</td></tr>
+        <tr><td>DrawSQL</td><td>No signup for free canvas</td><td>Yes (15 tables)</td><td>No (SQL import)</td><td>Team schema design</td></tr>
         <tr><td>dbdiagramr</td><td>None</td><td>Yes</td><td>Yes (free)</td><td>Understanding real DB</td></tr>
       </tbody>
     </table>
@@ -740,12 +818,12 @@ CREATE TABLE posts (
     <h2>3. dbdiagram.io: the popular choice</h2>
     <p>dbdiagram.io is the most well-known database diagram tool. You write schema definitions in DBML (a custom markup language) and it renders an interactive diagram. Full head-to-head: <a href="https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr">dbdiagram.io vs dbdiagramr</a>.</p>
     <p><strong>Pros:</strong> Clean UI, good for designing new schemas, shareable links.</p>
-    <p><strong>Cons:</strong> Must learn DBML. Free tier limited to 10 tables. No live database connection, the diagram is always a manual copy.</p>
+    <p><strong>Cons:</strong> Must learn DBML. Free tier includes 10 diagrams, PDF/PNG/SVG export, public sharing, Private mode, and embedding. No live database connection, the diagram is always a manual copy.</p>
 
-    <h2>4. DrawSQL: the desktop option</h2>
-    <p>DrawSQL is a desktop app that connects to live databases and generates ER diagrams. Supports MySQL, PostgreSQL, SQL Server, and MariaDB. Full head-to-head: <a href="https://www.dbdiagramr.space/drawsql-vs-dbdiagramr">DrawSQL vs dbdiagramr</a>.</p>
-    <p><strong>Pros:</strong> Desktop app, exports, team collaboration (paid).</p>
-    <p><strong>Cons:</strong> Paid for full features. Free tier limited to 10 diagrams.</p>
+    <h2>4. DrawSQL: the browser-based design option</h2>
+    <p>DrawSQL is a browser-based editor. It imports SQL DDL and exports SQL, Laravel, images; JSON and SVG on paid plans. It does not connect to a live database. Supports MySQL, PostgreSQL, SQL Server, and MariaDB. Full head-to-head: <a href="https://www.dbdiagramr.space/drawsql-vs-dbdiagramr">DrawSQL vs dbdiagramr</a>.</p>
+    <p><strong>Pros:</strong> Browser-based, SQL, Laravel, images; JSON and SVG on paid plans; team collaboration (paid).</p>
+    <p><strong>Cons:</strong> Paid for private diagrams and full features. Free plan is public only, up to 15 tables per diagram.</p>
 
     <h2>5. dbdiagramr: paste SQL, get a diagram</h2>
     <p><a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> takes a different approach: paste SQL or a PostgreSQL connection string, get an interactive ER diagram. No account, no install, no table limits. The same engine powers the <a href="https://www.dbdiagramr.space/tools">free tools page</a> (SQL formatter, schema health analyzer) and the <a href="https://www.dbdiagramr.space/schema">interactive schema library</a>, real schemas like Chinook and Pagila you can explore before touching your own database.</p>
@@ -783,7 +861,7 @@ CREATE TABLE posts (
     <p><strong>What's the best database schema diagram tool for PostgreSQL?</strong><br/>For understanding an existing database, dbdiagramr is the fastest, paste SQL or connect to a live database, no signup required.</p>
     <p><strong>Can I use dbdiagram.io without learning DBML?</strong><br/>Not really. DBML is the input format. If you prefer raw SQL, dbdiagramr accepts it directly.</p>
     <p><strong>Is pgAdmin's ERD tool good enough?</strong><br/>For small schemas and quick inspection, yes. For anything you need to share or keep current, use a dedicated tool.</p>
-    <p><strong>Does DrawSQL support live PostgreSQL connections?</strong><br/>Yes, but only on paid plans. The free tier is limited to 10 diagrams.</p>
+    <p><strong>Does DrawSQL support live PostgreSQL connections?</strong><br/>No. DrawSQL imports SQL DDL; it does not connect to a live database. The free plan is public only, up to 15 tables per diagram.</p>
     <p><strong>Can I create a Postgres ERD without connecting to the live database?</strong><br/>Yes. Run <code>pg_dump --schema-only</code> and feed the DDL to a SQL-to-diagram tool, or parse migration files. This is safer when you cannot expose production credentials.</p>
     <p><strong>How do I keep a schema diagram up to date?</strong><br/>Manual tools require manual regeneration, so they drift. The reliable fix is introspection: regenerate straight from the live database, or wire documentation generation into CI.</p>
   `,

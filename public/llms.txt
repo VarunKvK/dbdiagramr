@@ -43,8 +43,8 @@ Reference ER diagrams of popular PostgreSQL schemas, each showing every table, c
 - Exports diagrams as SVG or PNG
 - Shows per-table Row Level Security status on live connections (public schema)
 - Works with cloud databases: Supabase, Neon, Railway
-- Uses the Transaction pooler (port 6543) for serverless platform compatibility
+- Supports the Session pooler (5432) and Transaction pooler (6543)
 - Paste-SQL mode parses in the browser; live connection strings are sent to the dbdiagramr backend for one request, then discarded
 - Connection strings and schemas are never stored
 - Built with Next.js, PostgreSQL, and Tailwind CSS
-- Last updated: 2026-10-20
+- Last updated: 2026-10-23

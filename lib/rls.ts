@@ -7,9 +7,10 @@ export const RLS_META: Record<
   { label: string; color: string; description: string }
 > = {
   protected: {
-    label: "RLS on",
+    label: "RLS on, has policies",
     color: "#2f7d32",
-    description: "Row Level Security is on and at least one policy exists.",
+    description:
+      "RLS is on and at least one policy exists. Review that the policies are restrictive; USING (true) still exposes the table.",
   },
   "no-policies": {
     label: "RLS on, no policies",
@@ -42,7 +43,7 @@ export function rlsHint(table: { name: string; rls?: RlsInfo }): string {
     case "protected":
       return `${table.name}: RLS on, ${rls!.policyCount} ${
         rls!.policyCount === 1 ? "policy" : "policies"
-      }${rls!.forced ? ", forced" : ""}.`;
+      }${rls!.forced ? ", forced" : ""}. Review that they are restrictive.`;
     case "no-policies":
       return `${table.name}: RLS on but 0 policies. Non-owners are denied.`;
     case "disabled":
@@ -60,12 +61,18 @@ export type RlsSummary = {
   protected: number;
 };
 
+function isPublicSchemaTable(table: Schema["tables"][number]): boolean {
+  if (table.schema) return table.schema === "public";
+  return !table.name.includes(".");
+}
+
 export function rlsSummary(schema: Schema): RlsSummary {
+  const tables = schema.tables.filter(isPublicSchemaTable);
   let disabled = 0;
   let noPolicies = 0;
   let protectedTables = 0;
 
-  for (const table of schema.tables) {
+  for (const table of tables) {
     const status = rlsStatus(table.rls);
     if (status === "disabled") disabled += 1;
     else if (status === "no-policies") noPolicies += 1;
@@ -73,8 +80,8 @@ export function rlsSummary(schema: Schema): RlsSummary {
   }
 
   return {
-    hasRls: schema.tables.some((table) => table.rls !== undefined),
-    total: schema.tables.length,
+    hasRls: tables.some((table) => table.rls !== undefined),
+    total: tables.length,
     disabled,
     noPolicies,
     protected: protectedTables,

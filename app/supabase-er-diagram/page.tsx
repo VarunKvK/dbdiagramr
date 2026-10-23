@@ -44,7 +44,7 @@ const faqs = [
   },
   {
     q: "Which connection string should I use?",
-    a: "Use a Supabase pooler connection string from Dashboard -> Connect. The direct db.xxx.supabase.co host on port 5432 is IPv6-only, which is why some networks fail with ENOTFOUND or a timeout. The Session pooler works over IPv4 and is the safest default; the Transaction pooler on port 6543 also works.",
+    a: "Use a Supabase pooler connection string from Dashboard -> Connect. The direct db.xxx.supabase.co host on port 5432 uses IPv6 by default; IPv4 needs the paid IPv4 add-on, which is why some networks fail with ENOTFOUND or a timeout. The Session pooler works over IPv4 and is the safest default; the Transaction pooler on port 6543 also works.",
   },
   {
     q: "Is my connection string stored?",
@@ -52,7 +52,7 @@ const faqs = [
   },
   {
     q: "Can I check Row Level Security at the same time?",
-    a: "Use the free Supabase RLS Check with the same read-only connection string. It lists public tables with RLS off, RLS enabled but no policies, or protection in place. The diagram shows structure; the RLS check shows exposure.",
+    a: "Use the free Supabase RLS Check with the same read-only connection string. It lists public tables with RLS off, RLS enabled but no policies, or RLS on with policies to review. The diagram shows structure; the RLS check shows exposure.",
   },
   {
     q: "Is dbdiagramr free for Supabase projects?",
@@ -210,7 +210,7 @@ export default function SupabaseErDiagramPage() {
               {
                 step: "1",
                 title: "Copy the pooler string",
-                body: "Supabase dashboard -> Connect -> Session pooler. The direct db.xxx.supabase.co host is IPv6-only, so the pooler avoids ENOTFOUND and timeouts.",
+                body: "Supabase dashboard -> Connect -> Session pooler. The direct db.xxx.supabase.co host uses IPv6 by default; IPv4 needs the paid IPv4 add-on, so the pooler avoids ENOTFOUND and timeouts.",
               },
               {
                 step: "2",
@@ -283,7 +283,7 @@ export default function SupabaseErDiagramPage() {
               {
                 href: "/supabase-rls-check",
                 title: "Supabase RLS Check",
-                body: "See which public tables have RLS off, RLS with no policies, or protection in place.",
+                body: "See which public tables have RLS off, RLS with no policies, or RLS on with policies to review.",
               },
               {
                 href: "/blog/supabase-auth-schema-explained",

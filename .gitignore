@@ -41,3 +41,6 @@ FREEALTERNATIVE-SUBMISSION.md
 
 # action build deps (dist IS committed)
 actions/**/node_modules
+.opencode/
+videos/
+public/Product Design.zip

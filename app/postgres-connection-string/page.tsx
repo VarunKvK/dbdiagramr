@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     q: "Which providers are supported?",
-    a: "Any PostgreSQL URI parses, and presets prefill Supabase (Session pooler 5432 and Direct), Neon (pooled host, sslmode=require), Railway, and localhost. Transaction poolers (Supabase 6543) decode fine but cannot run schema introspection, use Session mode for visualization.",
+    a: "Any PostgreSQL URI parses, and presets prefill Supabase (Session pooler 5432 and Direct), Neon (pooled host, sslmode=require), Railway, and localhost. Both Session (5432) and Transaction (6543) poolers work for schema introspection. Session mode is the safer default because it supports prepared statements.",
   },
   {
     q: "Can I visualize the database this connects to?",

@@ -169,16 +169,17 @@ export const blogPosts: BlogPost[] = [
   },
   {
     slug: "supabase-connection-string-ipv6-enotfound",
-    title: "Supabase Connection String: IPv6 & ENOTFOUND Fix",
+    title: "Supabase getaddrinfo ENOTFOUND db.<ref>.supabase.co Fix",
     description:
-      "Why Supabase throws ENOTFOUND and ETIMEDOUT errors, the IPv6 vs IPv4 problem, and how the transaction pooler port (6543) fixes most connection issues.",
+      "Fix Supabase getaddrinfo ENOTFOUND db.<ref>.supabase.co: use the session pooler (5432), or transaction pooler (6543) with prepared statements off.",
     keywords: [
       "supabase enotfound",
       "supabase ipv6 connection",
       "supabase transaction pooler 6543",
     ],
     date: "2026-09-08",
-    readingMinutes: 5,
+    readingMinutes: 7,
+    updated: "2026-10-23",
     tags: ["supabase", "postgres", "tutorial"],
     devtoUrl: undefined,
   },

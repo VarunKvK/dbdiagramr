@@ -70,12 +70,12 @@ const comparisonRows = [
   {
     feature: "Price",
     dbdiagramr: "Free, no diagram limit",
-    chartdb: "Free tier; paid plans for teams",
+    chartdb: "Free tier: 1 user, 1 database, up to 10 tables; paid plans for teams",
   },
   {
     feature: "Export",
     dbdiagramr: "SVG and PNG",
-    chartdb: "SQL",
+    chartdb: "SQL, DBML, JSON, PNG, SVG",
   },
   {
     feature: "Best for",
@@ -237,6 +237,12 @@ export default function ChartDbAlternativePage() {
               ))}
             </tbody>
           </table>
+          <p className="mt-3 text-xs leading-relaxed text-muted">
+            Last verified: 2026-10-23. Sources:{" "}
+            <a href="https://chartdb.io/pricing" target="_blank" rel="noreferrer" className="text-accent underline">ChartDB pricing</a>,{" "}
+            <a href="https://chartdb.io" target="_blank" rel="noreferrer" className="text-accent underline">ChartDB features</a>.
+            Prices and limits change; check the vendor page before buying.
+          </p>
         </div>
 
         <section className="mt-16">

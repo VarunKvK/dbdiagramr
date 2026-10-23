@@ -10,7 +10,7 @@ import FaqAccordion from "@/app/sections/FaqAccordion";
 const URL = "https://www.dbdiagramr.space/supabase-rls-check";
 const TITLE = "Supabase RLS Check — Find Tables Without Row Level Security";
 const DESCRIPTION =
-  "See which Supabase tables have Row Level Security off, on with no policies, or protected. Read-only, no signup, connection string never stored.";
+  "See which Supabase tables have Row Level Security off, on with no policies, or on with policies to review. Read-only, no signup, connection string never stored.";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -50,15 +50,15 @@ const faqs = [
   },
   {
     q: "Does this work with Supabase?",
-    a: "Yes. Use the Session pooler (port 5432) or Transaction pooler (port 6543) connection string. Direct connections are IPv6-only and often fail from hosted apps.",
+    a: "Yes. Use the Session pooler (port 5432) or Transaction pooler (port 6543) connection string. The direct host uses IPv6 by default; IPv4 needs the paid IPv4 add-on, so it often fails from hosted apps.",
   },
   {
     q: "Do you store my connection string or schema?",
     a: "No. The connection string is sent to our backend for one request, then discarded. We read catalog metadata only, never table rows. Nothing is saved.",
   },
   {
-    q: "Which schemas do you check?",
-    a: "public, auth and storage. public is shown first, and you can switch auth or storage on with one click. Everything else is ignored so the diagram stays readable.",
+    q: "Which schema does the RLS check cover?",
+    a: "The public schema, which Supabase exposes through its Data API. The diagram can still show auth and storage tables.",
   },
   {
     q: "Why does pasted SQL show RLS as unknown?",
@@ -92,8 +92,8 @@ const legend = [
   {
     icon: Check,
     color: RLS_META.protected.color,
-    title: "RLS on",
-    body: "At least one policy exists. Review the policy logic separately.",
+    title: "RLS on, has policies",
+    body: "At least one policy exists. Review that it is restrictive; USING (true) still exposes the table.",
   },
   {
     icon: X,
@@ -120,10 +120,9 @@ export default function SupabaseRlsCheckPage() {
           <span className="text-accent">Row Level Security off.</span>
         </h1>
         <p className="mt-5 max-w-2xl text-lg leading-relaxed text-muted">
-          Connect with a read-only role. dbdiagramr reads the RLS flags and
-          policy counts from PostgreSQL, draws your public schema (auth and
-          storage are one click away), and marks every table. No signup, no
-          storage.
+          Connect with a read-only role. dbdiagramr reads RLS flags and policy
+          counts for your public schema, draws it, and marks every table. No
+          signup, no storage.
         </p>
         <div className="mt-8 flex flex-wrap gap-3">
           <TrackedLink

@@ -126,6 +126,14 @@ export default function BlogPostPage({
         <div className="mb-8">
           <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
             <time dateTime={post.date}>{post.date}</time>
+            {post.updated ? (
+              <>
+                <span>·</span>
+                <span>
+                  Updated <time dateTime={post.updated}>{post.updated}</time>
+                </span>
+              </>
+            ) : null}
             <span>·</span>
             <span>{post.readingMinutes} min read</span>
             <div className="ml-2 flex gap-1.5">

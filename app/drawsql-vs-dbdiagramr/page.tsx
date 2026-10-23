@@ -40,7 +40,7 @@ const comparisonRows = [
   {
     feature: "Shows your actual database",
     dbdiagramr: "Yes - reads live tables, columns, and foreign keys",
-    drawsql: "Partial - visualizes what you import or draw, not the live DB",
+    drawsql: "No - imports SQL DDL; no live database connection",
   },
   {
     feature: "Databases supported",
@@ -55,7 +55,7 @@ const comparisonRows = [
   {
     feature: "Free plan",
     dbdiagramr: "Unlimited diagrams",
-    drawsql: "Public diagrams free; private diagrams from $19/month",
+    drawsql: "Unlimited public diagrams (15 tables each); private on paid plans",
   },
   {
     feature: "Private diagrams on free plan",
@@ -70,12 +70,12 @@ const comparisonRows = [
   {
     feature: "Export options",
     dbdiagramr: "PNG and SVG",
-    drawsql: "SQL, JSON, PNG",
+    drawsql: "SQL, Laravel, images; JSON and SVG on paid plans",
   },
   {
     feature: "Paid plan",
     dbdiagramr: "Pro in development, no billing yet",
-    drawsql: "$19/month",
+    drawsql: "Paid plans available - see DrawSQL pricing",
   },
   {
     feature: "Free companion tools",
@@ -239,6 +239,12 @@ export default function DrawSqlVsPage() {
               ))}
             </tbody>
           </table>
+          <p className="mt-3 text-xs leading-relaxed text-muted">
+            Last verified: 2026-10-23. Sources:{" "}
+            <a href="https://drawsql.app/pricing" target="_blank" rel="noreferrer" className="text-accent underline">DrawSQL pricing</a>,{" "}
+            <a href="https://drawsql.app/features" target="_blank" rel="noreferrer" className="text-accent underline">DrawSQL features</a>.
+            Prices and limits change; check the vendor page before buying.
+          </p>
         </div>
 
         <section className="mt-16">

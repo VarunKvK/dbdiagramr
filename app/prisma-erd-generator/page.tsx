@@ -69,7 +69,6 @@ export default function PrismaErdPage() {
       faqs={faqs}
       exploreLinks={[
         { href: "/schema/nextauth", label: "NextAuth schema diagram" },
-        { href: "/blog/nextauth-auth-schema-explained", label: "NextAuth Schema Explained" },
       ]}
     >
       <script

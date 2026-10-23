@@ -82,6 +82,46 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/blog/supabase-auth-schema-explained",
+        destination: "/schema/supabase",
+        permanent: true,
+      },
+      {
+        source: "/blog/nextauth-auth-schema-explained",
+        destination: "/schema/nextauth",
+        permanent: true,
+      },
+      {
+        source: "/blog/laravel-database-schema-explained",
+        destination: "/schema/laravel",
+        permanent: true,
+      },
+      {
+        source: "/blog/ecommerce-database-schema-postgres",
+        destination: "/schema/ecommerce",
+        permanent: true,
+      },
+      {
+        source: "/blog/stripe-billing-schema-postgres",
+        destination: "/schema/stripe",
+        permanent: true,
+      },
+      {
+        source: "/blog/free-online-database-diagram-tool",
+        destination: "/blog/database-schema-diagram-tool",
+        permanent: true,
+      },
+      {
+        source: "/blog/sql-to-schema-diagram-online",
+        destination: "/blog/database-schema-diagram-tool",
+        permanent: true,
+      },
+      {
+        source: "/blog/schema-documentation-drift",
+        destination: "/blog/database-schema-documentation",
+        permanent: true,
+      },
+      {
         source: "/:path*",
         has: [{ type: "host", value: "dbdiagramr.vercel.app" }],
         destination: "https://www.dbdiagramr.space/:path*",

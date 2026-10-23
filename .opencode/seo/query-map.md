@@ -31,7 +31,7 @@ Status: cover | gap | out of scope
 | 14 | supabase visualizer | tool | tool page | /supabase-er-diagram | cover (built 2026-10-20) |
 | 15 | supabase erd | tool | tool page | /supabase-er-diagram | cover (built 2026-10-20) |
 | 16 | supabase rls check | tool | tool page | /supabase-rls-check | cover |
-| 17 | supabase auth schema diagram | reference | schema reference page | /blog/supabase-auth-schema-explained | cover |
+| 17 | supabase auth schema diagram | reference | schema reference page | /schema/supabase | cover |
 | 18 | visualize supabase database | tool | tutorial + tool | /supabase-er-diagram | cover (built 2026-10-20) |
 
 ## C. Comparisons (19-26)
@@ -52,7 +52,7 @@ Status: cover | gap | out of scope
 | # | Query | Intent | Format to beat | Our page | Status |
 |---|---|---|---|---|---|
 | 27 | stripe database schema | reference | schema diagram page | /schema/stripe | cover |
-| 28 | stripe billing schema postgres | learn | tutorial | /blog/stripe-billing-schema-postgres | cover |
+| 28 | stripe billing schema postgres | learn | tutorial | /schema/stripe | cover |
 | 29 | ecommerce database schema postgres | reference | schema diagram page | /schema/ecommerce | cover |
 | 30 | library management system er diagram | reference | diagram page | /schema/library-management-system | cover |
 | 31 | hospital management system er diagram | reference | diagram page | /schema/hospital-management-system | cover |
@@ -69,13 +69,13 @@ Status: cover | gap | out of scope
 | # | Query | Intent | Format to beat | Our page | Status |
 |---|---|---|---|---|---|
 | 39 | how to visualize postgres schema | learn | tutorial | /blog/database-schema-diagram-tool | cover |
-| 40 | how to create er diagram from sql | learn | tutorial | /blog/sql-to-schema-diagram-online | cover |
+| 40 | how to create er diagram from sql | learn | tutorial | /blog/database-schema-diagram-tool | cover |
 | 41 | how to document database schema | learn | tutorial | /blog/database-schema-documentation | cover |
 | 42 | postgres show table relationships | learn | tutorial | /blog/database-schema-diagram-tool | cover |
 | 43 | information_schema vs pg_catalog | learn | explainer | /blog/information-schema-vs-pg-catalog | cover |
 | 44 | supabase connection string ipv6 enotfound | fix | troubleshooting post | /blog/supabase-connection-string-ipv6-enotfound | cover |
 | 45 | postgres connection string supabase neon railway | learn | reference post | /blog/postgres-connection-string-supabase-neon-railway | cover |
-| 46 | database schema documentation drift | learn | explainer | /blog/schema-documentation-drift | cover |
+| 46 | database schema documentation drift | learn | explainer | /blog/database-schema-documentation | cover |
 
 ## F. Adjacent tools (47-50)
 

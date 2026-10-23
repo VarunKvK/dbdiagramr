@@ -111,11 +111,8 @@ export default function RelatedTools({
           Learn more
         </div>
         <div className="mt-2 flex flex-wrap gap-x-4 gap-y-2 text-sm">
-          <Link href="/blog/free-online-database-diagram-tool" className="font-medium text-accent hover:text-accent-hover">
-            Free Online Database Diagram Tool →
-          </Link>
-          <Link href="/blog/sql-to-schema-diagram-online" className="font-medium text-accent hover:text-accent-hover">
-            SQL to Schema Diagram Online →
+          <Link href="/blog/database-schema-diagram-tool" className="font-medium text-accent hover:text-accent-hover">
+            Database Schema Diagram Tool →
           </Link>
           <Link href="/blog/database-schema-health-check" className="font-medium text-accent hover:text-accent-hover">
             Schema Health Check Guide →

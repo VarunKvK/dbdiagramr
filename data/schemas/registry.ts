@@ -45,6 +45,8 @@ export type SchemaEntry = {
   source?: SchemaSource;
   /** Topical related schema slugs; falls back to first 3 other entries */
   related?: string[];
+  /** Optional clarification shown above the relationship table */
+  relationshipNote?: string;
   /** Optional deep-dive notes rendered after the relationship table */
   guide?: {
     title: string;
@@ -52,6 +54,8 @@ export type SchemaEntry = {
     sql?: string;
     sqlNote?: string;
   };
+  /** Additional topic sections rendered after the guide */
+  sections?: { title: string; body: string }[];
 };
 
 export const schemaEntries: SchemaEntry[] = [
@@ -86,8 +90,73 @@ export const schemaEntries: SchemaEntry[] = [
         q: "How do users relate to identities in Supabase?",
         a: "Every auth.users row can have multiple auth.identities rows linked by user_id. Each identity represents a sign-in method (email/password, Google, GitHub, etc.) for that user.",
       },
+      {
+        q: "How do I export the Supabase auth schema?",
+        a: "Use the Supabase CLI for your public schema, then pg_dump for auth. The CLI dump filters managed schemas such as auth and storage, so it will not include the tables shown here.",
+      },
+      {
+        q: "What happens to sessions when a user signs out?",
+        a: "Supabase supports three scopes. The JavaScript client defaults to global, which ends every session for the user. local ends only the current session; others ends every other session. The affected sessions are removed, and refresh tokens for them are destroyed, but access tokens remain valid until they expire.",
+      },
+      {
+        q: "Can I join auth.users to my public tables?",
+        a: "Yes. auth.users.id is the user UUID. Store it in your public table, for example public.profiles.user_id, and join on that column.",
+      },
     ],
-    lastUpdated: "2026-10-20",
+    lastUpdated: "2026-10-23",
+    sections: [
+      {
+        title: "How to download or export your Supabase schema",
+        body: `
+          <p>The Supabase CLI dump is the quickest way to export your app schema:</p>
+          <pre><code>supabase db dump --db-url "$SUPABASE_SESSION_POOLER_URL" -f supabase/schema.sql</code></pre>
+          <p>The CLI filters Supabase-managed schemas, including <code>auth</code> and <code>storage</code>, so the file above will not contain the auth tables on this page. Dump <code>auth</code> separately with <code>pg_dump</code>:</p>
+          <pre><code>pg_dump "$SUPABASE_SESSION_POOLER_URL" --schema-only --schema=auth --no-owner --no-privileges -f auth-schema.sql</code></pre>
+          <p>Use the session pooler connection string on port 5432 for these commands. Use a <code>pg_dump</code> version at least as new as the PostgreSQL server version: newer <code>pg_dump</code> releases can dump older servers, but older ones cannot dump newer servers. See the <a href="https://supabase.com/docs/reference/cli/supabase-db-dump">Supabase CLI db dump reference</a> and the <a href="https://www.postgresql.org/docs/current/app-pgdump.html">PostgreSQL pg_dump documentation</a>.</p>
+        `,
+      },
+      {
+        title: "How the auth tables change during sign-in",
+        body: `
+          <p>These tables are written by Supabase Auth, not by your migrations. The main events look like this:</p>
+          <table>
+            <thead><tr><th>Event</th><th>What changes</th></tr></thead>
+            <tbody>
+              <tr><td>Sign-up</td><td>A row is created in <code>auth.users</code>. If email confirmations are enabled, the user must confirm the email before signing in (<a href="https://supabase.com/docs/guides/auth/passwords">password auth docs</a>).</td></tr>
+              <tr><td>Identity link</td><td>Each sign-in method gets a row in <code>auth.identities</code>, linked by <code>user_id</code> (<a href="https://supabase.com/docs/guides/auth/identities">identities docs</a>).</td></tr>
+              <tr><td>Sign-in</td><td>A row is created in <code>auth.sessions</code>. The access token carries a <code>session_id</code> claim matching the session primary key (<a href="https://supabase.com/docs/guides/auth/sessions">sessions docs</a>).</td></tr>
+              <tr><td>Token refresh</td><td>Refresh tokens are one-time use. Reuse outside the documented grace cases terminates the session and revokes all refresh tokens for it (<a href="https://supabase.com/docs/guides/auth/sessions">sessions docs</a>).</td></tr>
+              <tr><td>Sign-out</td><td><code>global</code> (the JavaScript default) ends all sessions; <code>local</code> ends the current session; <code>others</code> ends all but the current one. Affected sessions are removed and their refresh tokens are destroyed. Access tokens stay valid until they expire (<a href="https://supabase.com/docs/guides/auth/signout">sign-out docs</a>).</td></tr>
+            </tbody>
+          </table>
+          <p>Supabase does not document the exact row-level timing for every internal write, including changes to <code>auth.refresh_tokens</code>. Treat those rows as managed state rather than an application event log.</p>
+        `,
+      },
+      {
+        title: "How users, identities, and sessions connect",
+        body: `
+          <p>The common query is "who is this user, through which provider, and on which sessions":</p>
+          <pre><code>select u.email, i.provider, s.id as session_id
+from auth.users u
+join auth.identities i on i.user_id = u.id
+join auth.sessions s on s.user_id = u.id
+where u.id = $1;</code></pre>
+          <p><code>auth.identities.user_id</code> and <code>auth.sessions.user_id</code> both point at <code>auth.users.id</code>. Your public profile table should use the same UUID, for example <code>public.profiles.user_id references auth.users(id)</code>, so a profile joins directly to the auth user. A normal user has at least one identity; sessions are per sign-in and can be many.</p>
+        `,
+      },
+      {
+        title: "Working with auth tables safely",
+        body: `
+          <ul>
+            <li><strong>Treat <code>auth</code> as read-only.</strong> Create users, identities, and sessions through the Supabase client or Admin API, not with direct inserts.</li>
+            <li><strong>Do not store passwords yourself.</strong> The password flow writes a hash into the managed auth tables; direct writes bypass that handling.</li>
+            <li><strong>Keep the secret key on the server.</strong> The secret key bypasses Row Level Security, so it must never reach a browser.</li>
+            <li><strong>Use <code>auth.uid()</code> in RLS policies.</strong> It returns the current user's UUID, which is the value your public tables should reference.</li>
+            <li><strong>Export schema, not data.</strong> Use <code>--schema-only</code> when the dump is for documentation or review.</li>
+          </ul>
+        `,
+      },
+    ],
     schema: supabaseSchema,
     source: {
       label: "Supabase auth migrations (supabase/auth)",
@@ -103,7 +172,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "NextAuth.js Database Schema (Auth.js)",
     h1: "NextAuth.js Database Schema",
     description:
-      "The complete NextAuth.js / Auth.js schema diagram - users, accounts, sessions, and verification_tokens with all columns and foreign keys.",
+      "The complete NextAuth.js / Auth.js schema diagram - users, accounts, sessions, and verification_token with all columns and relationships.",
     keywords: [
       "nextauth schema",
       "nextauth database schema",
@@ -113,23 +182,65 @@ export const schemaEntries: SchemaEntry[] = [
       "nextauth er diagram",
     ],
     intro:
-      "NextAuth.js (now Auth.js) persists users, OAuth accounts, sessions, and email verification tokens in four tables: users, accounts, sessions, and verification_tokens. This diagram shows the exact columns and relationships the default Postgres adapter expects - the same shape you get from the Prisma adapter schema. A single user can have many accounts (one per OAuth provider) and many sessions.",
+      "NextAuth.js (now Auth.js) persists users, OAuth accounts, sessions, and email verification tokens in four tables: users, accounts, sessions, and verification_token. This diagram follows the PostgreSQL adapter's SQL: accounts and sessions have their own id, and both carry a userId that points at users.id. A single user can have many accounts (one per OAuth provider) and many sessions.",
     facts: [
       { label: "Tables", value: "4" },
       { label: "Core table", value: "users" },
       { label: "Relationship", value: "User 1→N Account" },
     ],
+    relationshipNote:
+      "These are the userId joins the PostgreSQL adapter uses. Its SQL does not declare foreign-key constraints; the Prisma adapter's PostgreSQL schema does, with ON DELETE CASCADE for accounts and sessions.",
     faqs: [
       {
         q: "How many tables does NextAuth.js use?",
-        a: "The default NextAuth.js / Auth.js database schema uses 4 tables: users, accounts, sessions, and verification_tokens.",
+        a: "The default NextAuth.js / Auth.js database schema uses 4 tables: users, accounts, sessions, and verification_token.",
       },
       {
         q: "What is the relationship between users and accounts in NextAuth?",
-        a: "It's a one-to-many relationship. A single user can have multiple accounts - one for each OAuth provider they sign in with (Google, GitHub, etc.). Each account row has a userId foreign key referencing users.id.",
+        a: "It's a one-to-many relationship. A single user can have multiple accounts - one for each OAuth provider they sign in with (Google, GitHub, etc.). Each account row has a userId referencing users.id.",
+      },
+      {
+        q: "Does NextAuth store passwords?",
+        a: "No. The Credentials provider does not persist data in the database by default. If you use it, your own code must store the user and hash the password, for example with bcrypt or argon2.",
+      },
+      {
+        q: "Can I add custom fields to the NextAuth tables?",
+        a: "Yes. Auth.js models can be extended with additional fields. Add the columns in your database schema and populate them in your own code; Auth.js only manages the fields its adapter defines.",
+      },
+      {
+        q: "What happens when a user deletes their account?",
+        a: "It depends on the adapter. The Prisma adapter's PostgreSQL schema uses onDelete: Cascade for Account.user and Session.user, so deleting a user removes those rows. The PostgreSQL adapter's SQL does not declare foreign keys, so it does not cascade; delete child rows yourself or add the constraints.",
       },
     ],
-    lastUpdated: "2026-08-03",
+    lastUpdated: "2026-10-23",
+    sections: [
+      {
+        title: "What each NextAuth table stores",
+        body: `
+          <p>The four tables have separate jobs. The adapter expects these names and columns; the values come from the provider or from Auth.js itself.</p>
+          <table>
+            <thead><tr><th>Table</th><th>What it stores</th></tr></thead>
+            <tbody>
+              <tr><td><code>users</code></td><td>One row per person: id, display name, email, verification timestamp, and profile image. A user can own several accounts and sessions.</td></tr>
+              <tr><td><code>accounts</code></td><td>One row per provider link: the provider name, the provider's account id, OAuth tokens, and the owning <code>userId</code>. A user with Google and GitHub has two rows.</td></tr>
+              <tr><td><code>sessions</code></td><td>One row per database session: the session token, the owning <code>userId</code>, and the expiry time. Use this table only with the database session strategy.</td></tr>
+              <tr><td><code>verification_token</code></td><td>Short-lived tokens for email magic-link sign-in. The identifier and token form the primary key; rows are single-use and expire after one day by default.</td></tr>
+            </tbody>
+          </table>
+          <p><strong>Exact verification table name:</strong> the <code>@auth/pg-adapter</code> SQL creates <code>verification_token</code> (singular). Prisma's PostgreSQL model is named <code>VerificationToken</code> and creates a quoted <code>"VerificationToken"</code> table by default. <code>verification_tokens</code> exists only if you add a <code>@@map</code> yourself, so this page uses the adapter's singular name.</p>
+          <p>The PostgreSQL adapter's SQL does not declare foreign-key constraints. The relationships shown in the diagram are the <code>userId</code> joins the adapter uses. The Prisma adapter's PostgreSQL schema does declare them and adds <code>onDelete: Cascade</code> for accounts and sessions.</p>
+        `,
+      },
+      {
+        title: "Custom fields, passwords, and account deletion",
+        body: `
+          <p><strong>Custom fields.</strong> Auth.js models can be extended with additional fields. Add columns to the relevant table and populate them in your own application code; the adapter still manages the fields it defines. A common example is a <code>role</code> column on <code>users</code>.</p>
+          <p><strong>Passwords.</strong> The Credentials provider does not persist data in the database by default. If you use it, your own code stores the user and hashes the password, for example with bcrypt or argon2. Auth.js is not a password manager.</p>
+          <p><strong>Account deletion.</strong> With the Prisma adapter's PostgreSQL schema, <code>Account.user</code> and <code>Session.user</code> use <code>onDelete: Cascade</code>, so a database-enforced user delete removes the linked rows. With the PostgreSQL adapter's SQL, there are no foreign keys, so deletes do not cascade; remove accounts and sessions in the same transaction or add your own constraints. Do not assume one adapter's behavior applies to the other.</p>
+          <p>Read the <a href="https://authjs.dev/concepts/database-models">Auth.js database models</a> and the <a href="https://authjs.dev/getting-started/authentication/credentials">Credentials provider docs</a> for the source wording.</p>
+        `,
+      },
+    ],
     schema: nextauthSchema,
     source: {
       label: "Auth.js database adapter schema (next-auth)",
@@ -145,7 +256,7 @@ export const schemaEntries: SchemaEntry[] = [
     title: "Laravel Database Schema Diagram",
     h1: "Laravel Database Schema Diagram",
     description:
-      "The default Laravel 11 database schema diagram - users, password_reset_tokens, sessions, jobs, and cache tables with all columns.",
+      "The default Laravel 13 database schema diagram - users, password_reset_tokens, sessions, jobs, job_batches, failed_jobs, cache, and cache_locks with all columns.",
     keywords: [
       "laravel schema",
       "laravel database schema",
@@ -155,29 +266,71 @@ export const schemaEntries: SchemaEntry[] = [
       "laravel database diagram",
     ],
     intro:
-      "A fresh Laravel 11 application ships with a handful of framework tables created by the default migrations: users, password_reset_tokens, sessions, jobs, failed_jobs, cache, and cache_locks. This diagram shows the full default schema - the users table with password and remember_token columns, plus the sessions table that references users via a user_id foreign key.",
+      "A fresh Laravel 13 application ships with eight framework tables created by the default migrations: users, password_reset_tokens, sessions, cache, cache_locks, jobs, job_batches, and failed_jobs. This diagram shows the full default schema - the users table with password and remember_token columns, the sessions table with its user_id index, and the queue tables that track jobs and batches.",
     facts: [
-      { label: "Tables", value: "7" },
+      { label: "Tables", value: "8" },
       { label: "Core table", value: "users" },
-      { label: "Framework", value: "Laravel 11" },
+      { label: "Framework", value: "Laravel 13" },
     ],
     faqs: [
       {
         q: "What tables does a default Laravel installation have?",
-        a: "The default Laravel migrations create users, password_reset_tokens, sessions, jobs, failed_jobs, cache, and cache_locks tables.",
+        a: "The default Laravel 13 migrations create users, password_reset_tokens, sessions, cache, cache_locks, jobs, job_batches, and failed_jobs tables.",
       },
       {
         q: "Does the Laravel sessions table reference the users table?",
-        a: "Yes. The sessions table has a user_id foreign key column that references users.id, so you can look up which user owns each authenticated session.",
+        a: "Yes. The sessions table has a nullable user_id column with an index. It is not a foreign-key constraint in the default migration, so you can look up a session's user but the database does not enforce the reference.",
+      },
+      {
+        q: "Is personal_access_tokens created by default?",
+        a: "No. personal_access_tokens belongs to Laravel Sanctum. It is created only when Sanctum is installed and its migration runs.",
+      },
+      {
+        q: "Where is job_batches in Laravel?",
+        a: "job_batches is created by the default jobs migration. It stores batch id, name, job counts, failed job ids, options, cancellation time, creation time, and finish time.",
       },
     ],
-    lastUpdated: "2026-08-03",
+    lastUpdated: "2026-10-23",
+    sections: [
+      {
+        title: "What each default Laravel table does",
+        body: `
+          <p>The default migrations are split by purpose. The first file creates authentication and session storage; the second creates the cache; the third creates queue tracking.</p>
+          <table>
+            <thead><tr><th>Table</th><th>Purpose</th></tr></thead>
+            <tbody>
+              <tr><td><code>users</code></td><td>Application accounts: name, unique email, password hash, verification timestamp, and remember token.</td></tr>
+              <tr><td><code>password_reset_tokens</code></td><td>One row per email address requesting a reset, keyed by email, with the hashed token and creation time.</td></tr>
+              <tr><td><code>sessions</code></td><td>Server-side session payloads keyed by a string session id, with an indexed <code>user_id</code>, IP address, user agent, and last activity time.</td></tr>
+              <tr><td><code>cache</code> / <code>cache_locks</code></td><td>Database cache values and locks, keyed by cache key, with expiration timestamps.</td></tr>
+              <tr><td><code>jobs</code></td><td>Queued jobs waiting to run, with queue name, payload, attempts, reservation time, and availability time.</td></tr>
+              <tr><td><code>job_batches</code></td><td>Batch metadata: total, pending, and failed counts, failed job ids, options, cancellation, creation, and finish times.</td></tr>
+              <tr><td><code>failed_jobs</code></td><td>Jobs that exhausted their attempts, with connection, queue, payload, exception, and failure time.</td></tr>
+            </tbody>
+          </table>
+          <p>The <code>sessions.user_id</code> column is indexed but is not declared as a foreign key in the default migration. That keeps the session table usable when users are deleted or when the session driver runs without a users table.</p>
+        `,
+      },
+      {
+        title: "Default tables vs package tables",
+        body: `
+          <p>Only the eight tables above come from a fresh <code>laravel/laravel</code> install. Other common tables arrive with packages or optional Artisan commands:</p>
+          <ul>
+            <li><code>personal_access_tokens</code> comes from Laravel Sanctum, not the framework skeleton.</li>
+            <li><code>password_resets</code> is the old pre-Laravel 8 name. Current applications use <code>password_reset_tokens</code>.</li>
+            <li>Older tutorials call the queue batch table <code>batches</code>; the current default migration creates <code>job_batches</code>.</li>
+            <li>Redis can replace the database drivers for sessions, cache, and queues, in which case those tables may exist but go unused.</li>
+          </ul>
+          <p>The source for this page is the <a href="https://github.com/laravel/laravel/tree/13.x/database/migrations">Laravel 13 default migrations</a>.</p>
+        `,
+      },
+    ],
     schema: laravelSchema,
     source: {
-      label: "Laravel 11 default migrations (laravel/laravel)",
-      url: "https://github.com/laravel/laravel",
+      label: "Laravel 13 default migrations (laravel/laravel)",
+      url: "https://github.com/laravel/laravel/tree/13.x/database/migrations",
       license: "MIT",
-      licenseUrl: "https://github.com/laravel/laravel/blob/11.x/LICENSE.md",
+      licenseUrl: "https://github.com/laravel/laravel/blob/13.x/LICENSE.md",
     },
     related: ["django", "nextauth", "supabase"],
   },
@@ -279,8 +432,52 @@ WHERE ug.user_id = 42 OR up.user_id = 42;`,
         q: "How do Stripe subscriptions relate to invoices and payments?",
         a: "A customer has many subscriptions. Each subscription has many subscription_items (one per price). When a billing period ends, Stripe generates an invoice with line items; each invoice can have a payment_intent that charges the customer's default payment_method.",
       },
+      {
+        q: "Should subscriptions reference products or prices?",
+        a: "Prices. A product is a catalog entry; a price is a purchasable variant with an amount and interval. Subscriptions are composed of subscription_items that each reference a price.",
+      },
+      {
+        q: "How does Stripe handle multiple products in one subscription?",
+        a: "Through subscription_items: one row per price in the subscription, each with its own quantity. One subscription can contain many items.",
+      },
+      {
+        q: "What is the difference between an invoice and a payment intent?",
+        a: "An invoice is a bill for what is owed. A payment intent is an attempt to collect it, with a status and payment method. One invoice can have multiple payment intents when a charge is retried.",
+      },
     ],
-    lastUpdated: "2026-09-03",
+    lastUpdated: "2026-10-23",
+    sections: [
+      {
+        title: "The billing flow as joins",
+        body: `
+          <p>Once the tables exist, most billing questions are joins. This query finds what a customer is subscribed to and at what price:</p>
+          <pre><code>select c.email, pr.name as product, p.unit_amount, si.quantity
+from customers c
+join subscriptions s on s.customer_id = c.id
+join subscription_items si on si.subscription_id = s.id
+join prices p on p.id = si.price_id
+join products pr on pr.id = p.product_id
+where s.status = 'active';</code></pre>
+          <p>This one lists unpaid invoices with their latest payment attempt:</p>
+          <pre><code>select i.id, i.amount_due, pi.status as payment_status
+from invoices i
+left join payment_intents pi on pi.invoice_id = i.id
+where i.status != 'paid';</code></pre>
+          <p>The join path is the model: customer to subscription, subscription to items, items to prices, prices to products. Invoices and payment intents hang off the customer and subscription rather than replacing them.</p>
+        `,
+      },
+      {
+        title: "Design details worth copying",
+        body: `
+          <ul>
+            <li><strong>Prices, not products, are what you bill.</strong> One product ("Pro Plan") can have many prices ($10/month, $100/year). Subscription items reference prices, not products directly.</li>
+            <li><strong>Subscription items allow multi-product subscriptions.</strong> One subscription can contain multiple prices (base plus add-on) with independent quantities.</li>
+            <li><strong>Invoices are snapshots.</strong> <code>invoice_line_items</code> copies the price and amount at invoice time, so an old invoice stays truthful after a price change.</li>
+            <li><strong>Payment intents are the audit trail.</strong> Every charge attempt is a row, including failed ones. Join them to invoices to see what was paid and what was not.</li>
+          </ul>
+        `,
+      },
+    ],
     schema: stripeSchema,
     source: {
       label: "Original design by dbdiagramr, modeled on the Stripe billing API",
@@ -319,8 +516,51 @@ WHERE ug.user_id = 42 OR up.user_id = 42;`,
         q: "What is the difference between cart_items and order_items?",
         a: "cart_items are mutable. Quantities change until checkout. order_items are immutable snapshots copied from the cart at order time, preserving the price and product that was actually purchased even if the product later changes.",
       },
+      {
+        q: "Should I store prices as float or integer?",
+        a: "Store integer cents. Floating-point rounding corrupts money. Use price_cents integer with a currency column, then divide by 100 only when displaying the amount.",
+      },
+      {
+        q: "How do categories handle subcategories?",
+        a: "With a self-referential foreign key: categories.parent_id references categories.id. Top-level categories have parent_id NULL; children point at their parent.",
+      },
+      {
+        q: "How do I show a customer's order history?",
+        a: "Join orders to order_items and products, then left join payments for the payment status. Filter by customer_id and order by placed_at descending.",
+      },
     ],
-    lastUpdated: "2026-09-03",
+    lastUpdated: "2026-10-23",
+    sections: [
+      {
+        title: "How an order moves through the schema",
+        body: `
+          <p>The schema separates browsing from buying. Products and categories describe the catalog; carts and cart items describe an active session; orders and order items preserve what was actually bought.</p>
+          <p><strong>Browse to cart.</strong> A customer browses <code>products</code>, joins <code>categories</code> and <code>product_images</code>, and adds rows to <code>cart_items</code> through a <code>carts</code> row. Cart rows are mutable: quantities change and items are removed.</p>
+          <p><strong>Cart to order.</strong> At checkout, cart items are copied into <code>order_items</code>. The order row records the total, the chosen shipping and billing addresses, and timestamps. The order item keeps the price and product from that moment even if the catalog changes later.</p>
+          <p><strong>Order to payment to review.</strong> <code>payments</code> records each charge attempt against the order. After fulfillment, <code>reviews</code> links the customer and product.</p>
+          <pre><code>select o.id, o.status, o.total_cents, p.status as payment_status,
+       oi.quantity, pr.title
+from orders o
+join order_items oi on oi.order_id = o.id
+join products pr on pr.id = oi.product_id
+left join payments p on p.order_id = o.id
+where o.customer_id = $1
+order by o.placed_at desc;</code></pre>
+        `,
+      },
+      {
+        title: "Design decisions worth copying",
+        body: `
+          <ul>
+            <li><strong>Cart vs order: mutable vs immutable.</strong> <code>cart_items</code> can change; <code>order_items</code> never should. Copy, do not move, at checkout.</li>
+            <li><strong>Addresses are separate from customers.</strong> One customer can have home, work, and other addresses. Orders reference a specific address row so the address at order time is preserved after a move.</li>
+            <li><strong>Categories are self-referential.</strong> <code>categories.parent_id</code> points at <code>categories.id</code>, which builds a tree such as Electronics → Phones → Cases without a separate hierarchy table.</li>
+            <li><strong>Money is integer cents.</strong> Avoid floating-point rounding. Store <code>price_cents integer</code> with a <code>currency</code> column.</li>
+            <li><strong>Payments are attempts, not a boolean.</strong> A separate <code>payments</code> row per attempt preserves retries and failures instead of overwriting one status field.</li>
+          </ul>
+        `,
+      },
+    ],
     schema: ecommerceSchema,
     source: {
       label: "Original design by dbdiagramr, modeled on Shopify / WooCommerce",

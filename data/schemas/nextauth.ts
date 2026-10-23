@@ -6,9 +6,9 @@ export const nextauthSchema: Schema = {
     table(
       "users",
       [
-        col("id", "text", { pk: true }),
-        col("name", "text", { nullable: true }),
-        col("email", "text", { nullable: true }),
+        col("id", "integer", { pk: true }),
+        col("name", "varchar(255)", { nullable: true }),
+        col("email", "varchar(255)", { nullable: true }),
         col("emailVerified", "timestamptz", { nullable: true }),
         col("image", "text", { nullable: true }),
       ],
@@ -17,18 +17,18 @@ export const nextauthSchema: Schema = {
     table(
       "accounts",
       [
-        col("id", "text", { pk: true }),
-        col("userId", "text"),
-        col("type", "text"),
-        col("provider", "text"),
-        col("providerAccountId", "text"),
+        col("id", "integer", { pk: true }),
+        col("userId", "integer"),
+        col("type", "varchar(255)"),
+        col("provider", "varchar(255)"),
+        col("providerAccountId", "varchar(255)"),
         col("refresh_token", "text", { nullable: true }),
         col("access_token", "text", { nullable: true }),
-        col("expires_at", "integer", { nullable: true }),
-        col("token_type", "text", { nullable: true }),
-        col("scope", "text", { nullable: true }),
+        col("expires_at", "bigint", { nullable: true }),
         col("id_token", "text", { nullable: true }),
+        col("scope", "text", { nullable: true }),
         col("session_state", "text", { nullable: true }),
+        col("token_type", "text", { nullable: true }),
       ],
       [
         { column: "userId", referencesTable: "users", referencesColumn: "id" },
@@ -37,20 +37,20 @@ export const nextauthSchema: Schema = {
     table(
       "sessions",
       [
-        col("id", "text", { pk: true }),
-        col("sessionToken", "text"),
-        col("userId", "text"),
+        col("id", "integer", { pk: true }),
+        col("userId", "integer"),
         col("expires", "timestamptz"),
+        col("sessionToken", "varchar(255)"),
       ],
       [
         { column: "userId", referencesTable: "users", referencesColumn: "id" },
       ]
     ),
     table(
-      "verification_tokens",
+      "verification_token",
       [
-        col("identifier", "text"),
-        col("token", "text"),
+        col("identifier", "text", { pk: true }),
+        col("token", "text", { pk: true }),
         col("expires", "timestamptz"),
       ],
       []

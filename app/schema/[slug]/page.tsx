@@ -53,28 +53,23 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
 const relatedBlogBySchema: Record<string, { href: string; label: string }[]> = {
   supabase: [
     { href: "/supabase-er-diagram", label: "Supabase Schema Diagram Tool" },
-    { href: "/blog/supabase-auth-schema-explained", label: "Supabase Auth Schema Explained" },
     { href: "/blog/postgres-connection-string-supabase-neon-railway", label: "PostgreSQL Connection String Guide" },
   ],
   nextauth: [
-    { href: "/blog/nextauth-auth-schema-explained", label: "NextAuth Schema Explained" },
     { href: "/blog/database-schema-diagram-tool", label: "Database Schema Diagram Tools" },
   ],
   laravel: [
-    { href: "/blog/laravel-database-schema-explained", label: "Laravel Tables Explained" },
-    { href: "/blog/sql-to-schema-diagram-online", label: "SQL to Schema Diagram Online" },
+    { href: "/blog/database-schema-diagram-tool", label: "Database Schema Diagram Tools" },
   ],
   django: [
     { href: "/blog/what-is-an-er-diagram", label: "How to Read an ER Diagram" },
     { href: "/blog/database-schema-diagram-tool", label: "Database Schema Diagram Tools" },
   ],
   stripe: [
-    { href: "/blog/stripe-billing-schema-postgres", label: "Stripe Billing Schema for PostgreSQL" },
-    { href: "/blog/free-online-database-diagram-tool", label: "Free Online Database Diagram Tool" },
+    { href: "/blog/database-schema-diagram-tool", label: "Database Schema Diagram Tools" },
   ],
   ecommerce: [
-    { href: "/blog/ecommerce-database-schema-postgres", label: "E-commerce Schema for PostgreSQL" },
-    { href: "/blog/free-online-database-diagram-tool", label: "Free Online Database Diagram Tool" },
+    { href: "/blog/database-schema-diagram-tool", label: "Database Schema Diagram Tools" },
   ],
   "library-management-system": [
     { href: "/blog/what-is-an-er-diagram", label: "How to Read an ER Diagram" },
@@ -109,7 +104,7 @@ const relatedBlogBySchema: Record<string, { href: string; label: string }[]> = {
     { href: "/blog/database-schema-diagram-tool", label: "5 Database Schema Diagram Tools" },
   ],
   "better-auth": [
-    { href: "/blog/nextauth-auth-schema-explained", label: "NextAuth Schema Explained" },
+    { href: "/schema/nextauth", label: "NextAuth Schema" },
     { href: "/schema/django", label: "Django Auth Schema" },
   ],
   "spring-batch": [
@@ -387,13 +382,19 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
         {relationships.length > 0 && (
           <section className="mt-16">
             <h2 className="mb-3 text-2xl font-semibold tracking-tight text-ink">
-              Foreign key relationships
+              Table relationships
             </h2>
-            <p className="mb-6 max-w-3xl leading-relaxed text-muted">
-              {relationships.length} foreign keys connect the tables in this
+            <p className="mb-3 max-w-3xl leading-relaxed text-muted">
+              {relationships.length} relationships connect the tables in this
               schema. Each row shows the child column and the parent column it
               references.
             </p>
+            {entry.relationshipNote && (
+              <p className="mb-6 max-w-3xl text-sm leading-relaxed text-muted/70">
+                {entry.relationshipNote}
+              </p>
+            )}
+            {!entry.relationshipNote && <div className="mb-6" />}
             <div className="overflow-x-auto rounded-[20px] border border-border bg-white shadow-sm">
               <table className="w-full min-w-[640px] text-sm">
                 <thead>
@@ -442,6 +443,18 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
             )}
           </section>
         )}
+
+        {entry.sections?.map((section) => (
+          <section key={section.title} className="mt-16 max-w-3xl">
+            <h2 className="mb-4 text-2xl font-semibold tracking-tight text-ink">
+              {section.title}
+            </h2>
+            <div
+              className="max-w-none leading-relaxed text-muted [&_h3]:mt-6 [&_h3]:text-lg [&_h3]:font-medium [&_h3]:text-ink [&_p]:mt-4 [&_p]:leading-relaxed [&_p]:text-muted [&_a]:text-accent [&_a]:underline [&_a]:decoration-accent/40 hover:[&_a]:text-accent-hover [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mt-1.5 [&_strong]:font-semibold [&_strong]:text-ink [&_table]:mt-6 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm [&_th]:border [&_th]:border-border [&_th]:bg-surface [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:font-medium [&_th]:text-ink [&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2 [&_td]:text-muted [&_pre]:mt-6 [&_pre]:overflow-x-auto [&_pre]:rounded-[10px] [&_pre]:bg-ink [&_pre]:p-4 [&_pre]:text-sm [&_pre]:text-white/85 [&_code]:rounded [&_code]:bg-black/5 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-sm [&_code]:text-ink [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-white/85"
+              dangerouslySetInnerHTML={{ __html: section.body }}
+            />
+          </section>
+        ))}
 
         <section className="mt-16">
           <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">

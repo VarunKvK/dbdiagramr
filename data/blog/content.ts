@@ -86,60 +86,7 @@ postgresql://user:pass@ep-cool-rain-123456.us-east-2.aws.neon.tech/neondb?sslmod
     <p><strong>Why does my Supabase connection fail with ENOTFOUND?</strong><br/>You're using the direct string on an IPv4-only network, and Supabase's direct endpoint uses IPv6 by default. Switch to a shared pooler string.</p>
     <p><strong>Is my connection string a secret?</strong><br/>Yes, password in plain text. Keep in environment variables, rotate if leaked, only hand to tools that won't store it.</p>
   `,
-  "supabase-auth-schema-explained": `
-    <h2>The short version</h2>
-    <p>Supabase stores auth in a separate <code>auth</code> schema, not your <code>public</code> schema. Every user has exactly <strong>one row in <code>auth.users</code></strong>, one or more rows in <strong><code>auth.identities</code></strong> (one per login provider), and can hold <strong>multiple active <code>auth.sessions</code></strong>, each backed by a <code>refresh_tokens</code> row. If you've seen tables you didn't create, these are the ones.</p>
-    <pre><code>auth.users 1───* auth.identities
-auth.users 1───* auth.sessions
-auth.sessions 1───* auth.refresh_tokens</code></pre>
 
-    <h2>Why an <code>auth</code> schema at all</h2>
-    <p>Supabase keeps auth separate from your app's tables. Your <code>public</code> schema is where your models live; <code>auth</code> is locked down and managed by GoTrue. You read from it, you don't write to it. That separation is why your migrations never touch these tables, and why introspecting a Supabase database shows a schema you didn't write.</p>
-
-    <h2>The four tables that matter</h2>
-    <p><strong><code>auth.users</code>, one row per user.</strong></p>
-    <table>
-      <thead><tr><th>Column</th><th>What it holds</th></tr></thead>
-      <tbody>
-        <tr><td><code>id</code></td><td>UUID PK; stable identifier</td></tr>
-        <tr><td><code>email</code> / <code>phone</code></td><td>Contact + login identity</td></tr>
-        <tr><td><code>encrypted_password</code></td><td>Bcrypt hash (email/password only)</td></tr>
-        <tr><td><code>raw_app_meta_data</code></td><td>Provider claims: <code>provider</code>, <code>providers</code>, <code>email</code></td></tr>
-        <tr><td><code>raw_user_meta_data</code></td><td>Custom metadata you set</td></tr>
-        <tr><td><code>is_sso_user</code></td><td>True when sign-in came via SSO</td></tr>
-        <tr><td><code>confirmed_at</code></td><td>When primary identity was confirmed</td></tr>
-      </tbody>
-    </table>
-    <p><strong><code>auth.identities</code>, one row per login method.</strong> Email <strong>and</strong> GitHub = two rows. <code>provider_id</code> is the provider's identifier; <code>identity_data</code> is the raw claim payload. FK <code>user_id → users.id</code>.</p>
-    <p><strong><code>auth.sessions</code>, a browser/token session.</strong> One per device roughly. <code>aal</code>, <code>user_agent</code>, <code>ip</code>, <code>not_after</code>, <code>factor_id</code> (MFA).</p>
-    <p><strong><code>auth.refresh_tokens</code>, the long-lived token backing a session.</strong> Access tokens ~1h (JWT). Refresh tokens are long, with <code>revoked</code> flag and <code>parent</code> for token reuse detection.</p>
-
-    <h2>How they relate (the joins you'll actually write)</h2>
-    <pre><code>select u.email, i.provider, s.id as session_id
-from auth.users u
-join auth.identities i on i.user_id = u.id
-join auth.sessions  s on s.user_id = u.id;</code></pre>
-    <p>The 80% case: "who is signed in, through which provider, on which sessions." Every relationship is a plain foreign key, <code>identities.user_id</code>, <code>sessions.user_id</code>, <code>refresh_tokens.session_id</code>, exactly what a diagram turns into readable arrows. Paste a read-only connection string into <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> to trace them visually.</p>
-
-    <h2>What's usually NOT your business</h2>
-    <p><code>auth.instances</code>, <code>auth.audit_log_entries</code>, and <code>auth.schema_migrations</code> are Supabase bookkeeping. <code>audit_log_entries</code> records admin actions; <code>instances</code> is multi-tenancy plumbing. If a diagram shows them, ignore them, your reads live in the other four.</p>
-
-    <h2>Practical tips</h2>
-    <ul>
-      <li><strong>Never write to <code>auth</code> tables directly.</strong> Use the Supabase client / Admin API. Direct inserts create orphaned identities, unhashed passwords.</li>
-      <li><strong>Foreign-key joins work across schemas.</strong> <code>auth.users.id</code> is the same UUID you'd use in <code>public</code>, join <code>public.profiles.user_id → auth.users.id</code>.</li>
-      <li><strong>A user with no identity row is a sign of trouble.</strong> Every normal user has at least one. Orphaned identities without a users row = import bug.</li>
-      <li><strong>Sessions accumulate.</strong> Many sessions per user isn't a leak, it's devices and tabs.</li>
-    </ul>
-    <p>See it live: the <a href="https://www.dbdiagramr.space/schema/supabase">Supabase auth schema diagram</a> was generated by introspecting a live database, users, identities, sessions, and refresh_tokens with foreign keys rendered as relationships.</p>
-
-    <h2>FAQ</h2>
-    <p><strong>Where is the Supabase auth schema?</strong><br/>In the <code>auth</code> schema, separate from <code>public</code>, <code>auth.users</code>, <code>auth.identities</code>, <code>auth.sessions</code>, <code>auth.refresh_tokens</code>, plus internal tables.</p>
-    <p><strong>What is <code>auth.users</code> used for?</strong><br/>Single source of truth for who can sign in. One row per user, with email/phone, password hash, metadata, and provider flags.</p>
-    <p><strong>Why does one user have multiple identities?</strong><br/>Each login method is a separate <code>auth.identities</code> row. Email + GitHub + Google = three rows, all pointing at the same <code>users.id</code>.</p>
-    <p><strong>What's the difference between a session and a refresh token?</strong><br/>Session is device/token context; refresh token is the long-lived credential that renews the short-lived JWT. One session maps to one refresh token chain.</p>
-    <p><strong>Can I join auth tables to my public tables?</strong><br/>Yes, use <code>auth.users.id</code> as the join key with your <code>public.*</code> tables.</p>
-  `,
   "what-is-an-er-diagram": `
     <h2>The short version</h2>
     <p>An <strong>entity-relationship (ER) diagram</strong> is a picture of your database structure. Each <strong>entity</strong> (table) is a box, each <strong>attribute</strong> (column) is a row inside it, and each <strong>relationship</strong> (foreign key) is a line between boxes. Cardinality markers tell you whether one row relates to one or many. If you can read those three elements, you can read any ER diagram.</p>
@@ -182,238 +129,6 @@ join auth.sessions  s on s.user_id = u.id;</code></pre>
     <p><strong>What's the difference between ER diagram and schema diagram?</strong><br/>They're the same thing in practice. "Schema diagram" emphasizes the PostgreSQL schema; "ER diagram" emphasizes the entity-relationship model. Both show tables, columns, and foreign keys.</p>
     <p><strong>How do I make an ER diagram from a PostgreSQL database?</strong><br/>Use <code>pgAdmin</code>'s ERD tool for a quick snapshot, or paste your connection string into a live-introspection tool to generate an interactive diagram in 10 seconds.</p>
   `,
-  "stripe-billing-schema-postgres": `
-    <h2>The short version</h2>
-    <p>If you sync Stripe into your own database (or are building Stripe-like billing), you need 9 tables: <code>customers</code>, <code>products</code>, <code>prices</code>, <code>subscriptions</code>, <code>subscription_items</code>, <code>invoices</code>, <code>invoice_line_items</code>, <code>payment_methods</code>, and <code>payment_intents</code>. Customers own everything; subscriptions compose prices; invoices snapshot what was billed; payment intents move the money. This is the full Stripe billing model as PostgreSQL.</p>
-
-    <h2>The 9 tables and how they connect</h2>
-    <table>
-      <thead><tr><th>Table</th><th>What it holds</th><th>Key FK</th></tr></thead>
-      <tbody>
-        <tr><td><code>customers</code></td><td>Who pays (email, name, balance)</td><td>-- (core)</td></tr>
-        <tr><td><code>products</code></td><td>What you sell (name, active)</td><td>--</td></tr>
-        <tr><td><code>prices</code></td><td>How much + how often (unit_amount, interval)</td><td><code>product_id → products.id</code></td></tr>
-        <tr><td><code>subscriptions</code></td><td>A customer's recurring purchase</td><td><code>customer_id → customers.id</code></td></tr>
-        <tr><td><code>subscription_items</code></td><td>Each price in a subscription (quantity)</td><td><code>subscription_id, price_id</code></td></tr>
-        <tr><td><code>invoices</code></td><td>A bill for a period</td><td><code>customer_id, subscription_id</code></td></tr>
-        <tr><td><code>invoice_line_items</code></td><td>Line on an invoice</td><td><code>invoice_id, price_id</code></td></tr>
-        <tr><td><code>payment_methods</code></td><td>Card / bank on file</td><td><code>customer_id</code></td></tr>
-        <tr><td><code>payment_intents</code></td><td>An attempt to charge</td><td><code>customer_id, invoice_id, payment_method_id</code></td></tr>
-      </tbody>
-    </table>
-
-    <h2>The billing flow as joins</h2>
-    <pre><code>-- What is this customer subscribed to, at what price?
-select c.email, pr.name as product, p.unit_amount, si.quantity
-from customers c
-join subscriptions s on s.customer_id = c.id
-join subscription_items si on si.subscription_id = s.id
-join prices p on p.id = si.price_id
-join products pr on pr.id = p.product_id
-where s.status = 'active';
-
--- Unpaid invoices with their payment attempt
-select i.id, i.amount_due, pi.status as payment_status
-from invoices i
-left join payment_intents pi on pi.invoice_id = i.id
-where i.status != 'paid';</code></pre>
-
-    <h2>Design details worth copying</h2>
-    <ul>
-      <li><strong>Prices, not products, are what you bill.</strong> One product ("Pro Plan") can have many prices ($10/mo, $100/yr). Subscriptions reference prices, not products directly.</li>
-      <li><strong>Subscription items allow multi-product subscriptions.</strong> One subscription can contain multiple prices (base + add-on) with independent quantities.</li>
-      <li><strong>Invoices are snapshots.</strong> <code>invoice_line_items</code> copies price and amount at invoice time, even if the price later changes, the invoice stays truthful.</li>
-      <li><strong>Payment intents are the audit trail.</strong> Every charge attempt is a row, even failed ones. Join to invoices to see what was paid and what wasn't.</li>
-    </ul>
-    <p>See it visually: the <a href="https://www.dbdiagramr.space/schema/stripe">Stripe billing schema diagram</a> renders all 9 tables with foreign keys as navigable relationships, the same picture you'd get introspecting a live Stripe-synced database.</p>
-
-    <h2>FAQ</h2>
-    <p><strong>What tables does a Stripe billing schema need?</strong><br/>9 tables: customers, products, prices, subscriptions, subscription_items, invoices, invoice_line_items, payment_methods, and payment_intents.</p>
-    <p><strong>Should subscriptions reference products or prices?</strong><br/>Prices. A product is a catalog entry; a price is a purchasable variant (amount + interval). Subscriptions are composed of subscription_items that each reference a price.</p>
-    <p><strong>How does Stripe handle multiple products in one subscription?</strong><br/>Through <code>subscription_items</code>, one row per price in the subscription, each with its own quantity. One subscription, many items.</p>
-    <p><strong>What's the difference between an invoice and a payment intent?</strong><br/>An invoice is a bill (what is owed). A payment intent is an attempt to collect it (what was charged, status, method). One invoice can have multiple payment intents (retries).</p>
-  `,
-  "ecommerce-database-schema-postgres": `
-    <h2>The short version</h2>
-    <p>Every online store is the same 11 tables with different CSS. <code>customers</code> have <code>addresses</code> and <code>carts</code>; carts hold <code>cart_items</code> that reference <code>products</code>; products belong to <code>categories</code> and have <code>product_images</code>; orders snapshot cart items into <code>order_items</code> and collect <code>payments</code>; <code>reviews</code> link customers to products. This is the PostgreSQL schema behind Shopify, WooCommerce, and most custom storefronts.</p>
-
-    <h2>The 11 tables at a glance</h2>
-    <table>
-      <thead><tr><th>Table</th><th>Purpose</th><th>Key FK</th></tr></thead>
-      <tbody>
-        <tr><td><code>customers</code></td><td>Who shops</td><td>-- (core)</td></tr>
-        <tr><td><code>addresses</code></td><td>Where to ship/bill</td><td><code>customer_id</code></td></tr>
-        <tr><td><code>categories</code></td><td>Catalog taxonomy (self-referential)</td><td><code>parent_id → categories.id</code></td></tr>
-        <tr><td><code>products</code></td><td>What you sell</td><td><code>category_id</code></td></tr>
-        <tr><td><code>product_images</code></td><td>Product photos</td><td><code>product_id</code></td></tr>
-        <tr><td><code>carts</code></td><td>Active shopping session</td><td><code>customer_id</code></td></tr>
-        <tr><td><code>cart_items</code></td><td>Mutable cart lines</td><td><code>cart_id, product_id</code></td></tr>
-        <tr><td><code>orders</code></td><td>Placed order (snapshot)</td><td><code>customer_id, shipping/billing address</code></td></tr>
-        <tr><td><code>order_items</code></td><td>Immutable order lines</td><td><code>order_id, product_id</code></td></tr>
-        <tr><td><code>payments</code></td><td>Payment attempt</td><td><code>order_id</code></td></tr>
-        <tr><td><code>reviews</code></td><td>Post-purchase feedback</td><td><code>product_id, customer_id</code></td></tr>
-      </tbody>
-    </table>
-
-    <h2>The three flows</h2>
-    <p><strong>Browse → cart:</strong> Customer browses <code>products</code> (joined to <code>categories</code> and <code>product_images</code>), adds to <code>carts</code> via <code>cart_items</code>. Cart is mutable, quantities change, items are removed.</p>
-    <p><strong>Cart → order:</strong> At checkout, cart items are <em>copied</em> into <code>order_items</code> as an immutable snapshot. Even if the product price later changes, the order preserves what was actually purchased. The <code>orders</code> row records total, addresses, and timestamps (<code>placed_at, paid_at, shipped_at</code>).</p>
-    <p><strong>Order → payment → review:</strong> <code>payments</code> records each charge attempt against the order. After fulfillment, <code>reviews</code> lets the customer rate the product.</p>
-    <pre><code>-- Order history with items and payment status
-select o.id, o.status, o.total_cents, p.status as payment_status,
-       oi.quantity, pr.title
-from orders o
-join order_items oi on oi.order_id = o.id
-join products pr on pr.id = oi.product_id
-left join payments p on p.order_id = o.id
-where o.customer_id = $1
-order by o.placed_at desc;</code></pre>
-
-    <h2>Design decisions that matter</h2>
-    <ul>
-      <li><strong>Cart vs order: mutable vs immutable.</strong> <code>cart_items</code> can change; <code>order_items</code> never should. Copy, don't move, at checkout.</li>
-      <li><strong>Addresses are separate from customers.</strong> One customer has many addresses (home, work). Orders reference specific address rows so the address at order time is preserved even if the customer later moves.</li>
-      <li><strong>Categories are self-referential.</strong> <code>categories.parent_id → categories.id</code> builds a tree (Electronics → Phones → Cases) without a separate hierarchy table.</li>
-      <li><strong>Prices in cents as integers.</strong> Avoid floating-point rounding. <code>price_cents integer</code> with a <code>currency</code> column is the safe default.</li>
-    </ul>
-    <p>Explore it: the <a href="https://www.dbdiagramr.space/schema/ecommerce">e-commerce schema diagram</a> renders all 11 tables with foreign keys you can hover to trace, the same view you'd get introspecting a live store database.</p>
-
-    <h2>FAQ</h2>
-    <p><strong>What tables does an e-commerce database need?</strong><br/>11 tables: customers, addresses, categories, products, product_images, carts, cart_items, orders, order_items, payments, and reviews.</p>
-    <p><strong>What is the difference between cart_items and order_items?</strong><br/>Cart items are mutable until checkout. Order items are immutable snapshots copied at order time, preserving price and product as purchased.</p>
-    <p><strong>Should I store prices as float or integer?</strong><br/>Integer cents. Float rounding corrupts money. Store <code>price_cents integer</code> and divide by 100 only at display time.</p>
-    <p><strong>How do categories handle subcategories?</strong><br/>Self-referential foreign key: <code>categories.parent_id → categories.id</code>. Top-level categories have <code>parent_id = NULL</code>; children point at their parent.</p>
-  `,
-
-  "nextauth-auth-schema-explained": `
-    <h2>The short version</h2>
-    <p>NextAuth (Auth.js) creates 4 tables in your database: <code>users</code>, <code>accounts</code>, <code>sessions</code>, and <code>verification_tokens</code>. The <code>users</code> and <code>accounts</code> tables have a one-to-one relationship via <code>accounts.user_id</code>. Sessions link to users via <code>sessions.user_id</code>. Verification tokens are short-lived and self-cleaning.</p>
-
-    <h2>The 4 tables</h2>
-    <h3>users</h3>
-    <table>
-      <thead><tr><th>Column</th><th>Type</th><th>What it means</th></tr></thead>
-      <tbody>
-        <tr><td><code>id</code></td><td>text / UUID</td><td>Primary key. Generated by NextAuth.</td></tr>
-        <tr><td><code>name</code></td><td>text</td><td>Display name from the OAuth provider.</td></tr>
-        <tr><td><code>email</code></td><td>text</td><td>User's email. May be null if the provider doesn't share it.</td></tr>
-        <tr><td><code>email_verified</code></td><td>timestamp</td><td>When the email was verified. Null if never verified.</td></tr>
-        <tr><td><code>image</code></td><td>text</td><td>Profile picture URL from the provider.</td></tr>
-        <tr><td><code>created_at</code></td><td>timestamp</td><td>When the user first signed in.</td></tr>
-        <tr><td><code>updated_at</code></td><td>timestamp</td><td>Last profile sync from the provider.</td></tr>
-      </tbody>
-    </table>
-
-    <h3>accounts</h3>
-    <p>Links a user to an OAuth provider. One user can have multiple accounts (Google + GitHub).</p>
-    <table>
-      <thead><tr><th>Column</th><th>Type</th><th>What it means</th></tr></thead>
-      <tbody>
-        <tr><td><code>id</code></td><td>text / UUID</td><td>Primary key.</td></tr>
-        <tr><td><code>user_id</code></td><td>text</td><td>Foreign key → <code>users.id</code>.</td></tr>
-        <tr><td><code>provider</code></td><td>text</td><td><code>"google"</code>, <code>"github"</code>, <code>"discord"</code>, etc.</td></tr>
-        <tr><td><code>provider_account_id</code></td><td>text</td><td>The provider's unique ID for this user.</td></tr>
-        <tr><td><code>access_token</code></td><td>text</td><td>OAuth access token (encrypted in production).</td></tr>
-        <tr><td><code>refresh_token</code></td><td>text</td><td>OAuth refresh token (encrypted in production).</td></tr>
-        <tr><td><code>expires_at</code></td><td>integer</td><td>When the access token expires (Unix timestamp).</td></tr>
-      </tbody>
-    </table>
-
-    <h3>sessions</h3>
-    <table>
-      <thead><tr><th>Column</th><th>Type</th><th>What it means</th></tr></thead>
-      <tbody>
-        <tr><td><code>id</code></td><td>text / UUID</td><td>Primary key.</td></tr>
-        <tr><td><code>session_token</code></td><td>text</td><td>The session token stored in the user's cookie.</td></tr>
-        <tr><td><code>user_id</code></td><td>text</td><td>Foreign key → <code>users.id</code>.</td></tr>
-        <tr><td><code>expires</code></td><td>timestamp</td><td>When this session expires.</td></tr>
-      </tbody>
-    </table>
-
-    <h3>verification_tokens</h3>
-    <p>Short-lived tokens for email verification and password reset. Self-cleaning.</p>
-    <table>
-      <thead><tr><th>Column</th><th>Type</th><th>What it means</th></tr></thead>
-      <tbody>
-        <tr><td><code>identifier</code></td><td>text</td><td>Email or user ID the token is for.</td></tr>
-        <tr><td><code>token</code></td><td>text</td><td>The actual token value.</td></tr>
-        <tr><td><code>expires</code></td><td>timestamp</td><td>When this token expires.</td></tr>
-      </tbody>
-    </table>
-
-    <h2>How they connect</h2>
-    <p><code>users → accounts</code> is one-to-one per provider. <code>users → sessions</code> is one-to-many (different devices). <code>verification_tokens</code> is temporary and doesn't have a foreign key.</p>
-    <p>On Better Auth instead? It uses four similar tables with different names — see the interactive <a href="https://www.dbdiagramr.space/schema/better-auth">Better Auth database schema diagram</a>.</p>
-
-    <h2>FAQ</h2>
-    <p><strong>Does NextAuth store passwords?</strong><br/>No. NextAuth is OAuth-first. If you need email/password, use <code>next-auth/providers/credentials</code> with bcrypt.</p>
-    <p><strong>Can I add custom fields to the users table?</strong><br/>Yes. Add columns directly. NextAuth ignores columns it doesn't know about.</p>
-    <p><strong>What happens when a user deletes their account?</strong><br/>NextAuth doesn't cascade deletes. Manually delete from <code>users</code>, <code>accounts</code>, and <code>sessions</code>.</p>
-  `,
-
-  "laravel-database-schema-explained": `
-    <h2>The short version</h2>
-    <p>A fresh Laravel install creates 7-8 tables depending on your packages. The core ones are <code>users</code>, <code>password_resets</code>, <code>failed_jobs</code>, and <code>personal_access_tokens</code>. The <code>cache</code>, <code>sessions</code>, <code>jobs</code>, and <code>batches</code> tables are only created if you run the corresponding Artisan commands.</p>
-
-    <h2>The core tables</h2>
-    <h3>users</h3>
-    <table>
-      <thead><tr><th>Column</th><th>Type</th><th>What it means</th></tr></thead>
-      <tbody>
-        <tr><td><code>id</code></td><td>bigint (PK)</td><td>Auto-incrementing primary key.</td></tr>
-        <tr><td><code>name</code></td><td>varchar(255)</td><td>User's display name.</td></tr>
-        <tr><td><code>email</code></td><td>varchar(255)</td><td>Unique email address.</td></tr>
-        <tr><td><code>email_verified_at</code></td><td>timestamp</td><td>When email was verified. Null if unverified.</td></tr>
-        <tr><td><code>password</code></td><td>varchar(255)</td><td>Hashed password (bcrypt). Never store plain text.</td></tr>
-        <tr><td><code>remember_token</code></td><td>varchar(100)</td><td>Token for "remember me" functionality.</td></tr>
-      </tbody>
-    </table>
-
-    <h3>password_resets</h3>
-    <table>
-      <thead><tr><th>Column</th><th>Type</th><th>What it means</th></tr></thead>
-      <tbody>
-        <tr><td><code>email</code></td><td>varchar(255)</td><td>The email requesting a reset.</td></tr>
-        <tr><td><code>token</code></td><td>varchar(255)</td><td>The reset token (hashed).</td></tr>
-        <tr><td><code>created_at</code></td><td>timestamp</td><td>When the token was generated.</td></tr>
-      </tbody>
-    </table>
-
-    <h3>failed_jobs</h3>
-    <table>
-      <thead><tr><th>Column</th><th>Type</th><th>What it means</th></tr></thead>
-      <tbody>
-        <tr><td><code>id</code></td><td>bigint (PK)</td><td>Auto-incrementing ID.</td></tr>
-        <tr><td><code>uuid</code></td><td>varchar(255)</td><td>Unique identifier for the job.</td></tr>
-        <tr><td><code>connection</code></td><td>text</td><td>Queue connection that failed.</td></tr>
-        <tr><td><code>queue</code></td><td>varchar</td><td>Which queue the job was on.</td></tr>
-        <tr><td><code>payload</code></td><td>longText</td><td>The job's serialized data.</td></tr>
-        <tr><td><code>exception</code></td><td>longText</td><td>The full exception stack trace.</td></tr>
-      </tbody>
-    </table>
-
-    <h3>personal_access_tokens</h3>
-    <p>Created by Laravel Sanctum for API token authentication.</p>
-    <table>
-      <thead><tr><th>Column</th><th>Type</th><th>What it means</th></tr></thead>
-      <tbody>
-        <tr><td><code>id</code></td><td>bigint (PK)</td><td>Auto-incrementing ID.</td></tr>
-        <tr><td><code>tokenable_type</code></td><td>varchar(255)</td><td>The model this token belongs to.</td></tr>
-        <tr><td><code>tokenable_id</code></td><td>bigint</td><td>The ID of that model.</td></tr>
-        <tr><td><code>name</code></td><td>varchar(255)</td><td>Token name (e.g., "Mobile App").</td></tr>
-        <tr><td><code>token</code></td><td>varchar(60)</td><td>The hashed token value.</td></tr>
-        <tr><td><code>abilities</code></td><td>text</td><td>JSON array of allowed abilities.</td></tr>
-      </tbody>
-    </table>
-
-    <h2>Optional tables</h2>
-    <p><code>sessions</code>, created by <code>php artisan session:table</code>. <code>cache</code>, created by <code>php artisan cache:table</code>. <code>jobs</code>, created by <code>php artisan queue:table</code>. <code>batches</code>, created by <code>php artisan queue:batches-table</code>. None are created by default.</p>
-
-    <h2>FAQ</h2>
-    <p><strong>Does Laravel create all these tables automatically?</strong><br/>No. Only <code>users</code>, <code>password_resets</code>, and <code>failed_jobs</code> are created by <code>php artisan migrate</code>.</p>
-    <p><strong>Can I use Redis instead of the database tables?</strong><br/>Yes. Switch your <code>.env</code> driver to <code>redis</code> for sessions, cache, and queues.</p>
-    <p><strong>What's the difference between <code>password_resets</code> and <code>password_reset_tokens</code>?</strong><br/>Same table, different names. Laravel 8+ renamed it to <code>password_reset_tokens</code>.</p>
-  `,
 
   "database-schema-documentation": `
     <h2>The short version</h2>
@@ -439,8 +154,30 @@ order by o.placed_at desc;</code></pre>
     <h2>The one-page cheat sheet</h2>
     <p>Create a <code>SCHEMA.md</code> in your repo with table names, key columns, relationships, and a link to your visual diagram. Update it in the same PR that changes the schema.</p>
 
+    <h2>Why schema docs go stale</h2>
+    <p>A schema diagram is a snapshot of a moving target. A migration adds a column, someone renames a table, and the diagram is wrong while still looking authoritative. Three causes show up again and again:</p>
+    <ul>
+      <li><strong>Migrations do not update diagrams.</strong> Someone runs <code>ALTER TABLE orders ADD COLUMN shipping_cost_cents integer;</code> and no one remembers the diagram.</li>
+      <li><strong>The diagram lives away from the code.</strong> A Confluence page or Figma file has no link to the migration that changed the schema.</li>
+      <li><strong>Nobody owns it.</strong> Maintenance falls between frontend, backend, and operations, so it happens only when someone complains.</li>
+    </ul>
+    <p>The failure is predictable: a stale diagram is worse than no diagram because people trust it. The fix is to make regeneration cheaper than editing the picture by hand.</p>
+
+    <h2>Keep docs current in CI</h2>
+    <p>Generate from the database or migrations, not from memory. A practical loop:</p>
+    <ol>
+      <li>Export the schema in CI with <code>pg_dump --schema-only</code>.</li>
+      <li>Generate the diagram or <code>SCHEMA.md</code> from that dump.</li>
+      <li>Commit the generated file, or fail the build when the committed copy differs.</li>
+    </ol>
+    <pre><code>pg_dump --schema-only "$DATABASE_URL" &gt; schema.sql
+# regenerate docs/schema.svg and SCHEMA.md from schema.sql
+git diff --exit-code docs/schema.svg SCHEMA.md</code></pre>
+    <p>The build check is the part that matters. A generation step without a diff check still depends on someone remembering to run it. Wire the check into the same pipeline that runs migrations, and update <code>SCHEMA.md</code> in the same pull request that changes the schema.</p>
+
     <h2>FAQ</h2>
     <p><strong>Should I document every table?</strong><br/>No. Document the tables new engineers will touch, the ones with complex business logic, and the ones with non-obvious schemas.</p>
+    <p><strong>Why do schema diagrams go stale?</strong><br/>Because they are static snapshots. Migrations change the database, but the diagram is not regenerated, and no one notices until someone trusts the wrong picture.</p>
     <p><strong>How often should I update the docs?</strong><br/>When you add or change a column. Put the update in your PR template as a checklist item.</p>
     <p><strong>What's the best tool for auto-generating schema docs?</strong><br/><a href="https://www.dbdiagramr.space">dbdiagramr</a> for visual diagrams. dbt's <code>docs generate</code> if you're on dbt.</p>
   `,
@@ -468,33 +205,6 @@ order by o.placed_at desc;</code></pre>
     <p><strong>Can I query pg_catalog from MySQL?</strong><br/>No. pg_catalog is PostgreSQL-specific.</p>
     <p><strong>Which one does pg_dump use?</strong><br/><code>pg_catalog</code>. It needs Postgres-specific details like table OIDs and ACLs.</p>
     <p><strong>Can I see system tables from information_schema?</strong><br/>No. Use <code>pg_catalog.pg_stat_activity</code> for active queries, <code>pg_catalog.pg_locks</code> for locks.</p>
-  `,
-
-  "schema-documentation-drift": `
-    <h2>The short version</h2>
-    <p>Schema diagrams go stale because they're static snapshots of a moving target. A migration adds a column, someone renames a table, and suddenly your beautiful diagram is wrong. The fix: generate diagrams from the live database, not from a file.</p>
-
-    <h2>Why it happens</h2>
-    <ul>
-      <li><strong>Migrations don't update diagrams.</strong> You run <code>ALTER TABLE orders ADD COLUMN shipping_cost_cents integer;</code> and nobody thinks to update the diagram.</li>
-      <li><strong>Diagrams live in the wrong place.</strong> If your diagram is in Confluence or Figma, it's disconnected from the code.</li>
-      <li><strong>Nobody owns it.</strong> Diagram maintenance falls between "frontend" and "backend" and "DevOps."</li>
-    </ul>
-
-    <h2>The three fixes</h2>
-    <h3>Fix 1: Generate from the live database</h3>
-    <p>Use <a href="https://www.dbdiagramr.space">dbdiagramr</a>, paste your connection string, get a diagram in seconds. Your schema is always current.</p>
-
-    <h3>Fix 2: Generate in CI/CD</h3>
-    <p>Add a schema diagram step to your CI pipeline. Run it on every push to <code>main</code>. The diagram is always one commit behind, but close enough.</p>
-
-    <h3>Fix 3: One-page SCHEMA.md</h3>
-    <p>Maintain a single markdown file with the schema overview. Update it in the same PR that adds or changes a column. Put it in your PR checklist.</p>
-
-    <h2>FAQ</h2>
-    <p><strong>How often should I update my schema diagram?</strong><br/>Every time you add, remove, or rename a column. With dbdiagramr, it's always current.</p>
-    <p><strong>Should I commit the diagram to git?</strong><br/>Yes. Commit it as an SVG or markdown file so it's versioned with your code.</p>
-    <p><strong>What's the minimum viable schema documentation?</strong><br/>A one-page <code>SCHEMA.md</code> with table names, key columns, and relationships.</p>
   `,
 
   "supabase-connection-string-ipv6-enotfound": `
@@ -612,181 +322,6 @@ psql "$DATABASE_URL" -c "select count(*) from pg_catalog.pg_tables where scheman
     <p>Need to build or decode a URI first? Use the <a href="https://www.dbdiagramr.space/postgres-connection-string">PostgreSQL connection string builder</a>, then open the <a href="https://www.dbdiagramr.space/supabase-er-diagram">Supabase ER diagram guide</a>.</p>
   `,
 
-  "free-online-database-diagram-tool": `
-    <h2>The short version</h2>
-    <p>You need a database diagram. You don't want to pay for it, sign up for another account, or install anything. A free online database diagram tool should let you paste SQL or connect to your database and get a visual schema in seconds.</p>
-    <p>Most tools claim to be free, then hit you with table limits, export restrictions, or require an email before you can do anything. The one that actually works the way you expect is <a href="https://www.dbdiagramr.space">dbdiagramr</a>, paste SQL or a PostgreSQL connection string, get an interactive ER diagram, export SVG/PNG. No signup, no limits, no catch.</p>
-
-    <h2>What a good free database diagram tool should do</h2>
-    <table>
-      <thead><tr><th>Feature</th><th>Why it matters</th></tr></thead>
-      <tbody>
-        <tr><td>Paste SQL directly</td><td>You already have the schema, just show it</td></tr>
-        <tr><td>Live database connection</td><td>See what's actually deployed, not what you think is deployed</td></tr>
-        <tr><td>Interactive diagram</td><td>Pan, zoom, drag tables around</td></tr>
-        <tr><td>Export SVG/PNG</td><td>Share with your team or drop in docs</td></tr>
-        <tr><td>Search tables/columns</td><td>Find anything in a large schema fast</td></tr>
-        <tr><td>No signup required</td><td>You're diagramming, not buying enterprise software</td></tr>
-      </tbody>
-    </table>
-
-    <h2>How to use dbdiagramr as your free database diagram tool</h2>
-
-    <h3>Option 1: Paste SQL</h3>
-    <p>If you have a SQL dump or migration file, paste it directly into dbdiagramr and see your ER diagram appear instantly. Works with PostgreSQL CREATE TABLE statements, foreign keys, indexes, the whole schema.</p>
-
-    <h3>Option 2: Connect to a live database</h3>
-    <p>If you have a PostgreSQL connection string, paste it into dbdiagramr. The backend reads <code>pg_catalog</code> for tables, columns, primary keys, and foreign keys, then renders an interactive ER diagram you can pan, zoom, drag, and export as SVG or PNG. Live connection strings are sent to the backend for one request, then discarded; they are never stored. Pasted SQL is parsed in your browser.</p>
-
-    <h3>Option 3: Upload a file</h3>
-    <p>Drag and drop a <code>.sql</code> file or use the file picker. Same result, instant diagram.</p>
-
-    <h2>Why most "free" database diagram tools aren't actually free</h2>
-    <table>
-      <thead><tr><th>Tool</th><th>Free tier limitations</th></tr></thead>
-      <tbody>
-        <tr><td>dbdiagram.io</td><td>Up to 10 diagrams; PDF/PNG/SVG export included; public sharing and Private mode</td></tr>
-        <tr><td>DrawSQL</td><td>Unlimited public diagrams, up to 15 tables each; private diagrams on paid plans</td></tr>
-        <tr><td>Lucidchart</td><td>3 editable documents, 60 shapes per document</td></tr>
-        <tr><td>QuickDBD</td><td>Limited diagrams, watermark on exports</td></tr>
-      </tbody>
-    </table>
-    <p>dbdiagramr has none of these limits. Paste SQL, connect to your database, export as much as you want. The tool is open-source, you can even self-host it.</p>
-
-    <h2>Real example: visualizing a Supabase schema</h2>
-    <p>Supabase projects come with auth, storage, and realtime tables out of the box. Understanding how they connect requires a diagram.</p>
-    <p>Paste this SQL into dbdiagramr:</p>
-    <pre><code>CREATE TABLE users (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  email TEXT UNIQUE NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE posts (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  title TEXT NOT NULL,
-  content TEXT,
-  published BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
-CREATE TABLE comments (
-  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  post_id UUID REFERENCES posts(id) ON DELETE CASCADE,
-  user_id UUID REFERENCES users(id) ON DELETE CASCADE,
-  body TEXT NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);</code></pre>
-    <p>In two seconds you see: <code>users</code>, <code>posts</code>, <code>comments</code> with all foreign key relationships drawn. Drag the boxes around, zoom in, export as PNG for your README.</p>
-
-    <h2>When to use a free tool vs. a paid one</h2>
-    <p><strong>Use a free tool when:</strong></p>
-    <ul>
-      <li>You're exploring an existing schema</li>
-      <li>You need a quick diagram for documentation</li>
-      <li>You're a solo developer or small team</li>
-      <li>You want to understand relationships before writing queries</li>
-    </ul>
-    <p><strong>Consider paid when:</strong></p>
-    <ul>
-      <li>You need real-time collaboration (Lucidchart, DrawSQL paid)</li>
-      <li>You need version control integration (some enterprise tools)</li>
-      <li>You're designing a schema from scratch with a large team</li>
-    </ul>
-    <p>For 90% of database diagramming tasks, a free tool is enough.</p>
-
-    <h2>FAQ</h2>
-    <p><strong>What's the best free online database diagram tool?</strong><br/>dbdiagramr is the best free option, no table limits, no signup, open-source. Paste SQL or connect to a live PostgreSQL database.</p>
-    <p><strong>Can I create a database diagram without signing up?</strong><br/>Yes. dbdiagramr requires no account. Go to the site, paste SQL, get your diagram.</p>
-    <p><strong>Does it work with PostgreSQL only?</strong><br/>Currently yes. PostgreSQL is the most common target for ER diagrams, and dbdiagramr specializes in it. SQL paste works with any PostgreSQL-compatible syntax.</p>
-    <p><strong>Can I export the diagram?</strong><br/>Yes. Export as SVG or PNG with one click. No paid plan required.</p>
-    <p><strong>Is my database connection secure?</strong><br/>Yes. Pasted SQL stays in your browser. A live connection string is sent to the dbdiagramr backend, used for one request, then discarded; it is never stored. Only schema metadata is read, never table rows.</p>
-  `,
-  "sql-to-schema-diagram-online": `
-    <h2>The short version</h2>
-    <p>You have SQL. You need a diagram. The fastest path from <code>CREATE TABLE</code> to a visual schema is a tool that parses SQL and renders an ER diagram on the spot.</p>
-    <p><a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> does exactly that, paste your SQL, get an interactive diagram in seconds. No signup, no install, no export limits.</p>
-
-    <h2>Why convert SQL to a schema diagram?</h2>
-    <p>SQL is precise. Diagrams are comprehensible. When you're onboarding to a new codebase or explaining a schema to a non-technical stakeholder, a visual representation does something SQL can't: it shows relationships at a glance.</p>
-    <p>Reading 200 lines of <code>CREATE TABLE</code> statements, you'll find the foreign keys eventually. Seeing them drawn as lines between boxes takes half a second.</p>
-
-    <h2>How to convert SQL to a schema diagram online</h2>
-
-    <h3>Step 1: Get your SQL</h3>
-    <p>Grab your schema from one of these sources:</p>
-    <ul>
-      <li><code>pg_dump --schema-only yourdb</code></li>
-      <li>Migration files (Prisma, Drizzle, Rails, Django)</li>
-      <li>Your IDE's schema export</li>
-      <li>A SQL file you already have</li>
-    </ul>
-
-    <h3>Step 2: Paste into dbdiagramr</h3>
-    <p>Go to <a href="https://www.dbdiagramr.space/visualize">dbdiagramr.com/visualize</a> and paste your SQL in the editor. The tool parses CREATE TABLE statements, detects primary keys, and maps foreign key relationships automatically.</p>
-
-    <h3>Step 3: Explore and export</h3>
-    <p>Your ER diagram appears instantly. Pan, zoom, drag tables around to arrange them. When you're happy, export as SVG or PNG with one click.</p>
-
-    <h2>What SQL syntax works?</h2>
-    <p>dbdiagramr understands standard PostgreSQL syntax:</p>
-    <ul>
-      <li><code>CREATE TABLE</code> with columns and types</li>
-      <li><code>PRIMARY KEY</code> constraints</li>
-      <li><code>REFERENCES</code> for foreign keys</li>
-      <li><code>DEFAULT</code> values</li>
-      <li><code>NOT NULL</code> and <code>UNIQUE</code> constraints</li>
-      <li><code>ON DELETE</code> and <code>ON UPDATE</code> actions</li>
-    </ul>
-    <p>If your SQL is valid PostgreSQL, dbdiagramr will parse it.</p>
-
-    <h2>Example: converting a Laravel migration</h2>
-    <p>If you're using Laravel, your migrations live in <code>database/migrations/</code>. Export them to SQL and paste the result:</p>
-    <pre><code>-- Laravel migration exported to SQL
-CREATE TABLE users (
-  id BIGSERIAL PRIMARY KEY,
-  name VARCHAR(255) NOT NULL,
-  email VARCHAR(255) UNIQUE NOT NULL,
-  password VARCHAR(255) NOT NULL,
-  remember_token VARCHAR(100),
-  created_at TIMESTAMPTZ,
-  updated_at TIMESTAMPTZ
-);
-
-CREATE TABLE posts (
-  id BIGSERIAL PRIMARY KEY,
-  user_id BIGINT NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-  title VARCHAR(255) NOT NULL,
-  slug VARCHAR(255) UNIQUE NOT NULL,
-  body TEXT,
-  published BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMPTZ,
-  updated_at TIMESTAMPTZ
-);</code></pre>
-    <p>dbdiagramr renders the <code>users</code> and <code>posts</code> tables with the foreign key relationship drawn between them. Done in seconds.</p>
-
-    <h2>Alternative methods (and why they're slower)</h2>
-    <table>
-      <thead><tr><th>Method</th><th>Setup</th><th>Speed</th><th>Limitation</th></tr></thead>
-      <tbody>
-        <tr><td>pgAdmin ERD tool</td><td>Already installed</td><td>Medium</td><td>Snapshot, manual re-run</td></tr>
-        <tr><td>Draw.io + manual</td><td>Short</td><td>Slow</td><td>Hand-draw every table</td></tr>
-        <tr><td>dbdiagram.io</td><td>No signup for the ERD generator</td><td>Fast</td><td>Must learn DBML syntax</td></tr>
-        <tr><td>dbdiagramr</td><td>None</td><td>Instant</td><td>PostgreSQL only (for now)</td></tr>
-      </tbody>
-    </table>
-    <p>dbdiagramr is the only option that requires zero setup and accepts raw SQL directly.</p>
-
-    <h2>FAQ</h2>
-    <p><strong>Can I convert MySQL SQL to a diagram?</strong><br/>Not yet. dbdiagramr currently supports PostgreSQL syntax only. MySQL support is planned.</p>
-    <p><strong>Does it work with Prisma schema files?</strong><br/>Not directly. Generate SQL from your Prisma schema, then paste the SQL. Prisma 7+ uses <code>--to-schema</code> (<a href="https://github.com/prisma/prisma/releases/tag/7.0.0">Prisma 7 release notes</a>):</p>
-    <pre><code>npx prisma migrate diff --from-empty --to-schema=prisma/schema.prisma --script &gt; schema.sql</code></pre>
-    <p>Prisma 6 and earlier use <code>--to-schema-datamodel</code> (<a href="https://www.prisma.io/docs/orm/reference/prisma-cli-reference#migrate-diff">CLI reference</a>):</p>
-    <pre><code>npx prisma migrate diff --from-empty --to-schema-datamodel=prisma/schema.prisma --script &gt; schema.sql</code></pre>
-    <p><strong>How large a schema can it handle?</strong><br/>dbdiagramr handles schemas with dozens of tables comfortably. Very large schemas (100+ tables) may need some manual arrangement, but the parsing works fine.</p>
-    <p><strong>Is there a table limit?</strong><br/>No. Paste as many tables as you want. No signup, no limits.</p>
-  `,
   "database-schema-diagram-tool": `
     <h2>The short version</h2>
     <p>You need a database schema diagram tool that works with PostgreSQL. There are five practical options, each making a different tradeoff between speed, depth, and how current the diagram stays.</p>
@@ -844,6 +379,21 @@ CREATE TABLE posts (
     <p>If your schema lives in migration files (Prisma, Drizzle, Rails, Flyway), you can derive a diagram from code instead of a live connection:</p>
     <pre><code>pg_dump --schema-only mydb &gt; schema.sql</code></pre>
     <p>Then feed the DDL to any SQL-to-diagram tool. This documents the migrations, not necessarily what is deployed, and regenerating on every change is automation you have to build and maintain.</p>
+    <p>For Prisma, generate the DDL first. Prisma 7 and later use <code>--to-schema</code>:</p>
+    <pre><code>npx prisma migrate diff --from-empty --to-schema=prisma/schema.prisma --script &gt; schema.sql</code></pre>
+    <p>Prisma 6 and earlier use <code>--to-schema-datamodel</code>:</p>
+    <pre><code>npx prisma migrate diff --from-empty --to-schema-datamodel=prisma/schema.prisma --script &gt; schema.sql</code></pre>
+
+    <h2>How to turn SQL into a diagram</h2>
+    <p>You can start from three inputs, depending on what you have:</p>
+    <ul>
+      <li><strong>Paste SQL.</strong> Paste <code>CREATE TABLE</code> statements directly into the editor. Parsing happens in your browser.</li>
+      <li><strong>Upload a <code>.sql</code> file.</strong> Drag the dump or migration export onto the page, or use the file picker.</li>
+      <li><strong>Connect to PostgreSQL.</strong> Paste a read-only connection string. The backend reads schema metadata for one request, then discards the string; it never stores it and never reads table rows.</li>
+    </ul>
+    <p>For a dump, <code>pg_dump --schema-only yourdb &gt; schema.sql</code> gives you the DDL without data. Paste or upload that file, then pan, zoom, drag tables, and export SVG or PNG.</p>
+    <h3>What SQL syntax works</h3>
+    <p>The parser understands standard PostgreSQL DDL: <code>CREATE TABLE</code>, column types, <code>PRIMARY KEY</code>, <code>REFERENCES</code>, <code>DEFAULT</code>, <code>NOT NULL</code>, <code>UNIQUE</code>, and <code>ON DELETE</code> / <code>ON UPDATE</code> actions. If it is valid PostgreSQL DDL, it should parse.</p>
 
     <h2>Which tool should you choose?</h2>
     <ul>
@@ -863,6 +413,8 @@ CREATE TABLE posts (
     <p><strong>Is pgAdmin's ERD tool good enough?</strong><br/>For small schemas and quick inspection, yes. For anything you need to share or keep current, use a dedicated tool.</p>
     <p><strong>Does DrawSQL support live PostgreSQL connections?</strong><br/>No. DrawSQL imports SQL DDL; it does not connect to a live database. The free plan is public only, up to 15 tables per diagram.</p>
     <p><strong>Can I create a Postgres ERD without connecting to the live database?</strong><br/>Yes. Run <code>pg_dump --schema-only</code> and feed the DDL to a SQL-to-diagram tool, or parse migration files. This is safer when you cannot expose production credentials.</p>
+    <p><strong>Does it work with MySQL?</strong><br/>Not yet. The parser currently targets PostgreSQL DDL. MySQL support is planned.</p>
+    <p><strong>How large a schema can it handle?</strong><br/>Schemas with dozens of tables work comfortably. Very large schemas (100+ tables) may need manual arrangement, but parsing still works.</p>
     <p><strong>How do I keep a schema diagram up to date?</strong><br/>Manual tools require manual regeneration, so they drift. The reliable fix is introspection: regenerate straight from the live database, or wire documentation generation into CI.</p>
   `,
   "database-schema-health-check": `

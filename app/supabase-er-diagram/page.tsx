@@ -286,11 +286,6 @@ export default function SupabaseErDiagramPage() {
                 body: "See which public tables have RLS off, RLS with no policies, or RLS on with policies to review.",
               },
               {
-                href: "/blog/supabase-auth-schema-explained",
-                title: "Supabase auth schema explained",
-                body: "How auth.users, identities, and sessions fit together, table by table.",
-              },
-              {
                 href: "/schema/supabase",
                 title: "Supabase schema reference",
                 body: "A static reference diagram of the Supabase auth schema with column details.",

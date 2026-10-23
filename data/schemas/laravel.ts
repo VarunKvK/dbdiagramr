@@ -36,9 +36,7 @@ export const laravelSchema: Schema = {
         col("payload", "longtext"),
         col("last_activity", "integer"),
       ],
-      [
-        { column: "user_id", referencesTable: "users", referencesColumn: "id" },
-      ]
+      []
     ),
     table(
       "jobs",
@@ -50,6 +48,22 @@ export const laravelSchema: Schema = {
         col("reserved_at", "integer", { nullable: true }),
         col("available_at", "integer"),
         col("created_at", "integer"),
+      ],
+      []
+    ),
+    table(
+      "job_batches",
+      [
+        col("id", "varchar", { pk: true }),
+        col("name", "varchar"),
+        col("total_jobs", "integer"),
+        col("pending_jobs", "integer"),
+        col("failed_jobs", "integer"),
+        col("failed_job_ids", "longtext"),
+        col("options", "mediumtext", { nullable: true }),
+        col("cancelled_at", "integer", { nullable: true }),
+        col("created_at", "integer"),
+        col("finished_at", "integer", { nullable: true }),
       ],
       []
     ),

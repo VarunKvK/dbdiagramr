@@ -5,34 +5,35 @@ import { getAllPosts } from "@/data/blog/posts";
 export default function sitemap(): MetadataRoute.Sitemap {
   const base = "https://www.dbdiagramr.space";
   // Honest lastmod: only bump when the route's source actually changed.
-  // Do NOT use today's date on every build — Google treats that as noise
-  // and stops trusting lastmod. Dates below = last git change per route.
+  // Refresh a date with:
+  //   git log -1 --format=%cs -- app/<route>/page.tsx <route-specific content files>
+  // Use the newest date among the page and its dedicated sections/data.
+  // Exclude shared Navbar/Footer/link widgets. Never use the build date.
   const staticLastmod: Record<string, string> = {
-    "/": "2026-10-20",
-    "/visualize": "2026-09-08",
+    "/": "2026-10-21",
     "/supabase-rls-check": "2026-10-23",
-    "/schema": "2026-09-27",
+    "/schema": "2026-10-23",
     "/blog": "2026-10-23",
     "/alternatives": "2026-10-23",
     "/dbdiagram-io-vs-dbdiagramr": "2026-10-23",
     "/drawsql-vs-dbdiagramr": "2026-10-23",
     "/chartdb-alternative": "2026-10-23",
     "/supabase-er-diagram": "2026-10-23",
-    "/database-schema-analyzer": "2026-09-25",
+    "/database-schema-analyzer": "2026-10-21",
     "/tools": "2026-10-23",
-    "/sql-formatter": "2026-09-25",
-    "/csv-to-sql": "2026-09-28",
-    "/json-to-sql": "2026-09-28",
-    "/sql-validator": "2026-09-28",
-    "/sql-to-mermaid": "2026-09-28",
-    "/sql-to-typescript": "2026-09-28",
-    "/sql-to-prisma": "2026-09-28",
+    "/sql-formatter": "2026-10-21",
+    "/csv-to-sql": "2026-10-20",
+    "/json-to-sql": "2026-10-20",
+    "/sql-validator": "2026-10-20",
+    "/sql-to-mermaid": "2026-10-20",
+    "/sql-to-typescript": "2026-10-20",
+    "/sql-to-prisma": "2026-10-20",
     "/postgres-connection-string": "2026-10-23",
-    "/sql-schema-diff": "2026-10-10",
-    "/dbml-to-sql": "2026-10-10",
-    "/prisma-erd-generator": "2026-10-10",
-    "/github-schema-action": "2026-10-13",
-    "/pricing": "2026-10-19",
+    "/sql-schema-diff": "2026-10-20",
+    "/dbml-to-sql": "2026-10-20",
+    "/prisma-erd-generator": "2026-10-23",
+    "/github-schema-action": "2026-10-21",
+    "/pricing": "2026-10-21",
   };
 
   const schemaUrls = getAllSchemaEntries().map((entry) => ({
@@ -55,12 +56,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: staticLastmod["/"],
       changeFrequency: "weekly",
       priority: 1,
-    },
-    {
-      url: `${base}/visualize`,
-      lastModified: staticLastmod["/visualize"],
-      changeFrequency: "monthly",
-      priority: 0.9,
     },
     {
       url: `${base}/supabase-rls-check`,

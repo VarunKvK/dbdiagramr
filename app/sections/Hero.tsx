@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
@@ -69,13 +70,12 @@ export default function Hero() {
               rel="noopener noreferrer"
               className="inline-flex opacity-90 mix-blend-multiply transition-opacity hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
-              <img
+              <Image
                 src="https://www.codehype.ai/badges/dbdiagramr.svg?variant=find-us&v=20"
                 alt="Featured on CodeHype"
                 width={180}
                 height={65}
-                loading="lazy"
-                decoding="async"
+                unoptimized
                 className="block h-[50px] w-auto"
               />
             </a>
@@ -85,13 +85,12 @@ export default function Hero() {
               rel="noopener noreferrer dofollow"
               className="inline-flex opacity-90 mix-blend-multiply transition-opacity hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
             >
-              <img
+              <Image
                 src="https://noonlaunch.com/badges/dbdiagramr.svg"
                 alt="Featured on Noonlaunch"
                 width={220}
                 height={60}
-                loading="lazy"
-                decoding="async"
+                unoptimized
                 className="block h-[50px] w-auto"
               />
             </a>

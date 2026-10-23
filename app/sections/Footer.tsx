@@ -1,3 +1,4 @@
+import Image from "next/image";
 import AskAi from "@/app/sections/AskAi";
 
 export default function Footer() {
@@ -8,9 +9,11 @@ export default function Footer() {
         <div className="flex flex-col gap-10 lg:flex-row lg:justify-between">
           <div className="max-w-md">
             <span className="flex items-center gap-2 text-base font-semibold tracking-tight">
-              <img
+              <Image
                 src="/db-logo.svg"
                 alt="dbdiagramr logo"
+                width={32}
+                height={32}
                 className="h-8 w-8 object-contain"
               />
               dbdiagramr

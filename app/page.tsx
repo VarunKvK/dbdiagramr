@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Hero from "@/app/sections/Hero";
 import ProductShowcase from "@/app/sections/ProductShowcase";
 import Features from "@/app/sections/Features";
@@ -7,6 +8,13 @@ import CtaBand from "@/app/sections/CtaBand";
 import BlogTeaser from "@/app/sections/BlogTeaser";
 import PostgresGuide, { postgresFaqs, postgresHowToSteps } from "@/app/sections/PostgresGuide";
 import Footer from "@/app/sections/Footer";
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "https://www.dbdiagramr.space",
+  },
+};
+
 const softwareJsonLd = {
   "@type": "SoftwareApplication",
   name: "dbdiagramr",

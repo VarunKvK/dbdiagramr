@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { Menu, X } from "lucide-react";
 import { scrollToId, scrollToTop } from "@/lib/scroll";
@@ -48,9 +49,11 @@ export default function Navbar() {
           }}
           className="flex items-center gap-2 text-ink"
         >
-          <img
+          <Image
             src="/db-logo.svg"
             alt="dbdiagramr logo"
+            width={32}
+            height={32}
             className="h-8 w-8 object-contain"
           />
           <span className="text-base font-semibold tracking-tight text-ink">

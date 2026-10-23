@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   keywords:
     "postgresql er diagram, postgres erd tool, database diagram online, er diagram generator, schema visualization",
   robots: {
-    index: true,
+    index: false,
     follow: true,
   },
   alternates: {

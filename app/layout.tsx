@@ -28,9 +28,6 @@ export const metadata: Metadata = {
   keywords:
     "postgresql er diagram, postgresql schema diagram, er diagram generator, database schema visualization, postgresql schema visualization, db diagram, supabase schema, er diagram tool",
   authors: [{ name: "dbdiagramr" }],
-  alternates: {
-    canonical: "https://www.dbdiagramr.space",
-  },
   robots: {
     index: true,
     follow: true,

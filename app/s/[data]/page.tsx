@@ -14,7 +14,39 @@ export async function generateMetadata({
   params: { data: string };
 }): Promise<Metadata> {
   const schema = await decodeSchema(params.data);
-  if (!schema) return { title: "Diagram not found | dbdiagramr" };
+  const url = `${SITE}/s/${params.data}`;
+  const fallbackImage = `${SITE}/DbDiagramr-OG.png`;
+
+  if (!schema) {
+    const title = "Diagram not found | dbdiagramr";
+    const description = "This shared diagram link is invalid or has expired.";
+    return {
+      title,
+      description,
+      robots: { index: false, follow: true },
+      alternates: { canonical: null },
+      openGraph: {
+        title,
+        description,
+        type: "website",
+        url,
+        images: [
+          {
+            url: fallbackImage,
+            width: 1200,
+            height: 630,
+            alt: "dbdiagramr PostgreSQL ER diagram",
+          },
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title,
+        description,
+        images: [fallbackImage],
+      },
+    };
+  }
 
   const tableCount = schema.tables.length;
   const title = `${tableCount}-table PostgreSQL schema | dbdiagramr`;
@@ -26,11 +58,13 @@ export async function generateMetadata({
   return {
     title,
     description,
-    alternates: { canonical: `${SITE}/visualize` },
+    robots: { index: false, follow: true },
+    alternates: { canonical: null },
     openGraph: {
       title,
       description,
       type: "website",
+      url,
       images: [{ url: image, width: 1200, height: 630, alt: title }],
     },
     twitter: {

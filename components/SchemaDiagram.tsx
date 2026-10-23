@@ -27,7 +27,7 @@ import { LAYOUT, layoutSchema, tableSize } from "@/lib/diagramLayout";
 import type { Rect } from "@/lib/diagramLayout";
 import { formatType } from "@/lib/formatType";
 import { RLS_META, rlsHint, rlsStatus, rlsSummary } from "@/lib/rls";
-import { MAX_PUBLIC_PAYLOAD, encodeSchema } from "@/lib/share";
+import { MAX_PUBLIC_PAYLOAD, buildShareUrl, encodeSchema } from "@/lib/share";
 import { track } from "@/lib/analytics";
 
 function downloadBlob(blob: Blob, filename: string) {
@@ -500,17 +500,9 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
 
   const handleCopyShare = useCallback(
     async (kind: "private" | "public") => {
-      if (!sharePayload) return;
-      const origin = window.location.origin;
-      const url =
-        kind === "private"
-          ? `${origin}/visualize#s=${sharePayload}`
-          : `${origin}/s/${sharePayload}`;
-      track("share_clicked", {
-        kind,
-        table_count: schema.tables.length,
-        length: sharePayload.length,
-      });
+      const url = buildShareUrl(window.location.origin, sharePayload, kind);
+      if (!url) return;
+      track("share_link_copied", { type: kind });
       try {
         await navigator.clipboard.writeText(url);
         setShareCopied(kind);
@@ -519,7 +511,7 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
         window.prompt("Copy this link", url);
       }
     },
-    [sharePayload, schema.tables.length]
+    [sharePayload]
   );
 
   return (
@@ -593,7 +585,7 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
               </svg>
             </button>
             {shareOpen && (
-              <div className="absolute right-0 top-10 z-20 w-64 rounded-[10px] border border-border bg-white p-1.5 shadow-xl">
+              <div className="absolute right-0 top-10 z-20 w-72 rounded-[10px] border border-border bg-white p-1.5 shadow-xl">
                 {shareBusy ? (
                   <p className="px-2 py-2 text-xs text-muted">Preparing link…</p>
                 ) : (
@@ -606,7 +598,7 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
                         {shareCopied === "private" ? "Copied!" : "Copy private link"}
                       </span>
                       <span className="text-[11px] leading-snug text-muted">
-                        Keeps the schema in the URL after #. Never sent to a server.
+                        The diagram stays in the link; no preview image on social media.
                       </span>
                     </button>
                     <button
@@ -615,12 +607,14 @@ function Canvas({ schema, className = "", searchQuery = "", zoomOnScroll = true,
                       className="flex w-full flex-col items-start gap-0.5 rounded-[8px] px-2.5 py-2 text-left transition-colors hover:bg-surface disabled:cursor-not-allowed disabled:opacity-50"
                     >
                       <span className="text-xs font-medium text-ink">
-                        {shareCopied === "public" ? "Copied!" : "Copy public link"}
+                        {shareCopied === "public"
+                          ? "Copied!"
+                          : "Copy public link (shows the diagram on X/LinkedIn)"}
                       </span>
                       <span className="text-[11px] leading-snug text-muted">
                         {shareTooLong
-                          ? "Diagram is too large to embed in a link."
-                          : "Opens a read-only view with a preview image for Slack, X, GitHub."}
+                          ? "Too large for a preview link. Use the private link instead."
+                          : "The diagram data is part of the link and passes through our server to draw the preview."}
                       </span>
                     </button>
                   </>

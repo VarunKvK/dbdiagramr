@@ -1,4 +1,4 @@
-import { renderSchemaPng } from "@/lib/schemaImage";
+import { renderShareOgPng } from "@/lib/schemaImage";
 import { decodeSchema } from "@/lib/share";
 
 export const runtime = "nodejs";
@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   }
 
   try {
-    const png = renderSchemaPng(schema);
+    const png = renderShareOgPng(schema);
     return new Response(new Uint8Array(png), {
       headers: {
         "content-type": "image/png",

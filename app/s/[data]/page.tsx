@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import SchemaDiagram from "@/components/SchemaDiagram";
-import { decodeSchema } from "@/lib/share";
+import { buildShareDescription, decodeSchema } from "@/lib/share";
 
 export const runtime = "nodejs";
 
@@ -50,9 +50,7 @@ export async function generateMetadata({
 
   const tableCount = schema.tables.length;
   const title = `${tableCount}-table PostgreSQL schema | dbdiagramr`;
-  const description = `Interactive ER diagram of ${tableCount} ${
-    tableCount === 1 ? "table" : "tables"
-  }, shared with dbdiagramr. Free, no signup.`;
+  const description = buildShareDescription(schema);
   const image = `${SITE}/api/og?d=${encodeURIComponent(params.data)}`;
 
   return {

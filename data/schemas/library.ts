@@ -43,8 +43,8 @@ export const librarySchema: Schema = {
     table(
       "book_authors",
       [
-        col("isbn", "varchar(13)"),
-        col("author_id", "uuid"),
+        col("isbn", "varchar(13)", { pk: true }),
+        col("author_id", "uuid", { pk: true }),
       ],
       [
         { column: "isbn", referencesTable: "books", referencesColumn: "isbn" },

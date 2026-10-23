@@ -2,9 +2,9 @@ import type { Schema } from "@/lib/diagram";
 import { col, table } from "./helpers";
 
 // Multi-tenant SaaS, shared-schema pattern with a leading tenant_id column
-// on every table. PKs and FKs are composite (tenant_id, id) — the Citus /
-// Azure guidance — so cross-tenant joins are impossible at the database
-// level and tables can be hash-sharded on tenant_id later.
+// on the six tenant-owned tables. tenants and users are global. PKs and FKs
+// are single-column here; the page shows the composite UNIQUE + FK and RLS
+// hardening steps that enforce tenant isolation in production.
 export const multitenantSchema: Schema = {
   tables: [
     table(
@@ -31,8 +31,8 @@ export const multitenantSchema: Schema = {
     table(
       "tenant_users",
       [
-        col("tenant_id", "uuid"),
-        col("user_id", "uuid"),
+        col("tenant_id", "uuid", { pk: true }),
+        col("user_id", "uuid", { pk: true }),
         col("role", "varchar", { default: "'member'" }),
         col("joined_at", "timestamptz"),
       ],

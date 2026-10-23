@@ -1,11 +1,15 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Image from "next/image";
-import { getAllSchemaEntries, getSchemaEntry, type SchemaEntry } from "@/data/schemas/registry";
+import { getAllSchemaEntries, getSchemaEntry } from "@/data/schemas/registry";
 import Footer from "@/app/sections/Footer";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import SchemaCopyButtons from "@/components/SchemaCopyButtons";
-import type { ForeignKey } from "@/lib/diagram";
+import SchemaColumnsTable from "@/components/schema/SchemaColumnsTable";
+import SchemaRelationships from "@/components/schema/SchemaRelationships";
+import SchemaEmbed from "@/components/schema/SchemaEmbed";
+import CommonQueries from "@/components/schema/CommonQueries";
+import { getRelatedSchemas } from "@/lib/schemaRelations";
 import { schemaToMermaid, schemaToSql } from "@/lib/schemaExport";
 import FaqAccordion from "@/app/sections/FaqAccordion";
 
@@ -13,20 +17,16 @@ export function generateStaticParams() {
   return getAllSchemaEntries().map((entry) => ({ slug: entry.slug }));
 }
 
-const ogImages: Record<string, string> = {
-  supabase: "/Supabase-DbDiagramr-OG.png",
-  nextauth: "/NextAuthJS-DbDiagramr-OG.png",
-  laravel: "/Laravel-DbDiagramr-OG.png",
-  django: "/Django-DbDiagramr-OG.png",
-  "better-auth": "/BetterAuth-DbDiagramr-OG.png",
-};
+function schemaImagePath(slug: string, extension: "svg" | "png"): string {
+  return `/schemas/${slug}-er-diagram.${extension}`;
+}
 
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const entry = getSchemaEntry(params.slug);
   if (!entry) return {};
 
   const url = `https://www.dbdiagramr.space/schema/${entry.slug}`;
-  const image = ogImages[entry.slug] ?? "/DbDiagramr-OG.png";
+  const image = `https://www.dbdiagramr.space${schemaImagePath(entry.slug, "png")}`;
   const ogImage = [{ url: image, width: 1200, height: 630, alt: entry.title }];
 
   return {
@@ -118,27 +118,8 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
   if (!entry) notFound();
 
   const allEntries = getAllSchemaEntries();
-  const bySlug = new Map(allEntries.map((e) => [e.slug, e]));
-  const relatedSchemas: SchemaEntry[] = [];
-  for (const slug of entry.related ?? []) {
-    const e = bySlug.get(slug);
-    if (e && e.slug !== entry.slug && !relatedSchemas.some((r) => r.slug === e.slug)) {
-      relatedSchemas.push(e);
-    }
-  }
-  for (const e of allEntries) {
-    if (relatedSchemas.length >= 5) break;
-    if (e.slug !== entry.slug && !relatedSchemas.some((r) => r.slug === e.slug)) {
-      relatedSchemas.push(e);
-    }
-  }
+  const relatedSchemas = getRelatedSchemas(entry, allEntries);
   const relatedBlogs = relatedBlogBySchema[entry.slug] ?? [];
-  const relationships = entry.schema.tables.flatMap((table) =>
-    table.foreignKeys.map((fk) => ({
-      from: `${table.name}.${fk.column}`,
-      to: `${fk.referencesTable}.${fk.referencesColumn}`,
-    }))
-  );
   const schemaSql = schemaToSql(entry.schema);
   const schemaMermaid = schemaToMermaid(entry.schema);
 
@@ -152,7 +133,7 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
         headline: entry.title,
         description: entry.description,
         dateModified: entry.lastUpdated,
-        image: `${url}/diagram.png`,
+        image: `https://www.dbdiagramr.space${schemaImagePath(entry.slug, "png")}`,
         mainEntityOfPage: url,
         author: {
           "@type": "Person",
@@ -283,6 +264,23 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
               </div>
             ))}
           </div>
+          {entry.scopeNote && (
+            <div className="mt-6 rounded-[20px] border border-border bg-white p-5 shadow-sm">
+              <p className="text-sm font-medium text-ink">{entry.scopeNote.text}</p>
+              <p className="mt-1 text-sm leading-relaxed text-muted">
+                {entry.scopeNote.omitted}{" "}
+                <a
+                  href={entry.scopeNote.sourceUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-medium text-accent hover:text-accent-hover"
+                >
+                  {entry.scopeNote.sourceLabel}
+                </a>
+                .
+              </p>
+            </div>
+          )}
           {entry.slug === "supabase" && (
             <div className="mt-6 rounded-[20px] border border-accent bg-accent-soft p-5">
               <p className="text-sm leading-relaxed text-ink">
@@ -302,7 +300,36 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
           )}
         </div>
 
-        <div className="overflow-hidden rounded-[20px] bg-ink shadow-lg">
+        <section className="mt-10">
+          <div className="overflow-hidden rounded-[20px] border border-border bg-white shadow-sm">
+            <Image
+              src={schemaImagePath(entry.slug, "svg")}
+              alt={`${entry.name} database schema diagram showing tables, columns, and foreign keys`}
+              width={1200}
+              height={630}
+              unoptimized
+              className="h-auto w-full"
+            />
+          </div>
+          <div className="mt-3 flex flex-wrap gap-3">
+            <a
+              href={schemaImagePath(entry.slug, "svg")}
+              download={`${entry.slug}-er-diagram.svg`}
+              className="rounded-[10px] border border-border bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm transition-colors hover:bg-accent-soft"
+            >
+              Download SVG
+            </a>
+            <a
+              href={schemaImagePath(entry.slug, "png")}
+              download={`${entry.slug}-er-diagram.png`}
+              className="rounded-[10px] border border-border bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm transition-colors hover:bg-accent-soft"
+            >
+              Download PNG
+            </a>
+          </div>
+        </section>
+
+        <div className="mt-10 overflow-hidden rounded-[20px] bg-ink shadow-lg">
           <div className="flex h-10 items-center gap-2 border-b border-white/10 bg-pine px-4">
             <span className="h-3 w-3 rounded-full bg-[#ff5f57] ring-1 ring-black/10" />
             <span className="h-3 w-3 rounded-full bg-[#febc2e] ring-1 ring-black/10" />
@@ -319,105 +346,21 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
           slug={entry.slug}
         />
 
-        <section className="mt-10">
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className="text-2xl font-semibold tracking-tight text-ink">
-                Download the {entry.name} schema diagram
-              </h2>
-              <p className="mt-2 text-sm leading-relaxed text-muted">
-                A static 1200 x 630 PNG of the full diagram, ready for docs,
-                README files, or a slide.
-              </p>
-            </div>
-            <a
-              href={`/schema/${entry.slug}/diagram.png`}
-              className="inline-block rounded-[10px] bg-accent px-5 py-2.5 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
-            >
-              Download PNG
-            </a>
-          </div>
-          <a
-            href={`/schema/${entry.slug}/diagram.png`}
-            className="mt-4 block overflow-hidden rounded-[20px] border border-border bg-white shadow-sm"
-          >
-            <Image
-              src={`/schema/${entry.slug}/diagram.png`}
-              alt={`${entry.name} database schema diagram showing tables, columns, and foreign keys`}
-              width={1200}
-              height={630}
-              className="h-auto w-full"
-            />
-          </a>
-        </section>
+        <SchemaEmbed entry={entry} />
 
         <section className="mt-16">
           <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">
             Tables in the {entry.name} schema
           </h2>
-          <div className="overflow-x-auto rounded-[20px] border border-border bg-white shadow-sm">
-            <table className="w-full min-w-[720px] text-sm">
-              <thead>
-                <tr className="border-b border-border bg-surface text-left">
-                  <th className="px-4 py-3 font-medium text-ink">Column</th>
-                  <th className="px-4 py-3 font-medium text-ink">Type</th>
-                  <th className="px-4 py-3 font-medium text-ink">Nullable</th>
-                  <th className="px-4 py-3 font-medium text-ink">Key</th>
-                </tr>
-              </thead>
-              <tbody>
-                {entry.schema.tables.map((table) => (
-                  <TableRows
-                    key={table.name}
-                    tableName={table.name}
-                    rows={table.columns}
-                    foreignKeys={table.foreignKeys}
-                  />
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <SchemaColumnsTable schema={entry.schema} />
         </section>
 
-        {relationships.length > 0 && (
-          <section className="mt-16">
-            <h2 className="mb-3 text-2xl font-semibold tracking-tight text-ink">
-              Table relationships
-            </h2>
-            <p className="mb-3 max-w-3xl leading-relaxed text-muted">
-              {relationships.length} relationships connect the tables in this
-              schema. Each row shows the child column and the parent column it
-              references.
-            </p>
-            {entry.relationshipNote && (
-              <p className="mb-6 max-w-3xl text-sm leading-relaxed text-muted/70">
-                {entry.relationshipNote}
-              </p>
-            )}
-            {!entry.relationshipNote && <div className="mb-6" />}
-            <div className="overflow-x-auto rounded-[20px] border border-border bg-white shadow-sm">
-              <table className="w-full min-w-[640px] text-sm">
-                <thead>
-                  <tr className="border-b border-border bg-surface text-left">
-                    <th className="px-4 py-3 font-medium text-ink">From</th>
-                    <th className="px-4 py-3 font-medium text-ink">References</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {relationships.map((rel, index) => (
-                    <tr
-                      key={`${rel.from}-${rel.to}-${index}`}
-                      className="border-b border-border last:border-b-0"
-                    >
-                      <td className="px-4 py-2.5 font-mono text-ink">{rel.from}</td>
-                      <td className="px-4 py-2.5 font-mono text-muted">{rel.to}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </section>
-        )}
+        <SchemaRelationships
+          schema={entry.schema}
+          note={entry.relationshipNote}
+        />
+
+        <CommonQueries queries={entry.queries ?? []} />
 
         {entry.guide && (
           <section className="mt-16 max-w-3xl">
@@ -519,67 +462,5 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
       </div>
       <Footer />
     </main>
-  );
-}
-
-function TableRows({
-  tableName,
-  rows,
-  foreignKeys,
-}: {
-  tableName: string;
-  rows: { name: string; type: string; nullable: string; isPrimaryKey: boolean }[];
-  foreignKeys: ForeignKey[];
-}) {
-  const fksByColumn = new Map<string, ForeignKey[]>();
-  for (const fk of foreignKeys) {
-    const existing = fksByColumn.get(fk.column) ?? [];
-    existing.push(fk);
-    fksByColumn.set(fk.column, existing);
-  }
-
-  return (
-    <>
-      <tr className="border-b border-border bg-accent-soft/50">
-        <td
-          colSpan={4}
-          className="px-4 py-3 font-semibold text-accent"
-        >
-          {tableName}
-        </td>
-      </tr>
-      {rows.map((column) => {
-        const fks = fksByColumn.get(column.name) ?? [];
-        return (
-          <tr key={`${tableName}-${column.name}`} className="border-b border-border last:border-b-0">
-            <td className="px-4 py-2.5 font-mono text-ink">{column.name}</td>
-            <td className="px-4 py-2.5 font-mono text-muted">{column.type}</td>
-            <td className="px-4 py-2.5 text-muted">
-              {column.nullable === "NO" ? "No" : "Yes"}
-            </td>
-            <td className="px-4 py-2.5">
-              <div className="flex flex-wrap gap-1">
-                {column.isPrimaryKey && (
-                  <span className="whitespace-nowrap rounded-[20px] border border-accent bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent">
-                    PK
-                  </span>
-                )}
-                {fks.map((fk) => (
-                  <span
-                    key={`${fk.column}-${fk.referencesTable}-${fk.referencesColumn}`}
-                    className="whitespace-nowrap rounded-[20px] border border-border bg-surface px-2 py-0.5 text-xs font-medium text-muted"
-                  >
-                    FK → {fk.referencesTable}.{fk.referencesColumn}
-                  </span>
-                ))}
-                {!column.isPrimaryKey && fks.length === 0 && (
-                  <span className="text-xs text-muted">-</span>
-                )}
-              </div>
-            </td>
-          </tr>
-        );
-      })}
-    </>
   );
 }

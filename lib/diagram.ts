@@ -31,8 +31,14 @@ export type Table = {
   rls?: RlsInfo;
 };
 
+export type SchemaEnum = {
+  name: string;
+  values: string[];
+};
+
 export type Schema = {
   tables: Table[];
+  enums?: SchemaEnum[];
 };
 
 function esc(str: string): string {

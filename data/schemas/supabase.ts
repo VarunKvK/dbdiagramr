@@ -1,7 +1,13 @@
 import type { Schema } from "@/lib/diagram";
 import { col, table } from "./helpers";
 
+// Supabase Auth (GoTrue) v2.197.0 core auth tables. This mirrors the
+// current migrations for the seven tables most applications query directly:
+// users, identities, sessions, refresh_tokens, instances,
+// audit_log_entries, and schema_migrations. Optional MFA, SSO/SAML, OAuth,
+// WebAuthn, SCIM, and internal tables are intentionally omitted.
 export const supabaseSchema: Schema = {
+  enums: [{ name: "aal_level", values: ["aal1", "aal2", "aal3"] }],
   tables: [
     table(
       "users",
@@ -18,7 +24,6 @@ export const supabaseSchema: Schema = {
         col("confirmation_sent_at", "timestamptz", { nullable: true }),
         col("recovery_token", "varchar(255)", { nullable: true }),
         col("recovery_sent_at", "timestamptz", { nullable: true }),
-        col("email_change_token_current", "varchar(255)", { nullable: true }),
         col("email_change_token_new", "varchar(255)", { nullable: true }),
         col("email_change", "varchar(255)", { nullable: true }),
         col("email_change_sent_at", "timestamptz", { nullable: true }),
@@ -30,13 +35,14 @@ export const supabaseSchema: Schema = {
         col("updated_at", "timestamptz", { nullable: true }),
         col("phone", "text", { nullable: true }),
         col("phone_confirmed_at", "timestamptz", { nullable: true }),
-        col("phone_change", "text", { nullable: true }),
-        col("phone_change_token", "varchar(255)", { nullable: true }),
+        col("phone_change", "text", { nullable: true, default: "''" }),
+        col("phone_change_token", "varchar(255)", { nullable: true, default: "''" }),
         col("phone_change_sent_at", "timestamptz", { nullable: true }),
         col("confirmed_at", "timestamptz", { nullable: true }),
-        col("email_change_confirm_status", "smallint", { nullable: true }),
+        col("email_change_token_current", "varchar(255)", { nullable: true, default: "''" }),
+        col("email_change_confirm_status", "smallint", { nullable: true, default: "0" }),
         col("banned_until", "timestamptz", { nullable: true }),
-        col("reauthentication_token", "varchar(255)", { nullable: true }),
+        col("reauthentication_token", "varchar(255)", { nullable: true, default: "''" }),
         col("reauthentication_sent_at", "timestamptz", { nullable: true }),
         col("is_sso_user", "bool", { default: "false" }),
         col("deleted_at", "timestamptz", { nullable: true }),
@@ -47,7 +53,7 @@ export const supabaseSchema: Schema = {
     table(
       "identities",
       [
-        col("provider_id", "text", { nullable: true }),
+        col("provider_id", "text"),
         col("user_id", "uuid"),
         col("identity_data", "jsonb"),
         col("provider", "text"),
@@ -55,7 +61,7 @@ export const supabaseSchema: Schema = {
         col("created_at", "timestamptz", { nullable: true }),
         col("updated_at", "timestamptz", { nullable: true }),
         col("email", "text", { nullable: true }),
-        col("id", "text", { pk: true }),
+        col("id", "uuid", { pk: true, default: "gen_random_uuid()" }),
       ],
       [
         { column: "user_id", referencesTable: "users", referencesColumn: "id" },
@@ -71,10 +77,14 @@ export const supabaseSchema: Schema = {
         col("factor_id", "uuid", { nullable: true }),
         col("aal", "aal_level", { nullable: true }),
         col("not_after", "timestamptz", { nullable: true }),
-        col("refreshed_at", "timestamptz", { nullable: true }),
+        col("refreshed_at", "timestamp", { nullable: true }),
         col("user_agent", "text", { nullable: true }),
         col("ip", "inet", { nullable: true }),
         col("tag", "text", { nullable: true }),
+        col("oauth_client_id", "uuid", { nullable: true }),
+        col("refresh_token_hmac_key", "text", { nullable: true }),
+        col("refresh_token_counter", "bigint", { nullable: true }),
+        col("scopes", "text", { nullable: true }),
       ],
       [
         { column: "user_id", referencesTable: "users", referencesColumn: "id" },
@@ -94,7 +104,7 @@ export const supabaseSchema: Schema = {
         col("session_id", "uuid", { nullable: true }),
       ],
       [
-        { column: "user_id", referencesTable: "users", referencesColumn: "id" },
+        { column: "session_id", referencesTable: "sessions", referencesColumn: "id" },
       ]
     ),
     table(
@@ -115,7 +125,7 @@ export const supabaseSchema: Schema = {
         col("id", "uuid", { pk: true }),
         col("payload", "json", { nullable: true }),
         col("created_at", "timestamptz", { nullable: true }),
-        col("ip_address", "varchar(64)", { nullable: true }),
+        col("ip_address", "varchar(64)", { default: "''" }),
       ],
       []
     ),

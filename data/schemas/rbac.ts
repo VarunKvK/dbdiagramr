@@ -64,8 +64,8 @@ export const rbacSchema: Schema = {
     table(
       "membership_roles",
       [
-        col("membership_id", "uuid"),
-        col("role_id", "uuid"),
+        col("membership_id", "uuid", { pk: true }),
+        col("role_id", "uuid", { pk: true }),
         col("granted_at", "timestamptz"),
       ],
       [
@@ -76,8 +76,8 @@ export const rbacSchema: Schema = {
     table(
       "role_permissions",
       [
-        col("role_id", "uuid"),
-        col("permission_id", "uuid"),
+        col("role_id", "uuid", { pk: true }),
+        col("permission_id", "uuid", { pk: true }),
       ],
       [
         { column: "role_id", referencesTable: "roles", referencesColumn: "id" },

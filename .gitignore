@@ -44,3 +44,6 @@ actions/**/node_modules
 .opencode/
 videos/
 public/Product Design.zip
+
+# generated schema diagrams (prebuild/predev)
+public/schemas/

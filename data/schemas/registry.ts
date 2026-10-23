@@ -29,8 +29,24 @@ export type SchemaSource = {
   original?: boolean;
 };
 
+export type SchemaCategory = "auth" | "business" | "access" | "reference";
+
+export type SchemaQuery = {
+  title: string;
+  description: string;
+  sql: string;
+};
+
+export type SchemaScopeNote = {
+  text: string;
+  omitted: string;
+  sourceLabel: string;
+  sourceUrl: string;
+};
+
 export type SchemaEntry = {
   slug: string;
+  category: SchemaCategory;
   name: string;
   title: string;
   h1: string;
@@ -43,8 +59,12 @@ export type SchemaEntry = {
   schema: Schema;
   /** Where the schema came from (dump origin + license, or original design) */
   source?: SchemaSource;
-  /** Topical related schema slugs; falls back to first 3 other entries */
+  /** Topical related schema slugs; same-category entries fill the gaps */
   related?: string[];
+  /** Short query examples that run against this page's DDL */
+  queries?: SchemaQuery[];
+  /** Version/scope clarification shown above the diagram */
+  scopeNote?: SchemaScopeNote;
   /** Optional clarification shown above the relationship table */
   relationshipNote?: string;
   /** Optional deep-dive notes rendered after the relationship table */
@@ -61,11 +81,12 @@ export type SchemaEntry = {
 export const schemaEntries: SchemaEntry[] = [
   {
     slug: "supabase",
+    category: "auth",
     name: "Supabase",
     title: "Supabase Auth Schema Diagram: Users, Identities, Sessions",
     h1: "Supabase Auth Schema Diagram",
     description:
-      "See the Supabase auth schema as a diagram: auth.users, auth.identities, auth.sessions, and refresh_tokens with every column and foreign key.",
+      "See the Supabase auth schema as a diagram: auth.users, auth.identities, auth.sessions, and refresh_tokens with their core columns and foreign keys.",
     keywords: [
       "supabase auth schema",
       "supabase auth diagram",
@@ -77,14 +98,21 @@ export const schemaEntries: SchemaEntry[] = [
     intro:
       "Every Supabase project ships with a built-in auth schema managed by GoTrue. This diagram maps the auth tables - auth.users, auth.identities, auth.sessions, and refresh_tokens - with the primary keys and foreign keys between them. It documents the built-in auth schema, not your app's public tables. To diagram your own Supabase project, connect it with the Supabase ER diagram tool.",
     facts: [
-      { label: "Tables", value: "7" },
+      { label: "Core tables", value: "7" },
       { label: "Schema", value: "auth" },
-      { label: "Core table", value: "auth.users" },
+      { label: "Version", value: "GoTrue 2.197.0" },
     ],
+    scopeNote: {
+      text: "Core auth tables from Supabase Auth (GoTrue) v2.197.0, released 2026-09-09.",
+      omitted:
+        "Omitted here: MFA, SSO/SAML, OAuth, WebAuthn, and SCIM tables (20 optional tables in the full schema).",
+      sourceLabel: "source migrations",
+      sourceUrl: "https://github.com/supabase/auth/tree/v2.197.0/migrations",
+    },
     faqs: [
       {
         q: "How many tables does the Supabase auth schema have?",
-        a: "The standard Supabase auth schema has 7 core tables: users, identities, sessions, refresh_tokens, instances, audit_log_entries, and schema_migrations.",
+        a: "The core Supabase auth schema has 7 tables: users, identities, sessions, refresh_tokens, instances, audit_log_entries, and schema_migrations. GoTrue v2.197.0 also creates 20 optional tables for MFA, SSO/SAML, OAuth, WebAuthn, SCIM, and internal support.",
       },
       {
         q: "How do users relate to identities in Supabase?",
@@ -104,6 +132,46 @@ export const schemaEntries: SchemaEntry[] = [
       },
     ],
     lastUpdated: "2026-10-23",
+    relationshipNote:
+      "sessions.oauth_client_id references auth.oauth_clients. That table is part of the optional OAuth group, so the column is shown here without a foreign-key line.",
+    queries: [
+      {
+        title: "Sign-ins by provider",
+        description: "Join each user to their identities and sessions.",
+        sql: `select u.email, i.provider, s.created_at
+from users u
+join identities i on i.user_id = u.id
+join sessions s on s.user_id = u.id
+order by s.created_at desc
+limit 50;`,
+      },
+      {
+        title: "Current sessions",
+        description: "List sessions that have not passed their not_after cutoff.",
+        sql: `select s.id, u.email, s.aal, s.oauth_client_id, s.scopes
+from sessions s
+join users u on u.id = s.user_id
+where s.not_after is null or s.not_after > now()
+order by s.created_at desc;`,
+      },
+      {
+        title: "Refresh token lineage",
+        description: "Trace each refresh token to its session and parent token.",
+        sql: `select rt.id, rt.session_id, s.user_id, rt.parent, rt.revoked
+from refresh_tokens rt
+left join sessions s on s.id = rt.session_id
+order by rt.id desc
+limit 100;`,
+      },
+      {
+        title: "Users without an identity",
+        description: "Find auth users that have no sign-in method linked.",
+        sql: `select u.id, u.email
+from users u
+left join identities i on i.user_id = u.id
+where i.id is null;`,
+      },
+    ],
     sections: [
       {
         title: "How to download or export your Supabase schema",
@@ -159,15 +227,16 @@ where u.id = $1;</code></pre>
     ],
     schema: supabaseSchema,
     source: {
-      label: "Supabase auth migrations (supabase/auth)",
-      url: "https://github.com/supabase/auth",
+      label: "Supabase auth migrations v2.197.0 (supabase/auth)",
+      url: "https://github.com/supabase/auth/tree/v2.197.0/migrations",
       license: "Apache-2.0",
       licenseUrl: "https://github.com/supabase/auth/blob/master/LICENSE",
     },
-    related: ["nextauth", "django", "laravel"],
+    related: ["better-auth", "nextauth", "django", "laravel", "rbac"],
   },
   {
     slug: "nextauth",
+    category: "auth",
     name: "NextAuth.js",
     title: "NextAuth.js Database Schema (Auth.js)",
     h1: "NextAuth.js Database Schema",
@@ -248,10 +317,11 @@ where u.id = $1;</code></pre>
       license: "MIT",
       licenseUrl: "https://github.com/nextauthjs/next-auth/blob/main/LICENSE",
     },
-    related: ["supabase", "django", "laravel"],
+    related: ["better-auth", "supabase", "django", "laravel", "rbac"],
   },
   {
     slug: "laravel",
+    category: "auth",
     name: "Laravel",
     title: "Laravel Database Schema Diagram",
     h1: "Laravel Database Schema Diagram",
@@ -332,10 +402,11 @@ where u.id = $1;</code></pre>
       license: "MIT",
       licenseUrl: "https://github.com/laravel/laravel/blob/13.x/LICENSE.md",
     },
-    related: ["django", "nextauth", "supabase"],
+    related: ["laravel", "better-auth", "nextauth", "supabase", "rbac"],
   },
   {
     slug: "django",
+    category: "auth",
     name: "Django",
     title: "Django Auth Database Schema Diagram",
     h1: "Django Auth Database Schema Diagram",
@@ -403,6 +474,7 @@ WHERE ug.user_id = 42 OR up.user_id = 42;`,
   },
   {
     slug: "stripe",
+    category: "business",
     name: "Stripe",
     title: "Stripe Billing Database Schema Diagram",
     h1: "Stripe Billing Database Schema Diagram",
@@ -487,6 +559,7 @@ where i.status != 'paid';</code></pre>
   },
   {
     slug: "ecommerce",
+    category: "business",
     name: "E-commerce",
     title: "E-commerce Database Schema Diagram (PostgreSQL)",
     h1: "E-commerce Database Schema Diagram",
@@ -570,6 +643,7 @@ order by o.placed_at desc;</code></pre>
   },
   {
     slug: "library-management-system",
+    category: "business",
     name: "Library Management System",
     title: "Library Management System ER Diagram (PostgreSQL)",
     h1: "Library Management System ER Diagram",
@@ -604,16 +678,59 @@ order by o.placed_at desc;</code></pre>
         a: "Through the book_authors join table - a many-to-many link between books (by ISBN) and authors. Each row pairs one title with one author, so a book can have many authors and an author can write many books.",
       },
     ],
-    lastUpdated: "2026-09-27",
+    lastUpdated: "2026-10-23",
+    queries: [
+      {
+        title: "Overdue loans",
+        description: "Loans that are still out and past their due date.",
+        sql: `select l.id, b.title, m.email, l.due_at
+from loans l
+join copies c on c.id = l.copy_id
+join books b on b.isbn = c.isbn
+join members m on m.id = l.member_id
+where l.returned_at is null and l.due_at < now()
+order by l.due_at;`,
+      },
+      {
+        title: "Member loan history",
+        description: "Borrowing history for a member, newest first.",
+        sql: `select m.email, b.title, l.issued_at, l.returned_at
+from members m
+join loans l on l.member_id = m.id
+join copies c on c.id = l.copy_id
+join books b on b.isbn = c.isbn
+order by l.issued_at desc;`,
+      },
+      {
+        title: "Open reservations",
+        description: "Titles waiting to be fulfilled, with the requesting member.",
+        sql: `select b.title, m.email, r.reserved_at
+from reservations r
+join books b on b.isbn = r.isbn
+join members m on m.id = r.member_id
+where r.fulfilled_at is null
+order by r.reserved_at;`,
+      },
+      {
+        title: "Books per author",
+        description: "Count titles through the book_authors join table.",
+        sql: `select a.first_name, a.last_name, count(ba.isbn) as books
+from authors a
+left join book_authors ba on ba.author_id = a.id
+group by a.id, a.first_name, a.last_name
+order by books desc, a.last_name;`,
+      },
+    ],
     schema: librarySchema,
     source: {
       label: "Original design by dbdiagramr, modeled on standard DBMS textbook schemas",
       original: true,
     },
-    related: ["hospital-management-system", "ecommerce"],
+    related: ["hospital-management-system", "ecommerce", "chinook", "pagila"],
   },
   {
     slug: "hospital-management-system",
+    category: "business",
     name: "Hospital Management System",
     title: "Hospital Management System Database Schema (PostgreSQL)",
     h1: "Hospital Management System Database Schema",
@@ -648,16 +765,68 @@ order by o.placed_at desc;</code></pre>
         a: "Bills aggregate charges against a patient (optionally tied to one admission or appointment) with insurance-covered and status columns. Payments are separate rows per settlement attempt against a bill, which models partial payments and failed transactions naturally.",
       },
     ],
-    lastUpdated: "2026-09-27",
+    lastUpdated: "2026-10-23",
+    queries: [
+      {
+        title: "Appointment schedule",
+        description: "Upcoming appointments with the patient, doctor, and department.",
+        sql: `select a.appointment_at, p.first_name || ' ' || p.last_name as patient,
+       st.first_name || ' ' || st.last_name as doctor,
+       d.name as department, a.status
+from appointments a
+join patients p on p.id = a.patient_id
+join staff st on st.id = a.doctor_id
+left join departments d on d.id = a.department_id
+where a.appointment_at >= now()
+order by a.appointment_at;`,
+      },
+      {
+        title: "Outstanding bills",
+        description: "Bills with the amount paid so far and the remaining balance.",
+        sql: `select b.id, p.first_name || ' ' || p.last_name as patient,
+       b.total_amount,
+       coalesce(sum(pay.amount), 0) as paid,
+       b.total_amount - coalesce(sum(pay.amount), 0) as balance
+from bills b
+join patients p on p.id = b.patient_id
+left join payments pay on pay.bill_id = b.id
+where b.status <> 'paid'
+group by b.id, p.first_name, p.last_name, b.total_amount
+order by balance desc;`,
+      },
+      {
+        title: "Current admissions",
+        description: "Inpatients with their room and bed.",
+        sql: `select p.first_name || ' ' || p.last_name as patient,
+       r.number as room, b.bed_number, a.admitted_at
+from admissions a
+join patients p on p.id = a.patient_id
+join beds b on b.id = a.bed_id
+join rooms r on r.id = b.room_id
+where a.discharged_at is null
+order by a.admitted_at;`,
+      },
+      {
+        title: "Prescriptions per medical record",
+        description: "Every medication prescribed during a visit.",
+        sql: `select mr.id as record_id, m.name as medication,
+       pr.dosage, pr.frequency, pr.duration_days
+from prescriptions pr
+join medical_records mr on mr.id = pr.record_id
+join medications m on m.id = pr.medication_id
+order by mr.id, m.name;`,
+      },
+    ],
     schema: hospitalSchema,
     source: {
       label: "Original design by dbdiagramr, modeled on standard DBMS textbook schemas",
       original: true,
     },
-    related: ["library-management-system", "ecommerce"],
+    related: ["library-management-system", "ecommerce", "stripe", "multi-tenant-saas"],
   },
   {
     slug: "rbac",
+    category: "access",
     name: "RBAC",
     title: "RBAC Database Schema: Roles, Permissions & Joins",
     h1: "RBAC Database Schema",
@@ -692,21 +861,67 @@ order by o.placed_at desc;</code></pre>
         a: "Scope roles to the organization and keep permissions global. Permissions are vocabulary (resource + action pairs like articles:delete); roles are the org's policy (which permissions admin means here). This keeps permission names stable while each tenant defines its own roles.",
       },
     ],
-    lastUpdated: "2026-09-27",
+    lastUpdated: "2026-10-23",
+    queries: [
+      {
+        title: "Permission check",
+        description: "The three-join path from a membership to a permission.",
+        sql: `select 1
+from memberships m
+join membership_roles mr on mr.membership_id = m.id
+join role_permissions rp on rp.role_id = mr.role_id
+join permissions p on p.id = rp.permission_id
+where m.user_id = '00000000-0000-0000-0000-000000000001'::uuid
+  and m.organization_id = '00000000-0000-0000-0000-000000000002'::uuid
+  and p.resource = 'articles'
+  and p.action = 'delete';`,
+      },
+      {
+        title: "Roles and permission counts",
+        description: "See how many permissions each role grants.",
+        sql: `select r.name, count(rp.permission_id) as permission_count
+from roles r
+left join role_permissions rp on rp.role_id = r.id
+group by r.id, r.name
+order by permission_count desc, r.name;`,
+      },
+      {
+        title: "Memberships without roles",
+        description: "Find organization members that have no role assigned.",
+        sql: `select m.id, u.email, o.name as organization
+from memberships m
+join users u on u.id = m.user_id
+join organizations o on o.id = m.organization_id
+left join membership_roles mr on mr.membership_id = m.id
+where mr.membership_id is null;`,
+      },
+      {
+        title: "Permission matrix",
+        description: "List every role, permission, and organization pairing.",
+        sql: `select o.name as organization, r.name as role,
+       p.resource, p.action
+from roles r
+join organizations o on o.id = r.organization_id
+left join role_permissions rp on rp.role_id = r.id
+left join permissions p on p.id = rp.permission_id
+order by o.name, r.name, p.resource, p.action;`,
+      },
+    ],
     schema: rbacSchema,
     source: {
       label: "Original design by dbdiagramr, following the canonical RBAC model",
       original: true,
     },
-    related: ["multi-tenant-saas", "supabase", "nextauth"],
+    related: ["multi-tenant-saas", "supabase", "better-auth", "nextauth", "django"],
   },
   {
     slug: "multi-tenant-saas",
+    category: "business",
     name: "Multi-Tenant SaaS",
     title: "Multi-Tenant SaaS Database Schema (PostgreSQL)",
     h1: "Multi-Tenant SaaS Database Schema",
     description:
-      "Multi-tenant SaaS schema diagram: shared-schema PostgreSQL design with tenant_id on every table and composite keys.",
+      "Multi-tenant SaaS schema diagram: shared-schema PostgreSQL design with tenant_id on tenant-owned tables and a production hardening path.",
     keywords: [
       "multi tenant saas database schema postgres",
       "multi tenant database design postgres",
@@ -716,36 +931,106 @@ order by o.placed_at desc;</code></pre>
       "saas schema design",
     ],
     intro:
-      "The shared-schema pattern keeps every tenant's rows in the same tables, distinguished by a leading tenant_id column on all eight tables: tenants, users, tenant_users, projects, tasks, invitations, api_keys, and events. Primary keys and foreign keys are composite (tenant_id, id) following the Citus and Azure guidance, which makes cross-tenant joins impossible at the database level and lets the tables be hash-sharded on tenant_id later. Every operational table indexes tenant_id first, so row-level-security policies and tenant-scoped queries never scan other tenants' rows. The events table rounds out the design with a jsonb metadata column for tenant-specific fields without schema churn.",
+      "The shared-schema pattern keeps every tenant's rows in the same tables, distinguished by a leading tenant_id column on the six tenant-owned tables: tenant_users, projects, tasks, invitations, api_keys, and events. tenants and users are global: a tenant row and a user row exist once, while tenant_users links them and carries the membership role. Primary keys stay single-column (id) for readability, and tenant_id is indexed first on every tenant-owned table. This is the simpler starting point: the database does not prevent cross-tenant references by itself. The Hardening for production section shows the composite unique key plus foreign key and the RLS policy that add that guarantee.",
     facts: [
       { label: "Tables", value: "8" },
       { label: "Pattern", value: "Shared schema + tenant_id" },
-      { label: "Isolation", value: "Composite FKs" },
+      { label: "Isolation", value: "tenant_id + RLS (add in production)" },
     ],
     faqs: [
       {
         q: "What is the shared-schema multi-tenancy pattern?",
-        a: "All tenants share one database and one set of tables, with a tenant_id column on every table identifying the owner of each row. It has the lowest operational overhead - one migration covers all tenants - at the cost of relying on the application and row-level security for isolation.",
+        a: "All tenants share one database and one set of tables, with a tenant_id column on every tenant-owned table identifying the owner of each row. tenants and users stay global; tenant_users links them. It has the lowest operational overhead - one migration covers all tenants - at the cost of relying on the application and row-level security for isolation.",
       },
       {
-        q: "Why make primary keys composite (tenant_id, id)?",
-        a: "Composite keys guarantee uniqueness per tenant rather than globally, and composite foreign keys (tenant_id, project_id) make it structurally impossible for one tenant's rows to reference another tenant's rows. It also prepares the tables for hash-sharding on tenant_id, which colocates each tenant's data for cheap distributed joins.",
+        q: "Why are the primary keys single-column here?",
+        a: "Single-column keys keep the diagram and application queries simple. They do not stop one tenant's task from pointing at another tenant's project. The Hardening for production section adds a composite UNIQUE (tenant_id, id) and a composite foreign key, which enforces the tenant match in the database.",
       },
       {
         q: "How do tenant-specific custom fields work in a shared schema?",
         a: "With a jsonb metadata column (as on the events table) for flexible per-tenant fields, indexed with GIN or expression indexes where queried. This avoids per-tenant schema churn while keeping the relational core strict.",
       },
     ],
-    lastUpdated: "2026-09-27",
+    lastUpdated: "2026-10-23",
+    queries: [
+      {
+        title: "Projects and tasks per tenant",
+        description: "Count the projects and tasks owned by each tenant.",
+        sql: `select t.name,
+       count(distinct p.id) as projects,
+       count(tk.id) as tasks
+from tenants t
+left join projects p on p.tenant_id = t.id
+left join tasks tk on tk.tenant_id = t.id
+group by t.id, t.name
+order by t.name;`,
+      },
+      {
+        title: "Tenant membership list",
+        description: "Show each tenant's members and their roles.",
+        sql: `select t.name as tenant, u.email, tu.role, tu.joined_at
+from tenant_users tu
+join tenants t on t.id = tu.tenant_id
+join users u on u.id = tu.user_id
+order by t.name, u.email;`,
+      },
+      {
+        title: "Open tasks by assignee",
+        description: "Count unfinished tasks for each assignee inside a tenant.",
+        sql: `select u.email, count(t.id) as open_tasks
+from users u
+left join tasks t on t.assignee_id = u.id
+  and t.status <> 'done'
+  and t.tenant_id = '00000000-0000-0000-0000-000000000001'::uuid
+group by u.id, u.email
+order by open_tasks desc;`,
+      },
+      {
+        title: "Recent events for a tenant",
+        description: "Read the audit-style event stream for one tenant.",
+        sql: `select e.created_at, e.action, e.entity, e.entity_id, e.metadata
+from events e
+where e.tenant_id = '00000000-0000-0000-0000-000000000001'::uuid
+order by e.created_at desc
+limit 50;`,
+      },
+    ],
+    sections: [
+      {
+        title: "Hardening for production",
+        body: `
+          <p>The DDL on this page is the simpler starting point. To stop one tenant's rows from referencing another tenant's rows, add a composite unique key to the parent and a composite foreign key on the child. This example hardens <code>tasks.project_id</code>:</p>
+          <pre><code>alter table projects
+  add constraint projects_tenant_id_id_key unique (tenant_id, id);
+
+alter table tasks
+  drop constraint fk_tasks_project_id;
+
+alter table tasks
+  add constraint tasks_tenant_project_fk
+  foreign key (tenant_id, project_id)
+  references projects (tenant_id, id);</code></pre>
+          <p>The composite key makes the tenant part of the reference. A task can now point only at a project in its own tenant. Apply the same pattern to every tenant-owned foreign key.</p>
+          <p>Row-level security adds a second layer. Store the current tenant in a session setting, then filter every row through it:</p>
+          <pre><code>alter table tasks enable row level security;
+
+create policy tasks_tenant_isolation on tasks
+  using (tenant_id = current_setting('app.tenant_id', true)::uuid)
+  with check (tenant_id = current_setting('app.tenant_id', true)::uuid);</code></pre>
+          <p>Set <code>app.tenant_id</code> on each request before querying, for example <code>select set_config('app.tenant_id', $1, true);</code>. If the setting is missing, <code>current_setting(..., true)</code> returns null and the policy matches no rows.</p>
+        `,
+      },
+    ],
     schema: multitenantSchema,
     source: {
       label: "Original design by dbdiagramr, following the Citus / Azure shared-schema pattern",
       original: true,
     },
-    related: ["rbac", "stripe", "ecommerce"],
+    related: ["rbac", "stripe", "ecommerce", "hospital-management-system"],
   },
   {
     slug: "chinook",
+    category: "reference",
     name: "Chinook",
     title: "Chinook Database Schema Diagram (PostgreSQL)",
     h1: "Chinook Database Schema Diagram",
@@ -792,6 +1077,7 @@ order by o.placed_at desc;</code></pre>
   },
   {
     slug: "spring-batch",
+    category: "reference",
     name: "Spring Batch",
     title: "Spring Batch Metadata Tables Diagram (PostgreSQL)",
     h1: "Spring Batch Metadata Tables Diagram",
@@ -834,10 +1120,11 @@ order by o.placed_at desc;</code></pre>
       license: "Apache-2.0",
       licenseUrl: "https://github.com/spring-projects/spring-batch/blob/main/LICENSE.txt",
     },
-    related: ["supabase", "django", "laravel"],
+    related: ["chinook", "pagila", "dvd-rental", "northwind"],
   },
   {
     slug: "pagila",
+    category: "reference",
     name: "Pagila",
     title: "Pagila Database Schema Diagram (PostgreSQL)",
     h1: "Pagila Database Schema Diagram",
@@ -882,6 +1169,7 @@ order by o.placed_at desc;</code></pre>
   },
   {
     slug: "better-auth",
+    category: "auth",
     name: "Better Auth",
     title: "Better Auth Database Schema Diagram (PostgreSQL)",
     h1: "Better Auth Database Schema Diagram",
@@ -901,6 +1189,7 @@ order by o.placed_at desc;</code></pre>
       { label: "Tables", value: "4" },
       { label: "Core table", value: "user" },
       { label: "Identity", value: "(providerId, accountId)" },
+      { label: "Version", value: "1.7.12" },
     ],
     faqs: [
       {
@@ -913,21 +1202,71 @@ order by o.placed_at desc;</code></pre>
       },
       {
         q: "How is Better Auth's schema different from NextAuth's?",
-        a: "The shapes are close cousins - both have users, sessions, accounts, and a verification table. Better Auth names the token table verification (NextAuth calls it verification_tokens), stores the provider identity as providerId plus accountId, and supports custom table and column names via modelName and fields config.",
+        a: "The shapes are close cousins - both have users, sessions, accounts, and a verification table. Better Auth names the token table verification (NextAuth calls it verification_token), stores the provider identity as providerId plus accountId, and supports custom table and column names via modelName and fields config.",
       },
     ],
-    lastUpdated: "2026-10-20",
+    lastUpdated: "2026-10-23",
+    relationshipNote:
+      "PostgreSQL requires double quotes around the reserved table name user and around camelCase columns such as userId and expiresAt.",
+    queries: [
+      {
+        title: "Sessions per user",
+        description: "List unexpired sessions with the user and device details.",
+        sql: `select s.id, u.email, s."expiresAt", s."ipAddress", s."userAgent"
+from session s
+join "user" u on u.id = s."userId"
+where s."expiresAt" > now()
+order by s."expiresAt" desc;`,
+      },
+      {
+        title: "Accounts per provider",
+        description: "Show which sign-in provider each account uses.",
+        sql: `select u.email, a."providerId", a."accountId"
+from account a
+join "user" u on u.id = a."userId"
+order by u.email, a."providerId";`,
+      },
+      {
+        title: "Credential accounts",
+        description: "Find accounts that store a password hash for email/password login.",
+        sql: `select u.email, a."providerId"
+from account a
+join "user" u on u.id = a."userId"
+where a.password is not null;`,
+      },
+      {
+        title: "Unexpired verification values",
+        description: "Read the one-time values used by email verification and password resets.",
+        sql: `select identifier, value, "expiresAt"
+from verification
+where "expiresAt" > now()
+order by "expiresAt";`,
+      },
+    ],
+    sections: [
+      {
+        title: "Quoting the Better Auth table and column names",
+        body: `
+          <p>PostgreSQL folds unquoted identifiers to lowercase. <code>user</code> is a reserved keyword, and Better Auth's columns such as <code>userId</code>, <code>createdAt</code>, and <code>expiresAt</code> are camelCase. Always write <code>"user"</code>, <code>"userId"</code>, and <code>"createdAt"</code> in SQL.</p>
+          <pre><code>select u.id, u.email, s."userId", s."expiresAt"
+from "user" u
+join session s on s."userId" = u.id;</code></pre>
+          <p>If an ORM quotes identifiers for you, it handles this automatically. The Copy as SQL button on this page also quotes the reserved word and camelCase columns.</p>
+        `,
+      },
+    ],
     schema: betterauthSchema,
     source: {
-      label: "Better Auth core schema docs (better-auth.com/docs/concepts/database)",
+      label: "Better Auth core schema docs v1.7.12 (better-auth.com/docs/concepts/database)",
       url: "https://better-auth.com/docs/concepts/database",
       license: "MIT",
       licenseUrl: "https://github.com/better-auth/better-auth/blob/main/LICENSE.md",
     },
-    related: ["nextauth", "supabase", "rbac"],
+    related: ["supabase", "nextauth", "django", "laravel", "rbac"],
   },
   {
     slug: "dvd-rental",
+    category: "reference",
     name: "DVD Rental",
     title: "DVD Rental Database ER Diagram (PostgreSQL)",
     h1: "DVD Rental Database ER Diagram",
@@ -974,6 +1313,7 @@ order by o.placed_at desc;</code></pre>
   },
   {
     slug: "northwind",
+    category: "reference",
     name: "Northwind",
     title: "Northwind Database Diagram (PostgreSQL)",
     h1: "Northwind Database Diagram",

@@ -4,9 +4,118 @@ import type { Schema } from "@/lib/diagram";
 // Helpers
 // ---------------------------------------------------------------------------
 
+// PostgreSQL reserved words that must be quoted when used as identifiers.
+// Source: https://www.postgresql.org/docs/current/sql-keywords-appendix.html
+const RESERVED_WORDS = new Set([
+  "all",
+  "analyse",
+  "analyze",
+  "and",
+  "any",
+  "array",
+  "as",
+  "asc",
+  "asymmetric",
+  "authorization",
+  "binary",
+  "both",
+  "case",
+  "cast",
+  "check",
+  "collate",
+  "collation",
+  "column",
+  "concurrently",
+  "constraint",
+  "create",
+  "cross",
+  "current_catalog",
+  "current_date",
+  "current_role",
+  "current_schema",
+  "current_time",
+  "current_timestamp",
+  "current_user",
+  "default",
+  "deferrable",
+  "desc",
+  "distinct",
+  "do",
+  "else",
+  "end",
+  "except",
+  "false",
+  "fetch",
+  "for",
+  "foreign",
+  "freeze",
+  "from",
+  "full",
+  "grant",
+  "group",
+  "having",
+  "ilike",
+  "in",
+  "initially",
+  "inner",
+  "intersect",
+  "into",
+  "is",
+  "isnull",
+  "join",
+  "lateral",
+  "leading",
+  "left",
+  "like",
+  "limit",
+  "localtime",
+  "localtimestamp",
+  "natural",
+  "not",
+  "notnull",
+  "null",
+  "offset",
+  "on",
+  "only",
+  "or",
+  "order",
+  "outer",
+  "overlaps",
+  "placing",
+  "primary",
+  "references",
+  "returning",
+  "right",
+  "select",
+  "session_user",
+  "similar",
+  "some",
+  "symmetric",
+  "table",
+  "tablesample",
+  "then",
+  "to",
+  "trailing",
+  "true",
+  "union",
+  "unique",
+  "user",
+  "using",
+  "variadic",
+  "verbose",
+  "when",
+  "where",
+  "window",
+  "with",
+]);
+
 function quotePart(part: string): string {
-  // Quote an identifier part only when it needs it
-  if (/^[a-z_][a-z0-9_]*$/i.test(part)) return part;
+  // Quote only when PostgreSQL requires it: reserved words, uppercase,
+  // or any character outside [a-z0-9_]. Plain lowercase identifiers stay
+  // unquoted so copied SQL remains readable.
+  if (/^[a-z_][a-z0-9_]*$/.test(part) && !RESERVED_WORDS.has(part)) {
+    return part;
+  }
   return `"${part.replace(/"/g, '""')}"`;
 }
 
@@ -41,6 +150,13 @@ export function schemaToSql(schema: Schema): string {
   }
   for (const s of Array.from(schemas).sort()) {
     lines.push(`CREATE SCHEMA IF NOT EXISTS ${quotePart(s)};`, ``);
+  }
+
+  for (const e of schema.enums ?? []) {
+    const values = e.values
+      .map((value) => `'${value.replace(/'/g, "''")}'`)
+      .join(", ");
+    lines.push(`CREATE TYPE ${qualify(e.name)} AS ENUM (${values});`, ``);
   }
 
   for (const t of schema.tables) {

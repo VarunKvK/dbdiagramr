@@ -6,6 +6,24 @@ import { col, table } from "./helpers";
 // Note: the production payment table is range-partitioned by month; monthly
 // payment_p* partitions are omitted here so the diagram stays readable.
 export const pagilaSchema: Schema = {
+  extensions: ["vector"],
+  domains: [
+    {
+      name: "public.year",
+      as: "integer",
+      constraint: "CONSTRAINT year_check CHECK (((VALUE >= 1901) AND (VALUE <= 2155)))",
+    },
+  ],
+  enums: [
+    {
+      name: "public.mpaa_rating",
+      values: ["G", "PG", "PG-13", "R", "NC-17"],
+    },
+  ],
+  ddlNotes: [
+    "Adapted for PostgreSQL 16 from a source that targets PostgreSQL 18: uuidv7() -> gen_random_uuid(), VIRTUAL -> STORED generated columns. Requires the pgvector extension (CREATE EXTENSION vector).",
+    "The official 55 monthly payment partitions (payment_p2022_01 through payment_p2026_07) are omitted from this 16-table diagram; names and bounds match pagila-schema.sql v4.1.1.",
+  ],
   tables: [
     table(
       "customer",
@@ -20,7 +38,7 @@ export const pagilaSchema: Schema = {
         col("create_date", "date", { default: "CURRENT_DATE" }),
         col("last_update", "timestamp with time zone", { nullable: true, default: "now()" }),
         col("active", "integer", { nullable: true }),
-        col("uuid", "uuid", { default: "uuidv7()" }),
+        col("uuid", "uuid", { default: "gen_random_uuid()" }),
       ],
       [
         { column: "address_id", referencesTable: "address", referencesColumn: "address_id" },
@@ -63,7 +81,7 @@ export const pagilaSchema: Schema = {
         col("last_update", "timestamp with time zone", { default: "now()" }),
         col("special_features", "text[]", { nullable: true }),
         col("fulltext", "tsvector"),
-        col("length_hours", "numeric(4,2) GENERATED ALWAYS AS (round(length / 60.0, 2)) VIRTUAL", { nullable: true }),
+        col("length_hours", "numeric(4,2) GENERATED ALWAYS AS (round(length / 60.0, 2)) STORED", { nullable: true }),
       ],
       [
         { column: "language_id", referencesTable: "language", referencesColumn: "language_id" },
@@ -173,7 +191,7 @@ export const pagilaSchema: Schema = {
         col("rental_id", "integer"),
         col("amount", "numeric(5,2)"),
         col("payment_date", "timestamp with time zone", { pk: true }),
-        col("uuid", "uuid", { default: "uuidv7()" }),
+        col("uuid", "uuid", { default: "gen_random_uuid()" }),
       ],
       [
         // Inherited from the monthly payment_p* partition constraints in the
@@ -193,7 +211,7 @@ export const pagilaSchema: Schema = {
         col("return_date", "timestamp with time zone", { nullable: true }),
         col("staff_id", "integer"),
         col("last_update", "timestamp with time zone", { default: "now()" }),
-        col("uuid", "uuid", { default: "uuidv7()" }),
+        col("uuid", "uuid", { default: "gen_random_uuid()" }),
       ],
       [
         { column: "customer_id", referencesTable: "customer", referencesColumn: "customer_id" },

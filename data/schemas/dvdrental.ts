@@ -5,6 +5,19 @@ import { col, table } from "./helpers";
 // plain-SQL dump (neondatabase/postgres-sample-dbs dvdrental.sql) via parsePostgres,
 // then hand-verified.
 export const dvdrentalSchema: Schema = {
+  domains: [
+    {
+      name: "public.year",
+      as: "integer",
+      constraint: "CONSTRAINT year_check CHECK (((VALUE >= 1901) AND (VALUE <= 2155)))",
+    },
+  ],
+  enums: [
+    {
+      name: "public.mpaa_rating",
+      values: ["G", "PG", "PG-13", "R", "NC-17"],
+    },
+  ],
   tables: [
     table(
       "customer",

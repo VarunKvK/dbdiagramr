@@ -1,5 +1,5 @@
 import { getAllSchemaEntries, getSchemaEntry } from "@/data/schemas/registry";
-import { renderSchemaPng } from "@/lib/schemaImage";
+import { renderFullSchemaPng } from "@/lib/schemaImage";
 
 export const runtime = "nodejs";
 export const dynamic = "force-static";
@@ -18,7 +18,7 @@ export async function GET(
   }
 
   try {
-    const png = renderSchemaPng(entry.schema);
+    const png = renderFullSchemaPng(entry.schema);
     return new Response(new Uint8Array(png), {
       headers: {
         "content-type": "image/png",

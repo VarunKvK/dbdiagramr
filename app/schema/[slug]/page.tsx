@@ -11,6 +11,7 @@ import SchemaEmbed from "@/components/schema/SchemaEmbed";
 import CommonQueries from "@/components/schema/CommonQueries";
 import { getRelatedSchemas } from "@/lib/schemaRelations";
 import { schemaToMermaid, schemaToSql } from "@/lib/schemaExport";
+import { schemaDiagramSize } from "@/lib/schemaImage";
 import FaqAccordion from "@/app/sections/FaqAccordion";
 
 export function generateStaticParams() {
@@ -21,12 +22,16 @@ function schemaImagePath(slug: string, extension: "svg" | "png"): string {
   return `/schemas/${slug}-er-diagram.${extension}`;
 }
 
+function schemaOgPath(slug: string): string {
+  return `/schemas/${slug}-og.png`;
+}
+
 export function generateMetadata({ params }: { params: { slug: string } }): Metadata {
   const entry = getSchemaEntry(params.slug);
   if (!entry) return {};
 
   const url = `https://www.dbdiagramr.space/schema/${entry.slug}`;
-  const image = `https://www.dbdiagramr.space${schemaImagePath(entry.slug, "png")}`;
+  const image = `https://www.dbdiagramr.space${schemaOgPath(entry.slug)}`;
   const ogImage = [{ url: image, width: 1200, height: 630, alt: entry.title }];
 
   return {
@@ -122,6 +127,7 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
   const relatedBlogs = relatedBlogBySchema[entry.slug] ?? [];
   const schemaSql = schemaToSql(entry.schema);
   const schemaMermaid = schemaToMermaid(entry.schema);
+  const diagramSize = schemaDiagramSize(entry.schema);
 
   const url = `https://www.dbdiagramr.space/schema/${entry.slug}`;
   const jsonLd = {
@@ -133,7 +139,7 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
         headline: entry.title,
         description: entry.description,
         dateModified: entry.lastUpdated,
-        image: `https://www.dbdiagramr.space${schemaImagePath(entry.slug, "png")}`,
+        image: `https://www.dbdiagramr.space${schemaOgPath(entry.slug)}`,
         mainEntityOfPage: url,
         author: {
           "@type": "Person",
@@ -249,6 +255,29 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
               )}
             </p>
           )}
+          {entry.lineage && (
+            <p className="mt-1 text-sm text-muted/70">
+              Lineage: {entry.lineage.text}{" "}
+              <a
+                href={entry.lineage.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-accent hover:text-accent-hover"
+              >
+                {entry.lineage.sourceLabel}
+              </a>
+              {" "}· License:{" "}
+              <a
+                href={entry.lineage.licenseUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="font-medium text-accent hover:text-accent-hover"
+              >
+                {entry.lineage.license}
+              </a>
+              .
+            </p>
+          )}
           <div className="mt-6 flex flex-wrap gap-4">
             {entry.facts.map((fact) => (
               <div
@@ -301,16 +330,32 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
         </div>
 
         <section className="mt-10">
-          <div className="overflow-hidden rounded-[20px] border border-border bg-white shadow-sm">
-            <Image
-              src={schemaImagePath(entry.slug, "svg")}
-              alt={`${entry.name} database schema diagram showing tables, columns, and foreign keys`}
-              width={1200}
-              height={630}
-              unoptimized
-              className="h-auto w-full"
-            />
+          <div
+            className="overflow-x-auto rounded-[20px] border border-border bg-white shadow-sm"
+            tabIndex={0}
+            role="region"
+            aria-label={`${entry.name} schema diagram, scroll horizontally to see every table`}
+          >
+            <a
+              href={schemaImagePath(entry.slug, "svg")}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-max"
+            >
+              <Image
+                src={schemaImagePath(entry.slug, "svg")}
+                alt={`${entry.name} database schema diagram showing every table, column, and foreign key`}
+                width={diagramSize.width}
+                height={diagramSize.height}
+                unoptimized
+                className="block h-auto max-w-none"
+              />
+            </a>
           </div>
+          <p className="mt-3 text-sm text-muted">
+            Scroll horizontally to see the full diagram. Click it to open at
+            full size.
+          </p>
           <div className="mt-3 flex flex-wrap gap-3">
             <a
               href={schemaImagePath(entry.slug, "svg")}
@@ -324,7 +369,7 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
               download={`${entry.slug}-er-diagram.png`}
               className="rounded-[10px] border border-border bg-white px-4 py-2 text-sm font-medium text-ink shadow-sm transition-colors hover:bg-accent-soft"
             >
-              Download PNG
+              Download 2x PNG
             </a>
           </div>
         </section>
@@ -345,6 +390,17 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
           mermaid={schemaMermaid}
           slug={entry.slug}
         />
+
+        {entry.schema.ddlNotes?.length ? (
+          <section className="mt-3 max-w-3xl rounded-[10px] border border-border bg-white p-4 shadow-sm">
+            <h2 className="text-sm font-semibold text-ink">SQL export notes</h2>
+            <ul className="mt-2 list-disc space-y-1 pl-5 text-sm leading-relaxed text-muted">
+              {entry.schema.ddlNotes.map((note) => (
+                <li key={note}>{note}</li>
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
         <SchemaEmbed entry={entry} />
 

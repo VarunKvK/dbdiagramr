@@ -1,13 +1,14 @@
 import type { SchemaEntry } from "@/data/schemas/registry";
 import { buildSchemaEmbed } from "@/lib/schemaEmbed";
+import { schemaDiagramSize } from "@/lib/schemaImage";
 import EmbedCopyButton from "@/components/schema/EmbedCopyButton";
 
 export default function SchemaEmbed({
   entry,
 }: {
-  entry: Pick<SchemaEntry, "slug" | "title">;
+  entry: Pick<SchemaEntry, "slug" | "title" | "schema">;
 }) {
-  const html = buildSchemaEmbed(entry);
+  const html = buildSchemaEmbed(entry, schemaDiagramSize(entry.schema));
 
   return (
     <section className="mt-10">

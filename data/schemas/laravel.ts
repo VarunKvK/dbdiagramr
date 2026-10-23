@@ -6,7 +6,7 @@ export const laravelSchema: Schema = {
     table(
       "users",
       [
-        col("id", "bigint", { pk: true }),
+        col("id", "bigint", { pk: true, default: "nextval('public.users_id_seq'::regclass)" }),
         col("name", "varchar"),
         col("email", "varchar"),
         col("email_verified_at", "timestamp", { nullable: true }),
@@ -33,7 +33,7 @@ export const laravelSchema: Schema = {
         col("user_id", "bigint", { nullable: true }),
         col("ip_address", "varchar(45)", { nullable: true }),
         col("user_agent", "text", { nullable: true }),
-        col("payload", "longtext"),
+        col("payload", "text"),
         col("last_activity", "integer"),
       ],
       []
@@ -41,10 +41,10 @@ export const laravelSchema: Schema = {
     table(
       "jobs",
       [
-        col("id", "bigint", { pk: true }),
+        col("id", "bigint", { pk: true, default: "nextval('public.jobs_id_seq'::regclass)" }),
         col("queue", "varchar"),
-        col("payload", "longtext"),
-        col("attempts", "tinyint"),
+        col("payload", "text"),
+        col("attempts", "smallint"),
         col("reserved_at", "integer", { nullable: true }),
         col("available_at", "integer"),
         col("created_at", "integer"),
@@ -59,8 +59,8 @@ export const laravelSchema: Schema = {
         col("total_jobs", "integer"),
         col("pending_jobs", "integer"),
         col("failed_jobs", "integer"),
-        col("failed_job_ids", "longtext"),
-        col("options", "mediumtext", { nullable: true }),
+        col("failed_job_ids", "text"),
+        col("options", "text", { nullable: true }),
         col("cancelled_at", "integer", { nullable: true }),
         col("created_at", "integer"),
         col("finished_at", "integer", { nullable: true }),
@@ -70,12 +70,12 @@ export const laravelSchema: Schema = {
     table(
       "failed_jobs",
       [
-        col("id", "bigint", { pk: true }),
+        col("id", "bigint", { pk: true, default: "nextval('public.failed_jobs_id_seq'::regclass)" }),
         col("uuid", "varchar"),
-        col("connection", "text"),
-        col("queue", "text"),
-        col("payload", "longtext"),
-        col("exception", "longtext"),
+        col("connection", "varchar"),
+        col("queue", "varchar"),
+        col("payload", "text"),
+        col("exception", "text"),
         col("failed_at", "timestamp", { default: "now()" }),
       ],
       []
@@ -84,8 +84,8 @@ export const laravelSchema: Schema = {
       "cache",
       [
         col("key", "varchar", { pk: true }),
-        col("value", "mediumtext"),
-        col("expiration", "integer"),
+        col("value", "text"),
+        col("expiration", "bigint"),
       ],
       []
     ),
@@ -94,7 +94,7 @@ export const laravelSchema: Schema = {
       [
         col("key", "varchar", { pk: true }),
         col("owner", "varchar"),
-        col("expiration", "integer"),
+        col("expiration", "bigint"),
       ],
       []
     ),

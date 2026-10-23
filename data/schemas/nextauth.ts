@@ -6,7 +6,7 @@ export const nextauthSchema: Schema = {
     table(
       "users",
       [
-        col("id", "integer", { pk: true }),
+        col("id", "integer", { pk: true, default: "nextval('public.users_id_seq'::regclass)" }),
         col("name", "varchar(255)", { nullable: true }),
         col("email", "varchar(255)", { nullable: true }),
         col("emailVerified", "timestamptz", { nullable: true }),
@@ -17,7 +17,7 @@ export const nextauthSchema: Schema = {
     table(
       "accounts",
       [
-        col("id", "integer", { pk: true }),
+        col("id", "integer", { pk: true, default: "nextval('public.accounts_id_seq'::regclass)" }),
         col("userId", "integer"),
         col("type", "varchar(255)"),
         col("provider", "varchar(255)"),
@@ -37,7 +37,7 @@ export const nextauthSchema: Schema = {
     table(
       "sessions",
       [
-        col("id", "integer", { pk: true }),
+        col("id", "integer", { pk: true, default: "nextval('public.sessions_id_seq'::regclass)" }),
         col("userId", "integer"),
         col("expires", "timestamptz"),
         col("sessionToken", "varchar(255)"),

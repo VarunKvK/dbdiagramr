@@ -36,9 +36,18 @@ export type SchemaEnum = {
   values: string[];
 };
 
+export type SchemaDomain = {
+  name: string;
+  as: string;
+  constraint?: string;
+};
+
 export type Schema = {
   tables: Table[];
   enums?: SchemaEnum[];
+  domains?: SchemaDomain[];
+  extensions?: string[];
+  ddlNotes?: string[];
 };
 
 function esc(str: string): string {
@@ -86,7 +95,11 @@ export function diagramBounds(layout: Record<string, Rect>): {
   return { minX, minY, vw: maxX - minX, vh: maxY - minY };
 }
 
-export function renderDiagramSVG(schema: Schema, layout: Record<string, Rect>): string {
+export function renderDiagramSVG(
+  schema: Schema,
+  layout: Record<string, Rect>,
+  size?: { width: number; height: number }
+): string {
   const { tables } = schema;
   const { minX, minY, vw, vh } = diagramBounds(layout);
   const maxX = minX + vw;
@@ -166,7 +179,7 @@ ${colLines.join("\n")}
   });
 
   const parts = [
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${minX} ${minY} ${vw} ${vh}" width="100%" height="100%">
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${minX} ${minY} ${vw} ${vh}" width="${size?.width ?? "100%"}" height="${size?.height ?? "100%"}">
   <defs>
     <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
       <feGaussianBlur stdDeviation="3" result="blur" />

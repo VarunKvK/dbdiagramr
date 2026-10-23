@@ -14,7 +14,9 @@
     "test": "tsx --test lib/schemaExport.test.ts lib/share.test.ts",
     "start": "next start",
     "lint": "next lint",
-    "seo:run": "bash scripts/seo-run.sh"
+    "seo:run": "bash scripts/seo-run.sh",
+    "schemas:verify": "tsx scripts/verify-schema-queries.ts",
+    "schemas:verify:local": "bash scripts/verify-schemas-local.sh"
   },
   "dependencies": {
     "@base-ui/react": "^1.6.0",

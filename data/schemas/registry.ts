@@ -44,6 +44,14 @@ export type SchemaScopeNote = {
   sourceUrl: string;
 };
 
+export type SchemaLineage = {
+  text: string;
+  sourceLabel: string;
+  sourceUrl: string;
+  license: string;
+  licenseUrl: string;
+};
+
 export type SchemaEntry = {
   slug: string;
   category: SchemaCategory;
@@ -65,6 +73,8 @@ export type SchemaEntry = {
   queries?: SchemaQuery[];
   /** Version/scope clarification shown above the diagram */
   scopeNote?: SchemaScopeNote;
+  /** Credit for a database this schema was ported from */
+  lineage?: SchemaLineage;
   /** Optional clarification shown above the relationship table */
   relationshipNote?: string;
   /** Optional deep-dive notes rendered after the relationship table */
@@ -256,7 +266,15 @@ where u.id = $1;</code></pre>
       { label: "Tables", value: "4" },
       { label: "Core table", value: "users" },
       { label: "Relationship", value: "User 1→N Account" },
+      { label: "Adapter", value: "1.11.3" },
     ],
+    scopeNote: {
+      text: "PostgreSQL adapter schema from @auth/pg-adapter v1.11.3, released 2026-07-20.",
+      omitted:
+        "The adapter schema declares no foreign-key constraints and omits Prisma-only models and indexes.",
+      sourceLabel: "adapter schema.sql",
+      sourceUrl: "https://github.com/nextauthjs/next-auth/blob/%40auth/pg-adapter%401.11.3/packages/adapter-pg/schema.sql",
+    },
     relationshipNote:
       "These are the userId joins the PostgreSQL adapter uses. Its SQL does not declare foreign-key constraints; the Prisma adapter's PostgreSQL schema does, with ON DELETE CASCADE for accounts and sessions.",
     faqs: [
@@ -310,11 +328,47 @@ where u.id = $1;</code></pre>
         `,
       },
     ],
+    queries: [
+      {
+        title: "Active database sessions",
+        description: "List unexpired sessions and the user they belong to.",
+        sql: `select u.email, s.id, s."sessionToken", s.expires
+from sessions s
+join users u on u.id = s."userId"
+where s.expires > now()
+order by s.expires;`,
+      },
+      {
+        title: "Accounts by provider",
+        description: "Show every provider linked to each user.",
+        sql: `select u.email, a.provider, a."providerAccountId"
+from accounts a
+join users u on u.id = a."userId"
+order by u.email, a.provider;`,
+      },
+      {
+        title: "Users without an OAuth account",
+        description: "Find users that have no row in accounts.",
+        sql: `select u.id, u.email
+from users u
+left join accounts a on a."userId" = u.id
+where a.id is null;`,
+      },
+      {
+        title: "Sessions expiring soon",
+        description: "Sessions due to expire in the next 30 days.",
+        sql: `select u.email, s.id, s.expires
+from sessions s
+join users u on u.id = s."userId"
+where s.expires between now() and now() + interval '30 days'
+order by s.expires;`,
+      },
+    ],
     schema: nextauthSchema,
     source: {
-      label: "Auth.js database adapter schema (next-auth)",
-      url: "https://authjs.dev/getting-started/adapters/pg",
-      license: "MIT",
+      label: "@auth/pg-adapter v1.11.3 schema.sql (next-auth, released 2026-07-20)",
+      url: "https://github.com/nextauthjs/next-auth/blob/%40auth/pg-adapter%401.11.3/packages/adapter-pg/schema.sql",
+      license: "ISC",
       licenseUrl: "https://github.com/nextauthjs/next-auth/blob/main/LICENSE",
     },
     related: ["better-auth", "supabase", "django", "laravel", "rbac"],
@@ -340,8 +394,15 @@ where u.id = $1;</code></pre>
     facts: [
       { label: "Tables", value: "8" },
       { label: "Core table", value: "users" },
-      { label: "Framework", value: "Laravel 13" },
+      { label: "Framework", value: "Laravel 13.11.0" },
     ],
+    scopeNote: {
+      text: "Default migrations from laravel/laravel v13.11.0, released 2026-10-06.",
+      omitted:
+        "Package tables such as Sanctum personal_access_tokens and optional Artisan-generated tables are not part of the framework defaults.",
+      sourceLabel: "default migrations",
+      sourceUrl: "https://github.com/laravel/laravel/tree/v13.11.0/database/migrations",
+    },
     faqs: [
       {
         q: "What tables does a default Laravel installation have?",
@@ -395,14 +456,47 @@ where u.id = $1;</code></pre>
         `,
       },
     ],
+    queries: [
+      {
+        title: "Queue backlog",
+        description: "Count waiting jobs by queue name.",
+        sql: `select queue, count(*) as jobs
+from jobs
+group by queue
+order by jobs desc, queue;`,
+      },
+      {
+        title: "Failed job history",
+        description: "List failed jobs newest first.",
+        sql: `select id, connection, queue, failed_at
+from failed_jobs
+order by failed_at desc;`,
+      },
+      {
+        title: "Sessions per user",
+        description: "Count database sessions for each user.",
+        sql: `select u.email, count(s.id) as sessions
+from users u
+left join sessions s on s.user_id = u.id
+group by u.id, u.email
+order by sessions desc, u.email;`,
+      },
+      {
+        title: "Cache entries",
+        description: "Inspect stored cache keys and expiry timestamps.",
+        sql: `select key, expiration
+from cache
+order by expiration, key;`,
+      },
+    ],
     schema: laravelSchema,
     source: {
-      label: "Laravel 13 default migrations (laravel/laravel)",
-      url: "https://github.com/laravel/laravel/tree/13.x/database/migrations",
+      label: "Laravel v13.11.0 default migrations (laravel/laravel)",
+      url: "https://github.com/laravel/laravel/tree/v13.11.0/database/migrations",
       license: "MIT",
-      licenseUrl: "https://github.com/laravel/laravel/blob/13.x/LICENSE.md",
+      licenseUrl: "https://github.com/laravel/laravel/blob/v13.11.0/LICENSE.md",
     },
-    related: ["laravel", "better-auth", "nextauth", "supabase", "rbac"],
+    related: ["nextauth", "better-auth", "supabase", "rbac"],
   },
   {
     slug: "django",
@@ -426,7 +520,15 @@ where u.id = $1;</code></pre>
       { label: "Tables", value: "9" },
       { label: "Core table", value: "auth_user" },
       { label: "Join tables", value: "3" },
+      { label: "Version", value: "6.1.2" },
     ],
+    scopeNote: {
+      text: "Django 6.1.2 built-in auth and admin migrations, checked against the 6.1.x stable branch.",
+      omitted:
+        "Custom user models, third-party auth apps, and non-database session backends are not shown.",
+      sourceLabel: "django/contrib/auth migrations",
+      sourceUrl: "https://github.com/django/django/tree/6.1.2/django/contrib/auth",
+    },
     faqs: [
       {
         q: "What tables does Django auth create?",
@@ -445,7 +547,7 @@ where u.id = $1;</code></pre>
         a: "Yes. Running python manage.py migrate creates django_content_type first, then the auth tables and join tables, then django_admin_log. You get all of them even if you only use users without groups.",
       },
     ],
-    lastUpdated: "2026-10-20",
+    lastUpdated: "2026-10-23",
     guide: {
       title: "How Django's permission tables work",
       paragraphs: [
@@ -463,12 +565,50 @@ WHERE ug.user_id = 42 OR up.user_id = 42;`,
       sqlNote:
         "This lists every permission for user 42 through both groups and direct grants.",
     },
+    queries: [
+      {
+        title: "Group and direct permissions",
+        description: "List permissions a user gets through groups or directly.",
+        sql: `select u.username, g.name as "group", p.codename
+from auth_user u
+left join auth_user_groups ug on ug.user_id = u.id
+left join auth_group g on g.id = ug.group_id
+left join auth_group_permissions gp on gp.group_id = g.id
+left join auth_permission p on p.id = gp.permission_id
+order by u.username, g.name, p.codename;`,
+      },
+      {
+        title: "Recent admin actions",
+        description: "Show recent Django admin log entries with the acting user.",
+        sql: `select l.action_time, u.username, l.object_repr, l.action_flag
+from django_admin_log l
+join auth_user u on u.id = l.user_id
+order by l.action_time desc;`,
+      },
+      {
+        title: "Permissions per model",
+        description: "Count permissions attached to each content type.",
+        sql: `select ct.app_label, ct.model, count(*) as permissions
+from auth_permission p
+join django_content_type ct on ct.id = p.content_type_id
+group by ct.app_label, ct.model
+order by permissions desc, ct.app_label, ct.model;`,
+      },
+      {
+        title: "Users without a group",
+        description: "Find auth users that are not in any group.",
+        sql: `select u.id, u.username
+from auth_user u
+left join auth_user_groups ug on ug.user_id = u.id
+where ug.group_id is null;`,
+      },
+    ],
     schema: djangoSchema,
     source: {
-      label: "Django contrib.auth migrations (django/django)",
-      url: "https://github.com/django/django/tree/main/django/contrib/auth",
+      label: "Django 6.1.2 contrib.auth and admin migrations (django/django)",
+      url: "https://github.com/django/django/tree/6.1.2/django/contrib/auth",
       license: "BSD-3-Clause",
-      licenseUrl: "https://github.com/django/django/blob/main/LICENSE",
+      licenseUrl: "https://github.com/django/django/blob/6.1.2/LICENSE",
     },
     related: ["laravel", "nextauth", "supabase"],
   },
@@ -489,7 +629,7 @@ WHERE ug.user_id = 42 OR up.user_id = 42;`,
       "stripe postgres schema",
     ],
     intro:
-      "If you bill with Stripe, these are the tables behind the API. Customers own subscriptions and payment methods; subscriptions are composed of subscription items that reference prices; prices belong to products; invoices collect line items and link to payment intents. This diagram maps the full Stripe billing model as PostgreSQL tables. The shape you would build when syncing Stripe objects into your own database or designing a Stripe-like billing system from scratch.",
+      "This is a modeled Stripe billing schema, not Stripe's internal database. Customers own subscriptions and payment methods; subscriptions are composed of subscription items that reference prices; prices belong to products; invoices collect line items and link to payment intents. It is the shape you would build when syncing Stripe objects into your own database or designing a Stripe-like billing system from scratch.",
     facts: [
       { label: "Tables", value: "9" },
       { label: "Core table", value: "customers" },
@@ -518,6 +658,13 @@ WHERE ug.user_id = 42 OR up.user_id = 42;`,
       },
     ],
     lastUpdated: "2026-10-23",
+    scopeNote: {
+      text: "Modeled billing schema based on the Stripe API, not Stripe's internal database.",
+      omitted:
+        "Stripe does not publish its internal schema. Nested API objects are flattened (for example price.recurring.interval becomes recurring_interval), and _id columns represent API object references.",
+      sourceLabel: "Stripe API reference",
+      sourceUrl: "https://docs.stripe.com/api",
+    },
     sections: [
       {
         title: "The billing flow as joins",
@@ -542,12 +689,52 @@ where i.status != 'paid';</code></pre>
         title: "Design details worth copying",
         body: `
           <ul>
+            <li><strong>Nested fields are flattened.</strong> Stripe's <code>price.recurring.interval</code> and <code>interval_count</code> become <code>recurring_interval</code> and <code>recurring_interval_count</code>; card and billing details are flattened with prefixes such as <code>card_last4</code>.</li>
             <li><strong>Prices, not products, are what you bill.</strong> One product ("Pro Plan") can have many prices ($10/month, $100/year). Subscription items reference prices, not products directly.</li>
             <li><strong>Subscription items allow multi-product subscriptions.</strong> One subscription can contain multiple prices (base plus add-on) with independent quantities.</li>
             <li><strong>Invoices are snapshots.</strong> <code>invoice_line_items</code> copies the price and amount at invoice time, so an old invoice stays truthful after a price change.</li>
             <li><strong>Payment intents are the audit trail.</strong> Every charge attempt is a row, including failed ones. Join them to invoices to see what was paid and what was not.</li>
           </ul>
         `,
+      },
+    ],
+    queries: [
+      {
+        title: "Monthly recurring revenue",
+        description: "Sum active monthly subscription items in dollars.",
+        sql: `select round(sum(p.unit_amount * si.quantity) / 100.0, 2) as mrr
+from subscriptions s
+join subscription_items si on si.subscription_id = s.id
+join prices p on p.id = si.price_id
+where s.status = 'active'
+  and p.recurring_interval = 'month';`,
+      },
+      {
+        title: "Unpaid invoices",
+        description: "List invoices that are still open or past due.",
+        sql: `select i.id, c.email, i.status, i.amount_due
+from invoices i
+join customers c on c.id = i.customer_id
+where i.status <> 'paid'
+order by i.created;`,
+      },
+      {
+        title: "Failed payment attempts",
+        description: "Show payment intents that still need a payment method.",
+        sql: `select pi.id, c.email, pi.amount, pi.status
+from payment_intents pi
+left join customers c on c.id = pi.customer_id
+where pi.status = 'requires_payment_method'
+order by pi.created desc;`,
+      },
+      {
+        title: "Canceling subscriptions",
+        description: "Subscriptions already canceled or scheduled to cancel.",
+        sql: `select s.id, c.email, s.status, s.cancel_at_period_end, s.canceled_at
+from subscriptions s
+join customers c on c.id = s.customer_id
+where s.canceled_at is not null or s.cancel_at_period_end
+order by s.canceled_at desc nulls last;`,
       },
     ],
     schema: stripeSchema,
@@ -574,11 +761,11 @@ where i.status != 'paid';</code></pre>
       "orders products customers schema",
     ],
     intro:
-      "Every online store is the same 11 tables with different CSS. Customers have addresses and carts; carts hold cart items that reference products; products belong to categories and have images; orders snapshot cart items into order items and collect payments; reviews link customers to products. This is the complete e-commerce schema diagram that powers Shopify, WooCommerce, and most custom PostgreSQL storefronts.",
+      "Every online store needs the same core 11 tables. Customers have addresses and carts; carts hold cart items that reference products; products belong to categories and have images; orders snapshot cart items into order items and collect payments; reviews link customers to products. This modeled e-commerce schema covers catalog, cart, checkout, and post-purchase flows for a custom PostgreSQL storefront.",
     facts: [
       { label: "Tables", value: "11" },
       { label: "Core table", value: "orders" },
-      { label: "Pattern", value: "Shopify / WooCommerce" },
+      { label: "Pattern", value: "Original reference design" },
     ],
     faqs: [
       {
@@ -587,7 +774,7 @@ where i.status != 'paid';</code></pre>
       },
       {
         q: "What is the difference between cart_items and order_items?",
-        a: "cart_items are mutable. Quantities change until checkout. order_items are immutable snapshots copied from the cart at order time, preserving the price and product that was actually purchased even if the product later changes.",
+        a: "cart_items are mutable. Quantities change until checkout. order_items are immutable snapshots copied from the cart at order time, preserving the product_id, product_title, unit price, and total that were actually purchased even if the catalog later changes.",
       },
       {
         q: "Should I store prices as float or integer?",
@@ -603,13 +790,20 @@ where i.status != 'paid';</code></pre>
       },
     ],
     lastUpdated: "2026-10-23",
+    scopeNote: {
+      text: "Original reference design for a custom PostgreSQL storefront, not a published platform schema.",
+      omitted:
+        "Tax, shipping-rate, discount, fulfillment, and refund tables are omitted; nested commerce objects are flattened into ordinary PostgreSQL columns.",
+      sourceLabel: "Original reference design",
+      sourceUrl: "https://www.dbdiagramr.space/schema/ecommerce",
+    },
     sections: [
       {
         title: "How an order moves through the schema",
         body: `
           <p>The schema separates browsing from buying. Products and categories describe the catalog; carts and cart items describe an active session; orders and order items preserve what was actually bought.</p>
           <p><strong>Browse to cart.</strong> A customer browses <code>products</code>, joins <code>categories</code> and <code>product_images</code>, and adds rows to <code>cart_items</code> through a <code>carts</code> row. Cart rows are mutable: quantities change and items are removed.</p>
-          <p><strong>Cart to order.</strong> At checkout, cart items are copied into <code>order_items</code>. The order row records the total, the chosen shipping and billing addresses, and timestamps. The order item keeps the price and product from that moment even if the catalog changes later.</p>
+          <p><strong>Cart to order.</strong> At checkout, cart items are copied into <code>order_items</code>. The order row records the total, the chosen shipping and billing addresses, and timestamps. The order item keeps <code>product_id</code>, <code>product_title</code>, unit price, and line total from that moment even if the catalog changes later.</p>
           <p><strong>Order to payment to review.</strong> <code>payments</code> records each charge attempt against the order. After fulfillment, <code>reviews</code> links the customer and product.</p>
           <pre><code>select o.id, o.status, o.total_cents, p.status as payment_status,
        oi.quantity, pr.title
@@ -634,9 +828,52 @@ order by o.placed_at desc;</code></pre>
         `,
       },
     ],
+    queries: [
+      {
+        title: "Revenue by day",
+        description: "Sum completed order value per day.",
+        sql: `select date_trunc('day', placed_at) as day,
+       sum(total_cents) / 100.0 as revenue
+from orders
+where status <> 'cancelled'
+group by 1
+order by 1 desc;`,
+      },
+      {
+        title: "Active carts",
+        description: "Show open carts, owners, item counts, and value.",
+        sql: `select c.id, coalesce(cu.email, 'guest') as customer,
+       count(ci.id) as items,
+       coalesce(sum(ci.unit_price_cents * ci.quantity), 0) / 100.0 as value
+from carts c
+left join customers cu on cu.id = c.customer_id
+left join cart_items ci on ci.cart_id = c.id
+where c.status = 'active'
+group by c.id, cu.email
+order by value desc;`,
+      },
+      {
+        title: "Best sellers",
+        description: "Rank products by units sold using the order-item title snapshot.",
+        sql: `select product_title, sum(quantity) as units,
+       sum(total_cents) / 100.0 as revenue
+from order_items
+group by product_title
+order by units desc, product_title;`,
+      },
+      {
+        title: "Orders without a payment",
+        description: "Find orders that have no payment attempt yet.",
+        sql: `select o.id, o.status, o.total_cents, o.placed_at
+from orders o
+left join payments p on p.order_id = o.id
+where p.id is null
+order by o.placed_at;`,
+      },
+    ],
     schema: ecommerceSchema,
     source: {
-      label: "Original design by dbdiagramr, modeled on Shopify / WooCommerce",
+      label: "Original reference design by dbdiagramr",
       original: true,
     },
     related: ["stripe", "multi-tenant-saas"],
@@ -1023,7 +1260,7 @@ create policy tasks_tenant_isolation on tasks
     ],
     schema: multitenantSchema,
     source: {
-      label: "Original design by dbdiagramr, following the Citus / Azure shared-schema pattern",
+      label: "Original reference design by dbdiagramr for a PostgreSQL shared-schema multi-tenant app",
       original: true,
     },
     related: ["rbac", "stripe", "ecommerce", "hospital-management-system"],
@@ -1050,7 +1287,14 @@ create policy tasks_tenant_isolation on tasks
       { label: "Tables", value: "11" },
       { label: "Core table", value: "track" },
       { label: "Sample data", value: "15,000+ rows" },
+      { label: "Version", value: "1.4.5" },
     ],
+    scopeNote: {
+      text: "Chinook v1.4.5 PostgreSQL script by Luis Rocha.",
+      omitted: "Indexes, views, and the script's database-creation statements are omitted.",
+      sourceLabel: "Chinook_PostgreSql.sql",
+      sourceUrl: "https://github.com/lerocha/chinook-database/blob/v1.4.5/ChinookDatabase/DataSources/Chinook_PostgreSql.sql",
+    },
     faqs: [
       {
         q: "What tables are in the Chinook database?",
@@ -1065,13 +1309,52 @@ create policy tasks_tenant_isolation on tasks
         a: "From the official chinook-database repository on GitHub (Chinook_PostgreSql.sql, version 1.4+). It creates the schema and loads over 15,000 rows of sample data with a single script.",
       },
     ],
-    lastUpdated: "2026-09-27",
+    lastUpdated: "2026-10-23",
+    queries: [
+      {
+        title: "Top tracks by units sold",
+        description: "Rank tracks by invoice-line quantity.",
+        sql: `select t.name, sum(il.quantity) as units
+from track t
+join invoice_line il on il.track_id = t.track_id
+group by t.track_id, t.name
+order by units desc, t.name;`,
+      },
+      {
+        title: "Revenue by country",
+        description: "Sum invoice totals for each customer country.",
+        sql: `select c.country, sum(i.total) as revenue
+from invoice i
+join customer c on c.customer_id = i.customer_id
+group by c.country
+order by revenue desc;`,
+      },
+      {
+        title: "Sales by genre",
+        description: "Sum track sales grouped by genre.",
+        sql: `select g.name, sum(il.unit_price * il.quantity) as revenue
+from invoice_line il
+join track t on t.track_id = il.track_id
+join genre g on g.genre_id = t.genre_id
+group by g.name
+order by revenue desc;`,
+      },
+      {
+        title: "Playlist sizes",
+        description: "Count tracks in each playlist.",
+        sql: `select p.name, count(pt.track_id) as tracks
+from playlist p
+left join playlist_track pt on pt.playlist_id = p.playlist_id
+group by p.playlist_id, p.name
+order by tracks desc, p.name;`,
+      },
+    ],
     schema: chinookSchema,
     source: {
-      label: "Chinook database, Chinook_PostgreSql.sql v1.4.5 (lerocha/chinook-database)",
-      url: "https://github.com/lerocha/chinook-database/blob/master/ChinookDatabase/DataSources/Chinook_PostgreSql.sql",
+      label: "Chinook database v1.4.5, Chinook_PostgreSql.sql (lerocha/chinook-database)",
+      url: "https://github.com/lerocha/chinook-database/blob/v1.4.5/ChinookDatabase/DataSources/Chinook_PostgreSql.sql",
       license: "MIT",
-      licenseUrl: "https://github.com/lerocha/chinook-database/blob/master/LICENSE.md",
+      licenseUrl: "https://github.com/lerocha/chinook-database/blob/v1.4.5/LICENSE.md",
     },
     related: ["pagila", "library-management-system", "hospital-management-system"],
   },
@@ -1096,8 +1379,15 @@ create policy tasks_tenant_isolation on tasks
     facts: [
       { label: "Tables", value: "6" },
       { label: "Hierarchy", value: "Instance -> Execution -> Step" },
-      { label: "Source", value: "schema-postgresql.sql" },
+      { label: "Version", value: "6.0.6" },
     ],
+    scopeNote: {
+      text: "Spring Batch 6.0.6 schema-postgresql.sql. The official DDL uses unquoted uppercase names, which PostgreSQL stores in lowercase; this page and its copied DDL use those lowercase names.",
+      omitted:
+        "The three BATCH_*_SEQ sequences are omitted; the application assigns the IDs before inserting.",
+      sourceLabel: "schema-postgresql.sql v6.0.6",
+      sourceUrl: "https://github.com/spring-projects/spring-batch/blob/v6.0.6/spring-batch-core/src/main/resources/org/springframework/batch/core/schema-postgresql.sql",
+    },
     faqs: [
       {
         q: "What are the Spring Batch metadata tables?",
@@ -1112,13 +1402,49 @@ create policy tasks_tenant_isolation on tasks
         a: "Because the generated key must be assigned to the Java domain object immediately after insert. Sequences let Spring Batch fetch the ID first, set it on the object, then insert - a pattern that works uniformly across all supported databases.",
       },
     ],
-    lastUpdated: "2026-09-27",
+    lastUpdated: "2026-10-23",
+    queries: [
+      {
+        title: "Recent job executions",
+        description: "Show the latest job runs with their instance name.",
+        sql: `select ji.job_name, je.job_execution_id, je.status, je.create_time
+from batch_job_execution je
+join batch_job_instance ji on ji.job_instance_id = je.job_instance_id
+order by je.create_time desc;`,
+      },
+      {
+        title: "Failed steps",
+        description: "List step executions that ended in FAILED status.",
+        sql: `select je.job_execution_id, se.step_name, se.status, se.exit_code
+from batch_step_execution se
+join batch_job_execution je on je.job_execution_id = se.job_execution_id
+where se.status = 'FAILED'
+order by se.step_execution_id;`,
+      },
+      {
+        title: "Read and write totals",
+        description: "Sum step counters grouped by step name.",
+        sql: `select step_name,
+       sum(read_count) as read_count,
+       sum(write_count) as write_count
+from batch_step_execution
+group by step_name
+order by step_name;`,
+      },
+      {
+        title: "Job parameters",
+        description: "Show the parameters supplied to each execution.",
+        sql: `select jp.job_execution_id, jp.parameter_name, jp.parameter_value
+from batch_job_execution_params jp
+order by jp.job_execution_id, jp.parameter_name;`,
+      },
+    ],
     schema: springbatchSchema,
     source: {
-      label: "Official schema-postgresql.sql (spring-projects/spring-batch)",
-      url: "https://github.com/spring-projects/spring-batch/blob/main/spring-batch-core/src/main/resources/org/springframework/batch/core/schema-postgresql.sql",
+      label: "Official schema-postgresql.sql, Spring Batch v6.0.6 (spring-projects/spring-batch)",
+      url: "https://github.com/spring-projects/spring-batch/blob/v6.0.6/spring-batch-core/src/main/resources/org/springframework/batch/core/schema-postgresql.sql",
       license: "Apache-2.0",
-      licenseUrl: "https://github.com/spring-projects/spring-batch/blob/main/LICENSE.txt",
+      licenseUrl: "https://github.com/spring-projects/spring-batch/blob/v6.0.6/LICENSE.txt",
     },
     related: ["chinook", "pagila", "dvd-rental", "northwind"],
   },
@@ -1139,12 +1465,20 @@ create policy tasks_tenant_isolation on tasks
       "sakila postgres schema",
     ],
     intro:
-      "Pagila is the PostgreSQL port of MySQL's Sakila DVD-rental sample database, designed to showcase Postgres features. Films describe titles with a full-text search column; inventory holds physical copies per store; rentals link inventory to customers and staff; payments record each rental's charge. Sixteen tables are mapped above. Two details worth knowing: the payment table is range-partitioned by month in production (the monthly partitions are omitted here for readability), and the film table carries a film_embedding vector column plus a tsvector fulltext column - the Postgres-specific additions that distinguish Pagila from Sakila.",
+      "Pagila is the PostgreSQL port of MySQL's Sakila DVD-rental sample database, designed to showcase Postgres features. Films describe titles with a full-text search column; inventory holds physical copies per store; rentals link inventory to customers and staff; payments record each rental's charge. Sixteen tables are mapped above. Pagila v4.1.1 partitions payment by month into 55 official partitions from payment_p2022_01 through payment_p2026_07; the 16-table diagram omits them for readability. The film table also carries a film_embedding vector column plus a tsvector fulltext column - the Postgres-specific additions that distinguish Pagila from Sakila.",
     facts: [
       { label: "Tables", value: "16" },
       { label: "Core flow", value: "Film -> Inventory -> Rental -> Payment" },
-      { label: "Origin", value: "Sakila port for Postgres" },
+      { label: "Version", value: "4.1.1" },
+      { label: "Partitions", value: "55 monthly" },
     ],
+    scopeNote: {
+      text: "Pagila pagila-v4.1.1 (commit 9baf49c, 2026-09-20). Payment is range-partitioned by payment_date into 55 monthly partitions from payment_p2022_01 through payment_p2026_07; names and bounds match pagila-schema.sql.",
+      omitted:
+        "This diagram omits those partitions, views, functions, and the source's unused bıgınt domain. For PostgreSQL 16, the exported DDL uses gen_random_uuid() and STORED instead of the PG18 uuidv7() and VIRTUAL, and includes CREATE EXTENSION vector for vector(20).",
+      sourceLabel: "pagila-schema.sql (pagila-v4.1.1)",
+      sourceUrl: "https://github.com/devrimgunduz/pagila/blob/pagila-v4.1.1/pagila-schema.sql",
+    },
     faqs: [
       {
         q: "What tables are in the Pagila database?",
@@ -1156,14 +1490,72 @@ create policy tasks_tenant_isolation on tasks
       },
       {
         q: "Why is there no payment partitions table in this diagram?",
-        a: "In production Pagila partitions payment by month (payment_p2022_01 and so on), which would add dozens of identical tables to the diagram. The payment table shown here carries the inherited foreign keys; the FAQ source file documents the full partitioned layout.",
+        a: "Pagila v4.1.1 defines 55 monthly partitions, payment_p2022_01 through payment_p2026_07. The first covers 2022-01-01 00:00:00+00 to 2022-02-01 00:00:00+00; the last covers 2026-07-01 00:00:00+00 to 2026-08-01 00:00:00+00. The source also publishes local +01 bounds for March-July 2022. The 16-table diagram shows only the parent payment table; the source file documents the exact partition layout.",
       },
     ],
-    lastUpdated: "2026-09-27",
+    lastUpdated: "2026-10-23",
+    lineage: {
+      text: "Pagila is a PostgreSQL port of MySQL's Sakila sample database, originally developed by Mike Hillyer of the MySQL AB documentation team.",
+      sourceLabel: "MySQL Sakila documentation",
+      sourceUrl: "https://dev.mysql.com/doc/sakila/en/",
+      license: "New BSD",
+      licenseUrl: "https://dev.mysql.com/doc/sakila/en/sakila-license.html",
+    },
+    relationshipNote:
+      "store.manager_staff_id points to staff.staff_id by name, but pagila-schema.sql declares no foreign-key constraint on that column.",
+    queries: [
+      {
+        title: "Revenue by category",
+        description: "Sum payments through rentals and film categories.",
+        sql: `select c.name, sum(p.amount) as revenue
+from payment p
+join rental r on r.rental_id = p.rental_id
+join inventory i on i.inventory_id = r.inventory_id
+join film_category fc on fc.film_id = i.film_id
+join category c on c.category_id = fc.category_id
+group by c.name
+order by revenue desc;`,
+      },
+      {
+        title: "Most featured actors",
+        description: "Count films for each actor.",
+        sql: `select a.first_name || ' ' || a.last_name as actor,
+       count(*) as films
+from actor a
+join film_actor fa on fa.actor_id = a.actor_id
+group by a.actor_id, a.first_name, a.last_name
+order by films desc, actor;`,
+      },
+      {
+        title: "Overdue rentals",
+        description: "Unreturned rentals older than seven days.",
+        sql: `select c.first_name || ' ' || c.last_name as customer,
+       f.title, r.rental_date
+from rental r
+join customer c on c.customer_id = r.customer_id
+join inventory i on i.inventory_id = r.inventory_id
+join film f on f.film_id = i.film_id
+where r.return_date is null
+  and r.rental_date < now() - interval '7 days'
+order by r.rental_date;`,
+      },
+      {
+        title: "Revenue by store",
+        description: "Sum payments by the staff member's store.",
+        sql: `select s.store_id, sum(p.amount) as revenue
+from payment p
+join staff st on st.staff_id = p.staff_id
+join store s on s.store_id = st.store_id
+group by s.store_id
+order by s.store_id;`,
+      },
+    ],
     schema: pagilaSchema,
     source: {
-      label: "Pagila sample database, pagila-schema.sql (devrimgunduz/pagila) - a PostgreSQL port of MySQL's Sakila sample; the repository carries no license file, so check its terms before reuse",
-      url: "https://github.com/devrimgunduz/pagila/blob/master/pagila-schema.sql",
+      label: "Pagila pagila-v4.1.1, pagila-schema.sql (devrimgunduz/pagila) - a PostgreSQL port of MySQL's Sakila sample",
+      url: "https://github.com/devrimgunduz/pagila/blob/pagila-v4.1.1/pagila-schema.sql",
+      license: "MIT",
+      licenseUrl: "https://github.com/devrimgunduz/pagila/blob/pagila-v4.1.1/LICENSE.txt",
     },
     related: ["chinook", "library-management-system", "hospital-management-system"],
   },
@@ -1285,8 +1677,15 @@ join session s on s."userId" = u.id;</code></pre>
     facts: [
       { label: "Tables", value: "15" },
       { label: "Core flow", value: "Film -> Inventory -> Rental -> Payment" },
-      { label: "Source", value: "PostgreSQL tutorial" },
+      { label: "Dump commit", value: "b54cb675" },
     ],
+    scopeNote: {
+      text: "Neon plain-SQL DVD Rental dump b54cb67534bf, committed 2025-12-22.",
+      omitted:
+        "The dump omits three store foreign keys; they are restored from the official ER diagram. Views, functions, and procedural objects are omitted.",
+      sourceLabel: "dvdrental.sql",
+      sourceUrl: "https://github.com/neondatabase/postgres-sample-dbs/blob/b54cb67534bf/dvdrental.sql",
+    },
     faqs: [
       {
         q: "What tables are in the DVD Rental database?",
@@ -1301,13 +1700,57 @@ join session s on s."userId" = u.id;</code></pre>
         a: "From postgresqltutorial.com (as a pg_restore archive) or as plain SQL from the neondatabase/postgres-sample-dbs repository on GitHub, which is the source used for this diagram.",
       },
     ],
-    lastUpdated: "2026-09-27",
+    lastUpdated: "2026-10-23",
+    queries: [
+      {
+        title: "Most rented films",
+        description: "Rank films by the number of rentals.",
+        sql: `select f.title, count(r.rental_id) as rentals
+from film f
+join inventory i on i.film_id = f.film_id
+join rental r on r.inventory_id = i.inventory_id
+group by f.film_id, f.title
+order by rentals desc, f.title;`,
+      },
+      {
+        title: "Revenue by store",
+        description: "Sum payments by the staff member's store.",
+        sql: `select s.store_id, sum(p.amount) as revenue
+from payment p
+join staff st on st.staff_id = p.staff_id
+join store s on s.store_id = st.store_id
+group by s.store_id
+order by s.store_id;`,
+      },
+      {
+        title: "Overdue rentals",
+        description: "Unreturned rentals older than seven days.",
+        sql: `select c.first_name || ' ' || c.last_name as customer,
+       f.title, r.rental_date
+from rental r
+join customer c on c.customer_id = r.customer_id
+join inventory i on i.inventory_id = r.inventory_id
+join film f on f.film_id = i.film_id
+where r.return_date is null
+  and r.rental_date < now() - interval '7 days'
+order by r.rental_date;`,
+      },
+      {
+        title: "Films per category",
+        description: "Count titles in each film category.",
+        sql: `select c.name, count(fc.film_id) as films
+from category c
+left join film_category fc on fc.category_id = c.category_id
+group by c.category_id, c.name
+order by films desc, c.name;`,
+      },
+    ],
     schema: dvdrentalSchema,
     source: {
-      label: "DVD Rental sample database (postgresqltutorial.com), plain-SQL dump via neondatabase/postgres-sample-dbs",
-      url: "https://github.com/neondatabase/postgres-sample-dbs/blob/main/dvdrental.sql",
-      license: "MIT",
-      licenseUrl: "https://github.com/neondatabase/postgres-sample-dbs/blob/main/LICENSE",
+      label: "DVD Rental dump b54cb675 (neondatabase/postgres-sample-dbs); original database from postgresqltutorial.com",
+      url: "https://github.com/neondatabase/postgres-sample-dbs/blob/b54cb67534bf/dvdrental.sql",
+      license: "MIT for Neon scripts; original database terms not stated",
+      licenseUrl: "https://github.com/neondatabase/postgres-sample-dbs/blob/b54cb67534bf/LICENSE",
     },
     related: ["pagila", "chinook", "library-management-system"],
   },
@@ -1334,6 +1777,14 @@ join session s on s."userId" = u.id;</code></pre>
       { label: "Core flow", value: "Customer -> Order -> Order Details" },
       { label: "Origin", value: "Microsoft sample, PG port" },
     ],
+    scopeNote: {
+      text: "Northwind Traders schema from pthom/northwind_psql commit cd0ef28 (2024-08-31), originally published by Microsoft.",
+      omitted:
+        "Indexes and the sample-data rows are omitted. PostgreSQL folds the port's unquoted uppercase source names to lowercase, which is how they appear here.",
+      sourceLabel: "northwind.sql",
+      sourceUrl:
+        "https://github.com/pthom/northwind_psql/blob/cd0ef28d66369fbe177778e604e4be0f153c9e5c/northwind.sql",
+    },
     faqs: [
       {
         q: "What tables are in the Northwind database?",
@@ -1348,11 +1799,56 @@ join session s on s."userId" = u.id;</code></pre>
         a: "With a self-referencing foreign key: employees.reports_to points at employees.employee_id, so each employee row links to their manager's row. Territories add a second dimension via the employee_territories join table.",
       },
     ],
-    lastUpdated: "2026-09-27",
+    lastUpdated: "2026-10-23",
+    queries: [
+      {
+        title: "Revenue by category",
+        description: "Sum order-line value grouped by product category.",
+        sql: `select c.category_name,
+       sum(od.unit_price * od.quantity * (1 - od.discount)) as revenue
+from order_details od
+join products p on p.product_id = od.product_id
+join categories c on c.category_id = p.category_id
+group by c.category_name
+order by revenue desc;`,
+      },
+      {
+        title: "Top customers",
+        description: "Rank customers by order-line value.",
+        sql: `select c.company_name,
+       sum(od.unit_price * od.quantity * (1 - od.discount)) as revenue
+from orders o
+join order_details od on od.order_id = o.order_id
+join customers c on c.customer_id = o.customer_id
+group by c.customer_id, c.company_name
+order by revenue desc;`,
+      },
+      {
+        title: "Employee sales",
+        description: "Rank employees by the value they sold.",
+        sql: `select e.first_name || ' ' || e.last_name as employee,
+       sum(od.unit_price * od.quantity * (1 - od.discount)) as revenue
+from orders o
+join order_details od on od.order_id = o.order_id
+join employees e on e.employee_id = o.employee_id
+group by e.employee_id, e.first_name, e.last_name
+order by revenue desc;`,
+      },
+      {
+        title: "Low stock products",
+        description: "Products at or below their reorder level.",
+        sql: `select product_name, units_in_stock, reorder_level
+from products
+where units_in_stock <= reorder_level
+order by units_in_stock, product_name;`,
+      },
+    ],
     schema: northwindSchema,
     source: {
-      label: "Northwind Traders sample database, PostgreSQL port (pthom/northwind_psql) - originally a Microsoft sample database; the port repository carries no license file, so check its terms before reuse",
-      url: "https://github.com/pthom/northwind_psql",
+      label: "Northwind Traders sample database, Microsoft schema ported to PostgreSQL by pthom/northwind_psql commit cd0ef28 (2024-08-31)",
+      url: "https://github.com/pthom/northwind_psql/tree/cd0ef28d66369fbe177778e604e4be0f153c9e5c",
+      license: "Ms-PL",
+      licenseUrl: "https://github.com/pthom/northwind_psql/blob/cd0ef28d66369fbe177778e604e4be0f153c9e5c/LICENSE",
     },
     related: ["chinook", "pagila", "ecommerce"],
   },

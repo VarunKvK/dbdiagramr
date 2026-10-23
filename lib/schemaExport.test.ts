@@ -43,3 +43,31 @@ test("emits Postgres enum types before tables", () => {
   assert.match(sql, /CREATE TYPE aal_level AS ENUM \('aal1', 'aal2'\);/);
   assert.ok(sql.indexOf("CREATE TYPE aal_level") < sql.indexOf('CREATE TABLE "user"'));
 });
+
+test("creates sequences referenced by nextval defaults before tables", () => {
+  const sql = schemaToSql({
+    tables: [
+      {
+        name: "customer",
+        columns: [
+          {
+            name: "customer_id",
+            type: "integer",
+            nullable: "NO",
+            default: "nextval('public.customer_customer_id_seq'::regclass)",
+            isPrimaryKey: true,
+          },
+        ],
+        foreignKeys: [],
+      },
+    ],
+  });
+
+  assert.match(
+    sql,
+    /CREATE SEQUENCE IF NOT EXISTS public\.customer_customer_id_seq;/
+  );
+  assert.ok(
+    sql.indexOf("CREATE SEQUENCE") < sql.indexOf("CREATE TABLE customer")
+  );
+});

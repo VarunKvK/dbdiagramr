@@ -2,7 +2,7 @@ import type { Schema } from "@/lib/diagram";
 import { col, table } from "./helpers";
 
 // Generic e-commerce schema — products, categories, customers, orders, etc.
-// Pattern used by Shopify, WooCommerce, and most custom storefronts on PostgreSQL.
+// Generic PostgreSQL storefront reference design.
 export const ecommerceSchema: Schema = {
   tables: [
     table(
@@ -128,6 +128,7 @@ export const ecommerceSchema: Schema = {
         col("id", "uuid", { pk: true }),
         col("order_id", "uuid"),
         col("product_id", "uuid"),
+        col("product_title", "varchar"),
         col("quantity", "integer"),
         col("unit_price_cents", "integer"),
         col("total_cents", "integer"),

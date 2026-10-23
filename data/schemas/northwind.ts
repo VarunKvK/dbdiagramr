@@ -22,8 +22,8 @@ export const northwindSchema: Schema = {
         col("customer_type_id", "character varying(5)", { pk: true }),
       ],
       [
-        { column: "customer_type_id", referencesTable: "customer_demographics", referencesColumn: "id" },
-        { column: "customer_id", referencesTable: "customers", referencesColumn: "id" },
+        { column: "customer_type_id", referencesTable: "customer_demographics", referencesColumn: "customer_type_id" },
+        { column: "customer_id", referencesTable: "customers", referencesColumn: "customer_id" },
       ]
     ),
     table(
@@ -74,7 +74,7 @@ export const northwindSchema: Schema = {
         col("photo_path", "character varying(255)", { nullable: true }),
       ],
       [
-        { column: "reports_to", referencesTable: "employees", referencesColumn: "id" },
+        { column: "reports_to", referencesTable: "employees", referencesColumn: "employee_id" },
       ]
     ),
     table(
@@ -84,8 +84,8 @@ export const northwindSchema: Schema = {
         col("territory_id", "character varying(20)", { pk: true }),
       ],
       [
-        { column: "territory_id", referencesTable: "territories", referencesColumn: "id" },
-        { column: "employee_id", referencesTable: "employees", referencesColumn: "id" },
+        { column: "territory_id", referencesTable: "territories", referencesColumn: "territory_id" },
+        { column: "employee_id", referencesTable: "employees", referencesColumn: "employee_id" },
       ]
     ),
     table(
@@ -98,8 +98,8 @@ export const northwindSchema: Schema = {
         col("discount", "real"),
       ],
       [
-        { column: "product_id", referencesTable: "products", referencesColumn: "id" },
-        { column: "order_id", referencesTable: "orders", referencesColumn: "id" },
+        { column: "product_id", referencesTable: "products", referencesColumn: "product_id" },
+        { column: "order_id", referencesTable: "orders", referencesColumn: "order_id" },
       ]
     ),
     table(
@@ -121,9 +121,9 @@ export const northwindSchema: Schema = {
         col("ship_country", "character varying(15)", { nullable: true }),
       ],
       [
-        { column: "customer_id", referencesTable: "customers", referencesColumn: "id" },
-        { column: "employee_id", referencesTable: "employees", referencesColumn: "id" },
-        { column: "ship_via", referencesTable: "shippers", referencesColumn: "id" },
+        { column: "customer_id", referencesTable: "customers", referencesColumn: "customer_id" },
+        { column: "employee_id", referencesTable: "employees", referencesColumn: "employee_id" },
+        { column: "ship_via", referencesTable: "shippers", referencesColumn: "shipper_id" },
       ]
     ),
     table(
@@ -141,8 +141,8 @@ export const northwindSchema: Schema = {
         col("discontinued", "integer"),
       ],
       [
-        { column: "category_id", referencesTable: "categories", referencesColumn: "id" },
-        { column: "supplier_id", referencesTable: "suppliers", referencesColumn: "id" },
+        { column: "category_id", referencesTable: "categories", referencesColumn: "category_id" },
+        { column: "supplier_id", referencesTable: "suppliers", referencesColumn: "supplier_id" },
       ]
     ),
     table(
@@ -188,7 +188,7 @@ export const northwindSchema: Schema = {
         col("region_id", "smallint"),
       ],
       [
-        { column: "region_id", referencesTable: "region", referencesColumn: "id" },
+        { column: "region_id", referencesTable: "region", referencesColumn: "region_id" },
       ]
     ),
     table(

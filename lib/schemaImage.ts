@@ -6,7 +6,6 @@ import { layoutSchema } from "@/lib/diagramLayout";
 const WIDTH = 1200;
 const HEIGHT = 630;
 const BACKGROUND = "#f3ffe6";
-const FOOTER = 46;
 const FONT_SANS = "Liberation Sans";
 const FONT_MONO = "Liberation Mono";
 
@@ -31,37 +30,9 @@ function withoutMarkers(svg: string): string {
   return svg.replace(/\s*marker-end="url\(#arrowhead\)"/g, "");
 }
 
-function frame(
-  svg: string,
-  layout: ReturnType<typeof layoutSchema>,
-  tableCount: number
-): string {
-  const { minX, minY, vw, vh } = diagramBounds(layout);
-  const contentHeight = HEIGHT - FOOTER;
-  const scale = Math.min(
-    (WIDTH - 64) / vw,
-    (contentHeight - 36) / vh,
-    1.6
-  );
-  const scaledHeight = vh * scale;
-  const tx = (WIDTH - vw * scale) / 2 - minX * scale;
-  const ty =
-    scaledHeight <= contentHeight
-      ? (contentHeight - scaledHeight) / 2 - minY * scale
-      : 18 - minY * scale;
-  const body = svg.replace(/^<svg\b[^>]*>/, "").replace(/<\/svg>\s*$/, "");
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}">
-  <rect width="${WIDTH}" height="${HEIGHT}" fill="${BACKGROUND}"/>
-  <g transform="translate(${tx} ${ty}) scale(${scale})">${body}</g>
-  <rect x="0" y="${HEIGHT - FOOTER}" width="${WIDTH}" height="${FOOTER}" fill="${BACKGROUND}"/>
-  <text x="32" y="${HEIGHT - 17}" font-family="${FONT_SANS}" font-size="16" fill="#4b5563">${tableCount} ${tableCount === 1 ? "table" : "tables"}</text>
-  <text x="${WIDTH - 32}" y="${HEIGHT - 17}" text-anchor="end" font-family="${FONT_SANS}" font-size="16" fill="#4b5563">Made with dbdiagramr</text>
-</svg>`;
-}
-
 function bestLayout(schema: Schema) {
   const layouts = [layoutSchema(schema, "LR"), layoutSchema(schema, "TB")];
-  const target = WIDTH / (HEIGHT - FOOTER);
+  const target = WIDTH / (HEIGHT - 46);
   return layouts.reduce((best, candidate) => {
     const bestRatio = (() => {
       const b = diagramBounds(best);
@@ -76,18 +47,25 @@ function bestLayout(schema: Schema) {
   });
 }
 
-export function renderSchemaSvg(schema: Schema): string {
-  const layout = bestLayout(schema);
-  return frame(
-    withFonts(withoutMarkers(withoutGlow(renderDiagramSVG(schema, layout)))),
-    layout,
-    schema.tables.length
-  );
+export function schemaDiagramSize(schema: Schema): {
+  width: number;
+  height: number;
+} {
+  const bounds = diagramBounds(bestLayout(schema));
+  return { width: Math.ceil(bounds.vw), height: Math.ceil(bounds.vh) };
 }
 
-function renderPng(svg: string): Uint8Array {
+export function renderFullSchemaSvg(schema: Schema): string {
+  const layout = bestLayout(schema);
+  const size = schemaDiagramSize(schema);
+  return withFonts(renderDiagramSVG(schema, layout, size));
+}
+
+function renderPng(svg: string, scale = 1): Uint8Array {
   const resvg = new Resvg(svg, {
     background: BACKGROUND,
+    fitTo:
+      scale === 1 ? undefined : { mode: "zoom", value: scale },
     font: {
       loadSystemFonts: false,
       defaultFontFamily: FONT_SANS,
@@ -100,8 +78,81 @@ function renderPng(svg: string): Uint8Array {
   return resvg.render().asPng();
 }
 
-export function renderSchemaPng(schema: Schema): Uint8Array {
-  return renderPng(renderSchemaSvg(schema));
+export function renderFullSchemaPng(schema: Schema): Uint8Array {
+  const svg = withFonts(
+    withoutMarkers(withoutGlow(renderFullSchemaSvg(schema)))
+  );
+  return renderPng(svg, 2);
+}
+
+function escapeXml(value: string): string {
+  return value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+const OG_COLUMNS = 4;
+const OG_PAD = 40;
+const OG_GAP = 12;
+const OG_HEADER = 150;
+const OG_FOOTER = 56;
+
+export function renderSchemaOgSvg(schema: Schema): string {
+  const count = schema.tables.length;
+  const rows = Math.max(1, Math.ceil(count / OG_COLUMNS));
+  const cardWidth =
+    (WIDTH - OG_PAD * 2 - (OG_COLUMNS - 1) * OG_GAP) / OG_COLUMNS;
+  const availableHeight = HEIGHT - OG_HEADER - OG_FOOTER;
+  const cardHeight = Math.min(
+    104,
+    (availableHeight - (rows - 1) * OG_GAP) / rows
+  );
+  const gridTop =
+    OG_HEADER +
+    Math.max(
+      0,
+      (availableHeight - (rows * cardHeight + (rows - 1) * OG_GAP)) / 2
+    );
+
+  const cards = schema.tables
+    .map((table, index) => {
+      const col = index % OG_COLUMNS;
+      const row = Math.floor(index / OG_COLUMNS);
+      const x = OG_PAD + col * (cardWidth + OG_GAP);
+      const y = gridTop + row * (cardHeight + OG_GAP);
+      const name = escapeXml(table.name);
+      const nameSize = table.name.length > 24 ? 13.5 : 15;
+      const columnCount = table.columns.length;
+      const fkCount = table.foreignKeys.length;
+      const metrics = `${columnCount} ${columnCount === 1 ? "column" : "columns"} · ${fkCount} ${fkCount === 1 ? "FK" : "FKs"}`;
+      return `<g transform="translate(${x} ${y})">
+    <rect width="${cardWidth}" height="${cardHeight}" rx="10" fill="#1e1e1e"/>
+    <rect width="5" height="${cardHeight}" rx="2.5" fill="#3d7e16"/>
+    <text x="18" y="31" font-family="${FONT_SANS}" font-size="${nameSize}" font-weight="700" fill="#ffffff">${name}</text>
+    <text x="18" y="55" font-family="${FONT_SANS}" font-size="12" fill="#a3bfa0">${escapeXml(metrics)}</text>
+  </g>`;
+    })
+    .join("");
+
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${WIDTH}" height="${HEIGHT}" viewBox="0 0 ${WIDTH} ${HEIGHT}">
+  <rect width="${WIDTH}" height="${HEIGHT}" fill="${BACKGROUND}"/>
+  <rect x="${OG_PAD}" y="36" width="190" height="30" rx="15" fill="#e3f4d4"/>
+  <text x="${OG_PAD + 95}" y="56" text-anchor="middle" font-family="${FONT_SANS}" font-size="14" font-weight="700" letter-spacing="0.5" fill="#3d7e16">POSTGRESQL SCHEMA</text>
+  <text x="${WIDTH - OG_PAD}" y="56" text-anchor="end" font-family="${FONT_SANS}" font-size="20" font-weight="700" fill="#1e1e1e">dbdiagramr.space</text>
+  <text x="${WIDTH - OG_PAD}" y="79" text-anchor="end" font-family="${FONT_SANS}" font-size="13" fill="#4b5563">Free PostgreSQL ER diagrams</text>
+  <text x="${OG_PAD}" y="120" font-family="${FONT_SANS}" font-size="38" font-weight="700" fill="#1e1e1e">${count} ${count === 1 ? "table" : "tables"}, every column mapped</text>
+  <text x="${WIDTH - OG_PAD}" y="120" text-anchor="end" font-family="${FONT_SANS}" font-size="16" fill="#4b5563">${count === 0 ? "Empty schema" : "All tables shown"}</text>
+  ${cards}
+  <line x1="${OG_PAD}" y1="${HEIGHT - 48}" x2="${WIDTH - OG_PAD}" y2="${HEIGHT - 48}" stroke="#dbeccd" stroke-width="2"/>
+  <text x="${OG_PAD}" y="${HEIGHT - 20}" font-family="${FONT_SANS}" font-size="14" font-weight="700" fill="#1e1e1e">Interactive PostgreSQL ER diagram</text>
+  <text x="${WIDTH - OG_PAD}" y="${HEIGHT - 20}" text-anchor="end" font-family="${FONT_SANS}" font-size="14" fill="#4b5563">dbdiagramr.space</text>
+</svg>`;
+}
+
+export function renderSchemaOgPng(schema: Schema): Uint8Array {
+  return renderPng(renderSchemaOgSvg(schema));
 }
 
 const SHARE_CARD_WIDTH = 352;
@@ -111,14 +162,6 @@ const SHARE_GAP_Y = 14;
 const SHARE_COLUMNS = 3;
 const SHARE_MAX_TABLES = 12;
 const SHARE_GRID_TOP = 174;
-
-function escapeXml(value: string): string {
-  return value
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;");
-}
 
 function truncate(value: string, max: number): string {
   return value.length > max ? `${value.slice(0, max - 1)}…` : value;

@@ -210,7 +210,14 @@ GRANT CONNECT ON DATABASE your_db TO dbdiagramr_reader;
 GRANT USAGE ON SCHEMA public TO dbdiagramr_reader;`}</pre>
             <p className="mt-3 font-mono text-[11px] leading-relaxed text-muted">
               Use the Session pooler (5432) or Transaction pooler (6543)
-              connection string from Supabase → Connect.
+              connection string from Supabase → Connect.{" "}
+              <Link
+                href="/supabase-connection-string"
+                className="font-medium text-accent hover:text-accent-hover"
+              >
+                Compare all four Supabase modes
+              </Link>
+              .
             </p>
           </div>
           <div>

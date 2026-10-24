@@ -2,91 +2,6 @@
 // Keep each body self-contained: headings, tables, code blocks, FAQ.
 
 export const blogBodies: Record<string, string> = {
-  "postgres-connection-string-supabase-neon-railway": `
-    <h2>The short version</h2>
-    <p>A PostgreSQL connection string is a single URL that tells a client how to reach your database. It looks like this:</p>
-    <pre><code>postgresql://postgres:[YOUR-PASSWORD]@db.abcdefghij.supabase.co:5432/postgres</code></pre>
-    <p>Every provider builds on the same format, and the differences that trip people up are almost never the syntax. They're the <strong>port and host</strong> your provider hands you. Supabase alone has three different strings for the same database, and two of them are the wrong default for serverless apps.</p>
-
-    <h2>Anatomy of a connection string</h2>
-    <pre><code>postgresql://  user  :  password   @     host        :  port  /  database
-     |          |         |              |              |          |
-  protocol    username  secret         server        port       db name</code></pre>
-    <table>
-      <thead><tr><th>Part</th><th>Example</th><th>Notes</th></tr></thead>
-      <tbody>
-        <tr><td>Protocol</td><td><code>postgresql://</code></td><td><code>postgres://</code> also works</td></tr>
-        <tr><td>User</td><td><code>postgres</code></td><td>In Supabase: <code>postgres.[project-ref]</code> on pooler URLs</td></tr>
-        <tr><td>Password</td><td><code>[your-password]</code></td><td>URL-encode special chars (<code>@</code> → <code>%40</code>)</td></tr>
-        <tr><td>Host</td><td><code>db.xxxx.supabase.co</code></td><td>Provider-specific</td></tr>
-        <tr><td>Port</td><td><code>5432</code></td><td><strong>6543 = transaction pooler</strong></td></tr>
-        <tr><td>Database</td><td><code>postgres</code></td><td>Default database name</td></tr>
-      </tbody>
-    </table>
-    <p>You can append query parameters: <code>?sslmode=require</code> (force TLS) and <code>?channel_binding=require</code>.</p>
-
-    <h2>Supabase: three strings for one database</h2>
-    <p>Supabase is where most people hit the wall, because the <em>right</em> string depends on where your code runs:</p>
-    <table>
-      <thead><tr><th>Mode</th><th>Host</th><th>Port</th><th>Best for</th></tr></thead>
-      <tbody>
-        <tr><td><strong>Direct</strong></td><td><code>db.[project-ref].supabase.co</code></td><td><code>5432</code></td><td>Migrations, <code>pg_dump</code>, long-lived backend</td></tr>
-        <tr><td><strong>Shared pooler (session)</strong></td><td><code>aws-[region].pooler.supabase.com</code></td><td><code>5432</code></td><td>Persistent backend on IPv4</td></tr>
-        <tr><td><strong>Shared pooler (transaction)</strong></td><td><code>aws-[region].pooler.supabase.com</code></td><td><strong><code>6543</code></strong></td><td><strong>Serverless / edge / short-lived connections</strong></td></tr>
-      </tbody>
-    </table>
-    <pre><code># Direct
-postgresql://postgres:[YOUR-PASSWORD]@db.[project-ref].supabase.co:5432/postgres
-
-# Shared pooler session mode
-postgres://postgres.[project-ref]:[YOUR-PASSWORD]@aws-[REGION].pooler.supabase.com:5432/postgres
-
-# Shared pooler transaction mode (the one most apps want)
-postgres://postgres.[project-ref]:[YOUR-PASSWORD]@aws-[REGION].pooler.supabase.com:6543/postgres</code></pre>
-    <p><strong>The gotcha:</strong> direct connections use <strong>IPv6 by default</strong>; IPv4 needs the paid IPv4 add-on. On an IPv4-only network you get <code>ENOTFOUND</code>, not a friendly error. The shared pooler is IPv4-only and fixes it. For serverless (Vercel, edge, Lambda) use <strong>transaction mode (port 6543)</strong> with prepared statements off.</p>
-    <p>This is why <a href="https://www.dbdiagramr.space/visualize">dbdiagramr</a> defaults to the Session pooler and also supports Transaction mode when the connection string says <code>6543</code>.</p>
-
-    <h2>Neon: pooled vs direct</h2>
-    <pre><code># Pooled (use by default)
-postgresql://user:pass@ep-cool-rain-123456-pooler.us-east-2.aws.neon.tech/neondb?sslmode=require
-
-# Direct
-postgresql://user:pass@ep-cool-rain-123456.us-east-2.aws.neon.tech/neondb?sslmode=require</code></pre>
-    <p>Rule of thumb: use the <code>-pooler</code> host unless you have a specific reason not to. Grab both from the <em>Connect</em> button in the Neon dashboard.</p>
-
-    <h2>Railway: the plain standard</h2>
-    <pre><code>postgresql://postgres:[YOUR-PASSWORD]@[host].railway.app:5432/railway</code></pre>
-    <p>No pooler decision, textbook format, easiest to read and to misplace a password in. Store in <code>DATABASE_URL</code>, never in code.</p>
-
-    <h2>All the formats in one table</h2>
-    <table>
-      <thead><tr><th>Provider</th><th>Connection string shape</th></tr></thead>
-      <tbody>
-        <tr><td>Standard / Railway</td><td><code>postgresql://user:pass@host:5432/db</code></td></tr>
-        <tr><td>Supabase (direct)</td><td><code>postgresql://postgres:pass@db.[ref].supabase.co:5432/postgres</code></td></tr>
-        <tr><td>Supabase (session)</td><td><code>postgres://postgres.[ref]:pass@aws-[region].pooler.supabase.com:5432/postgres</code></td></tr>
-        <tr><td>Supabase (transaction)</td><td><code>postgres://postgres.[ref]:pass@aws-[region].pooler.supabase.com:6543/postgres</code></td></tr>
-        <tr><td>Neon (pooled)</td><td><code>postgresql://user:pass@ep-xxx-pooler.region.aws.neon.tech/db?sslmode=require</code></td></tr>
-        <tr><td>Neon (direct)</td><td><code>postgresql://user:pass@ep-xxx.region.aws.neon.tech/db?sslmode=require</code></td></tr>
-      </tbody>
-    </table>
-
-    <h2>Gotchas that will actually bite you</h2>
-    <ul>
-      <li><strong>IPv4 vs IPv6.</strong> Supabase direct uses IPv6 by default; IPv4 needs the paid IPv4 add-on. IPv4-only hosts get <code>ENOTFOUND</code>. The shared pooler strings are IPv4 and sidestep it.</li>
-      <li><strong>Serverless wants the transaction pooler.</strong> Long-lived backends can hold a connection; serverless functions open many short-lived ones. Session mode is not the best fit for that pattern; transaction pooling (port <strong>6543</strong>) exists for it.</li>
-      <li><strong>A connection string is a secret.</strong> Password in plain text. Never commit it, never paste into a shared doc. Most good tools never store it beyond one request.</li>
-      <li><strong>URL-encode passwords.</strong> A password with <code>@</code>, <code>:</code>, or <code>/</code> breaks the URL. Encode those.</li>
-    </ul>
-    <p>Curious what that pooler URL contains after it connects? The <a href="https://www.dbdiagramr.space/schema/supabase">Supabase auth schema diagram</a> was created by introspecting a live Supabase database through a transaction pooler string.</p>
-
-    <h2>FAQ</h2>
-    <p><strong>What is a PostgreSQL connection string?</strong><br/>A single URL with everything needed to reach a Postgres database: protocol, username, password, host, port, and database name.</p>
-    <p><strong>Should I use a direct connection or a pooler?</strong><br/>Persistent backend → direct is fine. Serverless/edge → use a pooler (Supabase transaction mode port 6543 or Neon <code>-pooler</code> host).</p>
-    <p><strong>Why does my Supabase connection fail with ENOTFOUND?</strong><br/>You're using the direct string on an IPv4-only network, and Supabase's direct endpoint uses IPv6 by default. Switch to a shared pooler string.</p>
-    <p><strong>Is my connection string a secret?</strong><br/>Yes, password in plain text. Keep in environment variables, rotate if leaked, only hand to tools that won't store it.</p>
-  `,
-
   "what-is-an-er-diagram": `
     <h2>The short version</h2>
     <p>An <strong>entity-relationship (ER) diagram</strong> is a picture of your database structure. Each <strong>entity</strong> (table) is a box, each <strong>attribute</strong> (column) is a row inside it, and each <strong>relationship</strong> (foreign key) is a line between boxes. Cardinality markers tell you whether one row relates to one or many. If you can read those three elements, you can read any ER diagram.</p>
@@ -210,6 +125,7 @@ git diff --exit-code docs/schema.svg SCHEMA.md</code></pre>
   "supabase-connection-string-ipv6-enotfound": `
     <h2>The short answer</h2>
     <p>The Supabase direct host uses IPv6 by default. If your app or network is IPv4-only, the hostname has no usable address and Node reports <code>getaddrinfo ENOTFOUND db.&lt;ref&gt;.supabase.co</code>. The fix is the shared pooler: Session mode (port <code>5432</code>) is the safe default, and Transaction mode (port <code>6543</code>) works for serverless if prepared statements are turned off.</p>
+    <p>For the full four-mode table, usernames, SSL settings, and driver fixes, see the <a href="https://www.dbdiagramr.space/supabase-connection-string">Supabase connection string guide</a>.</p>
 
     <h2>What the error means</h2>
     <pre><code>Error: getaddrinfo ENOTFOUND db.xxxxxxxxx.supabase.co</code></pre>

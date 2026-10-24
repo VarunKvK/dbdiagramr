@@ -16,22 +16,6 @@ export type BlogPost = {
 
 export const blogPosts: BlogPost[] = [
   {
-    slug: "postgres-connection-string-supabase-neon-railway",
-    title: "PostgreSQL Connection String: Supabase, Neon, Railway",
-    description:
-      "Every piece of a PostgreSQL connection string, broken down, plus why Supabase's transaction pooler (port 6543) is the gotcha most tutorials skip.",
-    keywords: [
-      "postgres connection string",
-      "supabase connection string",
-      "postgresql connection string explained",
-      "supabase transaction pooler",
-    ],
-    date: "2026-08-20",
-    readingMinutes: 5,
-    tags: ["postgres", "supabase", "tutorial"],
-    devtoUrl: undefined,
-  },
-  {
     slug: "what-is-an-er-diagram",
     title: "What Is an ER Diagram and How to Read One",
     description:

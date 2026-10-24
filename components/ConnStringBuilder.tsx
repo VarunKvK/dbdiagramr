@@ -1,15 +1,17 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { analyzeConnectionString, ENDPOINT_LABELS } from "@/lib/connectionString";
 import { goVisualizeWithConn } from "@/lib/preload";
 import { scrollToTop } from "@/lib/scroll";
 
-type Preset = "custom" | "supabase-pooler" | "supabase-direct" | "neon" | "railway" | "local";
+type Preset = "custom" | "supabase-pooler" | "supabase-direct" | "supabase-dedicated" | "neon" | "railway" | "local";
 
 const PRESETS: { id: Preset; label: string; hint: string }[] = [
   { id: "custom", label: "Custom", hint: "Fill every field yourself" },
   { id: "supabase-pooler", label: "Supabase (pooler)", hint: "Session pooler, port 5432, IPv4 reachable; copy the host from Dashboard -> Connect" },
   { id: "supabase-direct", label: "Supabase (direct)", hint: "Port 5432 direct, IPv6 by default; IPv4 needs the paid add-on" },
+  { id: "supabase-dedicated", label: "Supabase (dedicated)", hint: "Paid plans, transaction mode only, port 6543, IPv6 by default" },
   { id: "neon", label: "Neon", hint: "Pooled host, sslmode=require" },
   { id: "railway", label: "Railway", hint: "Standard public URL" },
   { id: "local", label: "Localhost", hint: "postgres://postgres:postgres@localhost:5432/mydb" },
@@ -18,40 +20,11 @@ const PRESETS: { id: Preset; label: string; hint: string }[] = [
 const PRESET_DEFAULTS: Record<Exclude<Preset, "custom">, { host: string; port: string; database: string; user: string; sslmode: string }> = {
   "supabase-pooler": { host: "aws-0-REGION.pooler.supabase.com", port: "5432", database: "postgres", user: "postgres.PROJECT_REF", sslmode: "require" },
   "supabase-direct": { host: "db.PROJECT_REF.supabase.co", port: "5432", database: "postgres", user: "postgres", sslmode: "require" },
+  "supabase-dedicated": { host: "db.PROJECT_REF.supabase.co", port: "6543", database: "postgres", user: "postgres", sslmode: "require" },
   neon: { host: "ep-cool-darkness-123456-pooler.us-east-2.aws.neon.tech", port: "5432", database: "neondb", user: "neondb_owner", sslmode: "require" },
   railway: { host: "containers-us-west-123.railway.app", port: "5432", database: "railway", user: "postgres", sslmode: "require" },
   local: { host: "localhost", port: "5432", database: "mydb", user: "postgres", sslmode: "prefer" },
 };
-
-type Parsed = {
-  user: string;
-  password: string;
-  host: string;
-  port: string;
-  database: string;
-  params: [string, string][];
-};
-
-function parseConnString(raw: string): Parsed {
-  const s = raw.trim();
-  if (!/^postgres(ql)?:\/\//i.test(s)) {
-    throw new Error('Must start with postgresql:// (e.g. postgresql://user:pass@host:5432/dbname)');
-  }
-  let u: URL;
-  try {
-    u = new URL(s.replace(/^postgres(ql)?:\/\//i, "http://"));
-  } catch {
-    throw new Error("Could not parse this connection string. Check for unescaped @ : / # characters (percent-encode special chars in the password).");
-  }
-  return {
-    user: decodeURIComponent(u.username),
-    password: decodeURIComponent(u.password),
-    host: u.hostname,
-    port: u.port || "5432",
-    database: decodeURIComponent(u.pathname.replace(/^\//, "")),
-    params: Array.from(u.searchParams.entries()),
-  };
-}
 
 function buildConnString(f: { user: string; password: string; host: string; port: string; database: string; sslmode: string }): string {
   const auth = f.password
@@ -74,7 +47,7 @@ export default function ConnStringBuilder() {
   const [database, setDatabase] = useState("postgres");
   const [sslmode, setSslmode] = useState("require");
   const [paste, setPaste] = useState("");
-  const [parseError, setParseError] = useState<string | null>(null);
+  const [prisma, setPrisma] = useState(false);
   const [copied, setCopied] = useState(false);
 
   function applyPreset(p: Preset) {
@@ -97,17 +70,10 @@ export default function ConnStringBuilder() {
     }
   }, [user, password, host, port, database, sslmode]);
 
-  const parsed = useMemo(() => {
-    if (!paste.trim()) return { value: null as Parsed | null, error: null as string | null };
-    try {
-      return { value: parseConnString(paste), error: null as string | null };
-    } catch (err: unknown) {
-      return {
-        value: null,
-        error: err instanceof Error ? err.message : "Could not parse this connection string",
-      };
-    }
-  }, [paste]);
+  const analysis = useMemo(
+    () => analyzeConnectionString(paste, { prisma }),
+    [paste, prisma]
+  );
 
   async function copyBuilt() {
     if (!built) return;
@@ -117,16 +83,15 @@ export default function ConnStringBuilder() {
   }
 
   function loadParsedIntoBuilder() {
-    if (!parsed.value) return;
+    if (!analysis.parsed) return;
     setPreset("custom");
-    setUser(parsed.value.user);
-    setPassword(parsed.value.password);
-    setHost(parsed.value.host);
-    setPort(parsed.value.port);
-    setDatabase(parsed.value.database);
-    const ssl = parsed.value.params.find(([k]) => k === "sslmode");
+    setUser(analysis.parsed.user);
+    setPassword(analysis.parsed.password);
+    setHost(analysis.parsed.host);
+    setPort(analysis.parsed.port);
+    setDatabase(analysis.parsed.database);
+    const ssl = analysis.parsed.params.find(([k]) => k === "sslmode");
     if (ssl) setSslmode(ssl[1]);
-    setParseError(null);
     scrollToTop();
   }
 
@@ -219,35 +184,43 @@ export default function ConnStringBuilder() {
         <div className="space-y-3 p-4">
           <textarea
             value={paste}
-            onChange={(e) => {
-              setPaste(e.target.value);
-              setParseError(null);
-            }}
+            onChange={(e) => setPaste(e.target.value)}
             placeholder="postgresql://user:pass@host:5432/dbname?sslmode=require"
             spellCheck={false}
             className="h-28 w-full resize-none rounded-[10px] border border-border bg-white p-3 font-mono text-base text-ink outline-none placeholder:text-muted/60 focus:border-accent md:text-sm"
           />
-          {parsed.error ? (
+          <label className="block">
+            <span className="mb-1 block text-xs font-medium text-muted">Checking Prisma settings?</span>
+            <select
+              value={prisma ? "yes" : "no"}
+              onChange={(e) => setPrisma(e.target.value === "yes")}
+              className={inputCls}
+            >
+              <option value="no">No, or another driver</option>
+              <option value="yes">Yes, Prisma</option>
+            </select>
+          </label>
+          {analysis.error ? (
             <div className="rounded-xl border border-red-200 bg-red-50 p-4">
               <p className="font-mono text-sm font-medium text-red-600">
                 Could not decode this URI
               </p>
               <p className="mt-1 whitespace-pre-wrap break-words font-mono text-xs leading-relaxed text-red-600/80">
-                {parsed.error}
+                {analysis.error}
               </p>
             </div>
-          ) : parsed.value ? (
+          ) : analysis.parsed ? (
             <div>
               <table className="w-full text-sm">
                 <tbody>
                   {(
                     [
-                      ["User", parsed.value.user],
-                      ["Password", parsed.value.password ? "•••••••• (present)" : "(empty)"],
-                      ["Host", parsed.value.host],
-                      ["Port", parsed.value.port],
-                      ["Database", parsed.value.database],
-                      ...parsed.value.params.map(([k, v]) => [`param: ${k}`, v]),
+                      ["User", analysis.parsed.user],
+                      ["Password", analysis.parsed.password ? "•••••••• (present)" : "(empty)"],
+                      ["Host", analysis.parsed.host],
+                      ["Port", analysis.parsed.port],
+                      ["Database", analysis.parsed.database],
+                      ...analysis.parsed.params.map(([k, v]) => [`param: ${k}`, v]),
                     ] as [string, string][]
                   ).map(([k, v]) => (
                     <tr key={k} className="border-b border-border last:border-b-0">
@@ -257,6 +230,46 @@ export default function ConnStringBuilder() {
                   ))}
                 </tbody>
               </table>
+              {analysis.endpoint && (
+                <p className="mt-3 font-mono text-xs text-muted">
+                  Detected:{" "}
+                  <span className="text-ink">{ENDPOINT_LABELS[analysis.endpoint]}</span>
+                </p>
+              )}
+              {analysis.flags.length > 0 ? (
+                <div className="mt-3 space-y-2" aria-live="polite">
+                  {analysis.flags.map((flag) => (
+                    <div
+                      key={flag.code}
+                      className={`rounded-xl border p-3 ${
+                        flag.severity === "error"
+                          ? "border-red-200 bg-red-50"
+                          : "border-amber-200 bg-amber-50"
+                      }`}
+                    >
+                      <p
+                        className={`text-xs font-medium ${
+                          flag.severity === "error" ? "text-red-700" : "text-amber-800"
+                        }`}
+                      >
+                        {flag.severity === "error" ? "Error" : "Warning"}
+                      </p>
+                      <p className="mt-1 text-sm text-ink">{flag.message}</p>
+                      <p className="mt-1 text-xs leading-relaxed text-muted">{flag.fix}</p>
+                      <a
+                        href={flag.href}
+                        className="mt-2 inline-block text-xs font-medium text-accent underline underline-offset-2 hover:text-accent-hover"
+                      >
+                        Read the fix →
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <p className="mt-3 text-xs text-muted">
+                  No obvious configuration problems found.
+                </p>
+              )}
               <button
                 type="button"
                 onClick={loadParsedIntoBuilder}
@@ -270,7 +283,7 @@ export default function ConnStringBuilder() {
               Paste a URI to see every part decoded, user, host, port, database, and parameters.
             </p>
           )}
-          {parseError && <p className="text-sm text-red-500">{parseError}</p>}
+
         </div>
       </div>
     </div>

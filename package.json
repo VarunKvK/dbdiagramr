@@ -11,7 +11,7 @@
     "build": "next build",
     "prebuild": "npm run schemas:images",
     "schemas:images": "tsx scripts/generate-schema-diagrams.ts",
-    "test": "tsx --test lib/schemaExport.test.ts lib/share.test.ts",
+    "test": "tsx --test lib/schemaExport.test.ts lib/share.test.ts lib/connectionString.test.ts",
     "start": "next start",
     "lint": "next lint",
     "seo:run": "bash scripts/seo-run.sh",

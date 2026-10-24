@@ -82,6 +82,11 @@ const nextConfig = {
         permanent: true,
       },
       {
+        source: "/blog/postgres-connection-string-supabase-neon-railway",
+        destination: "/supabase-connection-string",
+        permanent: true,
+      },
+      {
         source: "/blog/supabase-auth-schema-explained",
         destination: "/schema/supabase",
         permanent: true,

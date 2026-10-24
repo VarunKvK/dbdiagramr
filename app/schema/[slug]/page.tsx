@@ -63,7 +63,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
 const relatedBlogBySchema: Record<string, { href: string; label: string }[]> = {
   supabase: [
     { href: "/supabase-er-diagram", label: "Supabase Schema Diagram Tool" },
-    { href: "/blog/postgres-connection-string-supabase-neon-railway", label: "PostgreSQL Connection String Guide" },
+    { href: "/supabase-connection-string", label: "Supabase Connection String Guide" },
   ],
   nextauth: [
     { href: "/blog/database-schema-diagram-tool", label: "Database Schema Diagram Tools" },

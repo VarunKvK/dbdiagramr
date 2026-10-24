@@ -285,6 +285,11 @@ export default function SupabaseErDiagramPage() {
                 body: "A static reference diagram of the Supabase auth schema with column details.",
               },
               {
+                href: "/supabase-connection-string",
+                title: "Supabase connection strings",
+                body: "Every mode, port, username format, SSL setting, and driver fix in one guide.",
+              },
+              {
                 href: "/blog/supabase-connection-string-ipv6-enotfound",
                 title: "Fix Supabase ENOTFOUND",
                 body: "Why the direct host fails on IPv4 networks and which pooler string to use instead.",

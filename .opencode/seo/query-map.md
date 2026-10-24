@@ -74,7 +74,7 @@ Status: cover | gap | out of scope
 | 42 | postgres show table relationships | learn | tutorial | /blog/database-schema-diagram-tool | cover |
 | 43 | information_schema vs pg_catalog | learn | explainer | /blog/information-schema-vs-pg-catalog | cover |
 | 44 | supabase connection string ipv6 enotfound | fix | troubleshooting post | /blog/supabase-connection-string-ipv6-enotfound | cover |
-| 45 | postgres connection string supabase neon railway | learn | reference post | /blog/postgres-connection-string-supabase-neon-railway | cover |
+| 45 | postgres connection string supabase neon railway | learn | reference post | /supabase-connection-string | cover (merged 2026-10-25) |
 | 46 | database schema documentation drift | learn | explainer | /blog/database-schema-documentation | cover |
 
 ## F. Adjacent tools (47-50)

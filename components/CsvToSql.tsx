@@ -254,7 +254,7 @@ export default function CsvToSql() {
               <div className="flex min-h-full">
                 <div
                   aria-hidden="true"
-                  className="w-9 shrink-0 select-none pr-3 text-right font-mono text-sm leading-relaxed text-white/30"
+                  className="w-9 shrink-0 select-none pr-3 text-right font-mono text-sm leading-relaxed text-white/60"
                 >
                   {Array.from({ length: result.sql.split("\n").length }, (_, i) => (
                     <div key={i + 1}>{i + 1}</div>
@@ -266,10 +266,10 @@ export default function CsvToSql() {
               </div>
             ) : (
               <div className="flex h-full flex-col items-center justify-center text-center">
-                <p className="font-mono text-sm text-white/40">
+                <p className="font-mono text-sm text-white/60">
                   Drop a CSV on the left and CREATE TABLE + INSERTs land here.
                 </p>
-                <p className="mt-1 font-mono text-xs text-white/30">
+                <p className="mt-1 font-mono text-xs text-white/60">
                   Your file never leaves the browser.
                 </p>
               </div>

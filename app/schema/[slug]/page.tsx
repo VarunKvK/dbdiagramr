@@ -3,7 +3,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getAllSchemaEntries, getSchemaEntry } from "@/data/schemas/registry";
 import Footer from "@/app/sections/Footer";
-import SchemaDiagram from "@/components/SchemaDiagram";
+import LazySchemaDiagram from "@/components/LazySchemaDiagram";
 import SchemaCopyButtons from "@/components/SchemaCopyButtons";
 import SchemaColumnsTable from "@/components/schema/SchemaColumnsTable";
 import SchemaRelationships from "@/components/schema/SchemaRelationships";
@@ -218,11 +218,11 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
           <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted">
             {entry.intro}
           </p>
-          <p className="mt-3 text-sm text-muted/70">
+          <p className="mt-3 text-sm text-muted">
             Last updated: {entry.lastUpdated}
           </p>
           {entry.source && (
-            <p className="mt-1 text-sm text-muted/70">
+            <p className="mt-1 text-sm text-muted">
               Source:{" "}
               {entry.source.url ? (
                 <a
@@ -256,7 +256,7 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
             </p>
           )}
           {entry.lineage && (
-            <p className="mt-1 text-sm text-muted/70">
+            <p className="mt-1 text-sm text-muted">
               Lineage: {entry.lineage.text}{" "}
               <a
                 href={entry.lineage.sourceUrl}
@@ -381,7 +381,7 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
             <span className="h-3 w-3 rounded-full bg-[#28c840] ring-1 ring-black/10" />
           </div>
           <div className="h-[540px] overflow-hidden">
-            <SchemaDiagram schema={entry.schema} className="h-full w-full" />
+            <LazySchemaDiagram schema={entry.schema} className="h-full w-full" />
           </div>
         </div>
 
@@ -436,7 +436,7 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
               </div>
             )}
             {entry.guide.sqlNote && (
-              <p className="mt-3 text-sm text-muted/70">
+              <p className="mt-3 text-sm text-muted">
                 {entry.guide.sqlNote}
               </p>
             )}

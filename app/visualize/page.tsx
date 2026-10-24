@@ -147,7 +147,7 @@ export default function TryPage() {
   }, [schema]);
 
   return (
-    <div className="flex h-screen w-full flex-col overflow-hidden bg-cream pt-14 lg:flex-row lg:items-stretch">
+    <main className="flex h-screen w-full flex-col overflow-hidden bg-cream pt-14 lg:flex-row lg:items-stretch">
       <h1 className="sr-only">Visualize Your PostgreSQL Schema - ER Diagram Generator</h1>
 
       <div className={`z-20 flex shrink-0 flex-col overflow-hidden border-b border-border bg-white lg:h-auto lg:w-[384px] lg:shrink-0 lg:border-b-0 lg:border-r ${mode === "sql" ? "h-[46vh]" : "h-[52vh]"}`}>
@@ -251,6 +251,6 @@ export default function TryPage() {
           )}
         </div>
       </div>
-    </div>
+    </main>
   );
 }

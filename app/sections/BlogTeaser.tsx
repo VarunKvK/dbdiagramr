@@ -41,8 +41,8 @@ function BlogCard({
       }`}
     >
       <div className="flex flex-wrap gap-2">
-        <MetaPill>{post.date}</MetaPill>
-        <MetaPill>{post.readingMinutes} min</MetaPill>
+        <MetaPill className="border-punch text-punch">{post.date}</MetaPill>
+        <MetaPill className="border-punch text-punch">{post.readingMinutes} min</MetaPill>
       </div>
       <h3
         className={`mt-4 font-semibold leading-snug tracking-tight ${

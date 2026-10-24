@@ -19,7 +19,7 @@ const cards = [
     title: "Private by design",
     description:
       "Paste SQL never leaves your browser. Live connections go to our backend for one request, then are discarded. No stored schemas, no accounts.",
-    className: "bg-punch text-white md:col-span-2",
+    className: "bg-accent-hover text-white md:col-span-2",
     muted: true,
   },
   {

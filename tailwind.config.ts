@@ -22,7 +22,7 @@ const config: Config = {
         border: "#d5e5cb",
         accent: "#3d7e16",
         "accent-hover": "#2f6111",
-        "accent-soft": "#eaf2e4",
+        "accent-soft": "#eff6ea",
         punch: "#7aa861",
         background: "var(--background)",
         foreground: "var(--foreground)",

@@ -1,50 +1,40 @@
 # dbdiagramr
 
-dbdiagramr is a free, open-source web tool that generates interactive entity-relationship (ER) diagrams from any PostgreSQL connection string. No signup, no setup - paste your connection string and visualize your database schema in under 10 seconds.
+> dbdiagramr is a free, open-source web tool that generates interactive entity-relationship (ER) diagrams from any PostgreSQL connection string. No signup, no setup - paste your connection string and visualize your database schema in under 10 seconds.
 
 ## Key pages
 
-- Home: https://www.dbdiagramr.space
-- Visualize your database: https://www.dbdiagramr.space/visualize
-- Schema diagram library: https://www.dbdiagramr.space/schema
-- Blog (PostgreSQL guides): https://www.dbdiagramr.space/blog
-- Comparisons: https://www.dbdiagramr.space/alternatives
-- Supabase RLS check: https://www.dbdiagramr.space/supabase-rls-check
-- Pricing: https://www.dbdiagramr.space/pricing
-- Pricing (machine-readable): https://www.dbdiagramr.space/pricing.md
-- Full context: https://www.dbdiagramr.space/llms-full.txt
-- Features: https://www.dbdiagramr.space#features
-- How it works: https://www.dbdiagramr.space#guide
+- [Home](https://www.dbdiagramr.space): PostgreSQL ER diagram tool with paste-SQL and live connection modes.
+- [Visualize your database](https://www.dbdiagramr.space/visualize): Interactive diagram canvas for pasted SQL or a live PostgreSQL connection string.
+- [Schema diagram library](https://www.dbdiagramr.space/schema): Reference ER diagrams for popular PostgreSQL schemas.
+- [Blog](https://www.dbdiagramr.space/blog): PostgreSQL and database schema guides.
+- [Comparisons](https://www.dbdiagramr.space/alternatives): How dbdiagramr compares with other diagram tools.
+- [Supabase RLS check](https://www.dbdiagramr.space/supabase-rls-check): Check Row Level Security status for a Supabase schema.
+- [Pricing](https://www.dbdiagramr.space/pricing): Free plan and planned Pro features.
+- [Machine-readable pricing](https://www.dbdiagramr.space/pricing.md): Pricing details for automated agents.
+- [Full context](https://www.dbdiagramr.space/llms-full.txt): Extended product and feature context.
+- [Features](https://www.dbdiagramr.space#features): Interactive canvas, hover tracing, and export features.
+- [How it works](https://www.dbdiagramr.space#guide): Steps for generating a PostgreSQL ER diagram.
 
 ## Schema diagram library
 
-Reference ER diagrams of popular PostgreSQL schemas, each showing every table, column, primary key, and foreign key relationship:
-
-- Supabase auth schema (7 tables): https://www.dbdiagramr.space/schema/supabase
-- NextAuth.js / Auth.js schema (4 tables): https://www.dbdiagramr.space/schema/nextauth
-- Better Auth schema (4 tables): https://www.dbdiagramr.space/schema/better-auth
-- Laravel 11 default schema (7 tables): https://www.dbdiagramr.space/schema/laravel
-- Django auth schema (9 tables): https://www.dbdiagramr.space/schema/django
-- Stripe billing schema (9 tables): https://www.dbdiagramr.space/schema/stripe
-- E-commerce schema (11 tables): https://www.dbdiagramr.space/schema/ecommerce
+- [Supabase auth schema](https://www.dbdiagramr.space/schema/supabase): 7 tables from Supabase's built-in auth schema.
+- [NextAuth.js / Auth.js schema](https://www.dbdiagramr.space/schema/nextauth): 4 tables for NextAuth.js and Auth.js.
+- [Better Auth schema](https://www.dbdiagramr.space/schema/better-auth): 4 tables for Better Auth.
+- [Laravel 11 default schema](https://www.dbdiagramr.space/schema/laravel): 7 tables from the Laravel 11 default schema.
+- [Django auth schema](https://www.dbdiagramr.space/schema/django): 9 tables from Django's auth schema.
+- [Stripe billing schema](https://www.dbdiagramr.space/schema/stripe): 9 tables for a Stripe-style billing model.
+- [E-commerce schema](https://www.dbdiagramr.space/schema/ecommerce): 11 tables for an e-commerce application.
 
 ## Pricing
 
-- Free: $0 - unlimited diagrams, live PostgreSQL introspection, per-table RLS status, paste-SQL mode, SVG and PNG export, no signup
-- Pro: in development - no price and no checkout. Planned: schema checks on private-repo pull requests, lint rules for risky migrations, sticky PR comments
+- [Free plan](https://www.dbdiagramr.space/pricing): $0 with unlimited diagrams, live PostgreSQL introspection, per-table RLS status, paste-SQL mode, SVG and PNG export, and no signup.
+- [Pro plan](https://www.dbdiagramr.space/pricing): In development with no price or checkout. Planned features include schema checks on private-repo pull requests, lint rules for risky migrations, and sticky PR comments.
 
 ## About
 
-- Open source under the MIT licence: https://github.com/VarunKvK/dbdiagramr
-- Contact and updates on X: https://x.com/im_daedalus
-- Free with no diagram limit and no account
-- Generates interactive entity-relationship diagrams from live PostgreSQL schemas
-- Renders on an interactive canvas with pan, zoom, and hover-to-trace table relationships
-- Exports diagrams as SVG or PNG
-- Shows per-table Row Level Security status on live connections (public schema)
-- Works with cloud databases: Supabase, Neon, Railway
-- Supports the Session pooler (5432) and Transaction pooler (6543)
-- Paste-SQL mode parses in the browser; live connection strings are sent to the dbdiagramr backend for one request, then discarded
-- Connection strings and schemas are never stored
-- Built with Next.js, PostgreSQL, and Tailwind CSS
-- Last updated: 2026-10-23
+- [Source code](https://github.com/VarunKvK/dbdiagramr): Open source under the MIT licence.
+- [Contact and updates](https://x.com/im_daedalus): Follow dbdiagramr on X.
+- [Full context](https://www.dbdiagramr.space/llms-full.txt): Free with no diagram limit and no account; interactive ER diagrams from live PostgreSQL schemas; pan, zoom, and hover-to-trace relationships; SVG and PNG export; per-table RLS status on live connections; support for Supabase, Neon, Railway, the Session pooler (5432), and the Transaction pooler (6543); paste-SQL parsing in the browser; live connection strings sent to the backend for one request and then discarded; no stored connection strings or schemas; built with Next.js, PostgreSQL, and Tailwind CSS.
+
+Last updated: 2026-10-23

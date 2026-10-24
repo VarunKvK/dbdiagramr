@@ -1,3 +1,5 @@
+import VideoFacade from "@/components/VideoFacade";
+
 export default function About() {
   return (
     <section className="bg-ink py-20 md:py-28">
@@ -17,13 +19,7 @@ export default function About() {
         </div>
 
         <div className="mx-auto mt-12 max-w-5xl">
-          <iframe
-            src="https://www.youtube.com/embed/z-YlCbOBvjQ"
-            title="dbdiagramr demo"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            className="aspect-video w-full rounded-[20px] border border-white/15 bg-pine shadow-lg"
-          />
+          <VideoFacade />
         </div>
       </div>
     </section>

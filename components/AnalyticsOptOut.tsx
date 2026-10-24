@@ -3,18 +3,6 @@
 import { useEffect } from "react";
 import { GA_MEASUREMENT_ID, NOTRACK_STORAGE_KEY } from "@/lib/analytics";
 
-declare global {
-  interface Window {
-    __dbd_notrack_logged?: number;
-  }
-}
-
-function logDisabledOnce(): void {
-  if (window.__dbd_notrack_logged) return;
-  window.__dbd_notrack_logged = 1;
-  console.log("dbdiagramr: analytics disabled in this browser");
-}
-
 /** Mirrors the inline script on client-side navigations (?notrack=0/1 links). */
 function apply(): void {
   try {
@@ -26,7 +14,6 @@ function apply(): void {
     const store = window as unknown as Record<string, unknown>;
     if (window.localStorage.getItem(NOTRACK_STORAGE_KEY) === "1") {
       store[flag] = true;
-      logDisabledOnce();
     } else {
       delete store[flag];
     }

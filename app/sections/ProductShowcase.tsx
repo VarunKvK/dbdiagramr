@@ -81,7 +81,6 @@ export default function ProductShowcase() {
                 className={`object-cover transition-opacity duration-150 ${
                   i === active ? "opacity-100" : "opacity-0"
                 }`}
-                priority={i === 0}
               />
             ))}
           </div>
@@ -95,9 +94,7 @@ export default function ProductShowcase() {
                 key={slide.title}
                 onClick={() => setActive(i)}
                 aria-pressed={isActive}
-                className={`group flex flex-col items-center text-center transition-opacity duration-150 ${
-                  isActive ? "opacity-100" : "opacity-50 hover:opacity-75"
-                }`}
+                className="group flex flex-col items-center text-center transition-colors duration-150"
               >
                 <span className="font-mono text-xs font-medium text-accent">
                   0{i + 1}
@@ -130,13 +127,17 @@ export default function ProductShowcase() {
             <button
               key={i}
               onClick={() => setActive(i)}
-              className={`h-2.5 rounded-full transition-all duration-150 ${
-                i === active
-                  ? "w-7 bg-accent"
-                  : "w-2.5 bg-accent/30 hover:bg-accent/60"
-              }`}
+              className="group flex h-6 w-6 items-center justify-center rounded-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
               aria-label={`Go to slide ${i + 1}`}
-            />
+            >
+              <span
+                className={`block h-2.5 rounded-full transition-all duration-150 ${
+                  i === active
+                    ? "w-7 bg-accent"
+                    : "w-2.5 bg-accent/30 group-hover:bg-accent/60"
+                }`}
+              />
+            </button>
           ))}
         </div>
       </div>

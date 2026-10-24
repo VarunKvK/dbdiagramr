@@ -48,7 +48,7 @@ export function track(event: string, params: EventParams = {}): void {
       w.gtag("event", event, params);
       return;
     }
-    // gtag.js loads with lazyOnload; queue in the same shape it consumes so
+    // gtag.js loads after window load; queue in the same shape it consumes so
     // early events are not lost.
     w.dataLayer = w.dataLayer || [];
     w.dataLayer.push(["event", event, params]);

@@ -42,7 +42,7 @@ export default function SchemaRelationships({
         the cardinality.
       </p>
       {note && (
-        <p className="mb-6 max-w-3xl text-sm leading-relaxed text-muted/70">
+        <p className="mb-6 max-w-3xl text-sm leading-relaxed text-muted">
           {note}
         </p>
       )}

@@ -63,6 +63,7 @@ export type SchemaEntry = {
   intro: string;
   facts: { label: string; value: string }[];
   faqs: { q: string; a: string }[];
+  published: string;
   lastUpdated: string;
   schema: Schema;
   /** Where the schema came from (dump origin + license, or original design) */
@@ -141,6 +142,7 @@ export const schemaEntries: SchemaEntry[] = [
         a: "Yes. auth.users.id is the user UUID. Store it in your public table, for example public.profiles.user_id, and join on that column.",
       },
     ],
+    published: "2026-08-02",
     lastUpdated: "2026-10-23",
     relationshipNote:
       "sessions.oauth_client_id references auth.oauth_clients. That table is part of the optional OAuth group, so the column is shown here without a foreign-key line.",
@@ -299,6 +301,7 @@ where u.id = $1;</code></pre>
         a: "It depends on the adapter. The Prisma adapter's PostgreSQL schema uses onDelete: Cascade for Account.user and Session.user, so deleting a user removes those rows. The PostgreSQL adapter's SQL does not declare foreign keys, so it does not cascade; delete child rows yourself or add the constraints.",
       },
     ],
+    published: "2026-08-02",
     lastUpdated: "2026-10-23",
     sections: [
       {
@@ -421,6 +424,7 @@ order by s.expires;`,
         a: "job_batches is created by the default jobs migration. It stores batch id, name, job counts, failed job ids, options, cancellation time, creation time, and finish time.",
       },
     ],
+    published: "2026-08-02",
     lastUpdated: "2026-10-23",
     sections: [
       {
@@ -547,6 +551,7 @@ order by expiration, key;`,
         a: "Yes. Running python manage.py migrate creates django_content_type first, then the auth tables and join tables, then django_admin_log. You get all of them even if you only use users without groups.",
       },
     ],
+    published: "2026-08-02",
     lastUpdated: "2026-10-23",
     guide: {
       title: "How Django's permission tables work",
@@ -657,6 +662,7 @@ where ug.group_id is null;`,
         a: "An invoice is a bill for what is owed. A payment intent is an attempt to collect it, with a status and payment method. One invoice can have multiple payment intents when a charge is retried.",
       },
     ],
+    published: "2026-09-03",
     lastUpdated: "2026-10-23",
     scopeNote: {
       text: "Modeled billing schema based on the Stripe API, not Stripe's internal database.",
@@ -789,6 +795,7 @@ order by s.canceled_at desc nulls last;`,
         a: "Join orders to order_items and products, then left join payments for the payment status. Filter by customer_id and order by placed_at descending.",
       },
     ],
+    published: "2026-09-03",
     lastUpdated: "2026-10-23",
     scopeNote: {
       text: "Original reference design for a custom PostgreSQL storefront, not a published platform schema.",
@@ -915,6 +922,7 @@ order by o.placed_at;`,
         a: "Through the book_authors join table - a many-to-many link between books (by ISBN) and authors. Each row pairs one title with one author, so a book can have many authors and an author can write many books.",
       },
     ],
+    published: "2026-09-28",
     lastUpdated: "2026-10-23",
     queries: [
       {
@@ -1002,6 +1010,7 @@ order by books desc, a.last_name;`,
         a: "Bills aggregate charges against a patient (optionally tied to one admission or appointment) with insurance-covered and status columns. Payments are separate rows per settlement attempt against a bill, which models partial payments and failed transactions naturally.",
       },
     ],
+    published: "2026-09-28",
     lastUpdated: "2026-10-23",
     queries: [
       {
@@ -1098,6 +1107,7 @@ order by mr.id, m.name;`,
         a: "Scope roles to the organization and keep permissions global. Permissions are vocabulary (resource + action pairs like articles:delete); roles are the org's policy (which permissions admin means here). This keeps permission names stable while each tenant defines its own roles.",
       },
     ],
+    published: "2026-09-28",
     lastUpdated: "2026-10-23",
     queries: [
       {
@@ -1188,6 +1198,7 @@ order by o.name, r.name, p.resource, p.action;`,
         a: "With a jsonb metadata column (as on the events table) for flexible per-tenant fields, indexed with GIN or expression indexes where queried. This avoids per-tenant schema churn while keeping the relational core strict.",
       },
     ],
+    published: "2026-09-28",
     lastUpdated: "2026-10-23",
     queries: [
       {
@@ -1309,6 +1320,7 @@ create policy tasks_tenant_isolation on tasks
         a: "From the official chinook-database repository on GitHub (Chinook_PostgreSql.sql, version 1.4+). It creates the schema and loads over 15,000 rows of sample data with a single script.",
       },
     ],
+    published: "2026-09-28",
     lastUpdated: "2026-10-23",
     queries: [
       {
@@ -1402,6 +1414,7 @@ order by tracks desc, p.name;`,
         a: "Because the generated key must be assigned to the Java domain object immediately after insert. Sequences let Spring Batch fetch the ID first, set it on the object, then insert - a pattern that works uniformly across all supported databases.",
       },
     ],
+    published: "2026-09-28",
     lastUpdated: "2026-10-23",
     queries: [
       {
@@ -1493,6 +1506,7 @@ order by jp.job_execution_id, jp.parameter_name;`,
         a: "Pagila v4.1.1 defines 55 monthly partitions, payment_p2022_01 through payment_p2026_07. The first covers 2022-01-01 00:00:00+00 to 2022-02-01 00:00:00+00; the last covers 2026-07-01 00:00:00+00 to 2026-08-01 00:00:00+00. The source also publishes local +01 bounds for March-July 2022. The 16-table diagram shows only the parent payment table; the source file documents the exact partition layout.",
       },
     ],
+    published: "2026-09-28",
     lastUpdated: "2026-10-23",
     lineage: {
       text: "Pagila is a PostgreSQL port of MySQL's Sakila sample database, originally developed by Mike Hillyer of the MySQL AB documentation team.",
@@ -1597,6 +1611,7 @@ order by s.store_id;`,
         a: "The shapes are close cousins - both have users, sessions, accounts, and a verification table. Better Auth names the token table verification (NextAuth calls it verification_token), stores the provider identity as providerId plus accountId, and supports custom table and column names via modelName and fields config.",
       },
     ],
+    published: "2026-09-28",
     lastUpdated: "2026-10-23",
     relationshipNote:
       "PostgreSQL requires double quotes around the reserved table name user and around camelCase columns such as userId and expiresAt.",
@@ -1700,6 +1715,7 @@ join session s on s."userId" = u.id;</code></pre>
         a: "From postgresqltutorial.com (as a pg_restore archive) or as plain SQL from the neondatabase/postgres-sample-dbs repository on GitHub, which is the source used for this diagram.",
       },
     ],
+    published: "2026-09-28",
     lastUpdated: "2026-10-23",
     queries: [
       {
@@ -1799,6 +1815,7 @@ order by films desc, c.name;`,
         a: "With a self-referencing foreign key: employees.reports_to points at employees.employee_id, so each employee row links to their manager's row. Territories add a second dimension via the employee_territories join table.",
       },
     ],
+    published: "2026-09-28",
     lastUpdated: "2026-10-23",
     queries: [
       {

@@ -4,6 +4,7 @@ import Footer from "@/app/sections/Footer";
 import RelatedTools from "@/app/sections/RelatedTools";
 import SqlFormatter from "@/components/SqlFormatter";
 import FaqAccordion from "@/app/sections/FaqAccordion";
+import { webApplicationNode } from "@/lib/structuredData";
 
 export const metadata: Metadata = {
   title: "Free SQL Formatter | Format & Beautify PostgreSQL Online",
@@ -59,30 +60,12 @@ const faqs = [
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
-    {
-      "@type": "Article",
-      "@id": "https://www.dbdiagramr.space/sql-formatter#article",
-      headline: "Free SQL Formatter | Format & Beautify PostgreSQL Online",
+    webApplicationNode({
+      name: "SQL Formatter",
       description:
         "Paste messy SQL and get clean, consistently formatted PostgreSQL in seconds.",
-      datePublished: "2026-09-25",
-      dateModified: "2026-09-25",
-      mainEntityOfPage: "https://www.dbdiagramr.space/sql-formatter",
-      author: {
-        "@type": "Person",
-        name: "Varun Krishnan",
-        url: "https://github.com/VarunKvK",
-      },
-      publisher: {
-        "@type": "Organization",
-        name: "dbdiagramr",
-        url: "https://www.dbdiagramr.space",
-        logo: {
-          "@type": "ImageObject",
-          url: "https://www.dbdiagramr.space/favicon.svg",
-        },
-      },
-    },
+      url: "https://www.dbdiagramr.space/sql-formatter",
+    }),
     {
       "@type": "FAQPage",
       "@id": "https://www.dbdiagramr.space/sql-formatter#faq",

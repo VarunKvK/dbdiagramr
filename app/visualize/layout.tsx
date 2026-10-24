@@ -1,4 +1,7 @@
 import type { Metadata } from "next";
+import { breadcrumbNode, webApplicationNode } from "@/lib/structuredData";
+
+const URL = "https://www.dbdiagramr.space/visualize";
 
 export const metadata: Metadata = {
   title: "PostgreSQL ER Diagram Generator | Paste a Connection String",
@@ -25,23 +28,18 @@ export const metadata: Metadata = {
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: "dbdiagramr",
-  url: "https://www.dbdiagramr.space",
-  description:
-    "Generate interactive ER diagrams from any PostgreSQL database. Paste a connection string and see tables, columns, and foreign keys in under 10 seconds.",
-  applicationCategory: "DeveloperApplication",
-  operatingSystem: "Any (browser-based)",
-  offers: {
-    "@type": "Offer",
-    price: "0",
-    priceCurrency: "USD",
-  },
-  author: {
-    "@type": "Person",
-    name: "Varun Krishnan",
-    url: "https://github.com/VarunKvK",
-  },
+  "@graph": [
+    webApplicationNode({
+      name: "dbdiagramr",
+      description:
+        "Generate interactive ER diagrams from any PostgreSQL database. Paste a connection string and see tables, columns, and foreign keys in under 10 seconds.",
+      url: URL,
+    }),
+    breadcrumbNode([
+      { name: "Home", url: "https://www.dbdiagramr.space" },
+      { name: "Visualize", url: URL },
+    ]),
+  ],
 };
 
 export default function VisualizeLayout({

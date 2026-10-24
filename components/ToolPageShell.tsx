@@ -2,6 +2,7 @@ import Link from "next/link";
 import Footer from "@/app/sections/Footer";
 import RelatedTools from "@/app/sections/RelatedTools";
 import FaqAccordion from "@/app/sections/FaqAccordion";
+import { breadcrumbNode, webApplicationNode } from "@/lib/structuredData";
 
 export type ToolFaq = { q: string; a: string };
 
@@ -21,41 +22,22 @@ export function buildToolJsonLd({
   return {
     "@context": "https://schema.org",
     "@graph": [
-      {
-        "@type": "WebApplication",
-        "@id": `${url}#app`,
+      webApplicationNode({
         name: appName,
-        url,
         description: appDescription,
-        applicationCategory: "DeveloperApplication",
-        operatingSystem: "Any",
-        browserRequirements: "Requires JavaScript",
-        isAccessibleForFree: true,
-        offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
-        publisher: {
-          "@type": "Organization",
-          name: "dbdiagramr",
+        url,
+      }),
+      breadcrumbNode([
+        {
+          name: "Home",
           url: "https://www.dbdiagramr.space",
         },
-      },
-      {
-        "@type": "BreadcrumbList",
-        itemListElement: [
-          {
-            "@type": "ListItem",
-            position: 1,
-            name: "Home",
-            item: "https://www.dbdiagramr.space",
-          },
-          {
-            "@type": "ListItem",
-            position: 2,
-            name: "Free tools",
-            item: "https://www.dbdiagramr.space/tools",
-          },
-          { "@type": "ListItem", position: 3, name: appName, item: url },
-        ],
-      },
+        {
+          name: "Free tools",
+          url: "https://www.dbdiagramr.space/tools",
+        },
+        { name: appName, url },
+      ]),
       {
         "@type": "FAQPage",
         "@id": `${url}#faq`,

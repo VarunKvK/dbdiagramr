@@ -2,8 +2,11 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/app/sections/Footer";
+import AuthorByline from "@/components/AuthorByline";
+import { AUTHOR } from "@/data/authors";
 import { getAllPosts, getPost } from "@/data/blog/posts";
 import { blogBodies } from "@/data/blog/content";
+import { organizationNode, personNode, PERSON_URL } from "@/lib/structuredData";
 
 export function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));
@@ -21,6 +24,7 @@ export function generateMetadata({
     title: post.title,
     description: post.description,
     keywords: post.keywords.join(", "),
+    authors: [{ name: AUTHOR.name, url: PERSON_URL }],
     alternates: { canonical: post.canonical ?? url },
     openGraph: {
       title: post.title,
@@ -61,25 +65,16 @@ export default function BlogPostPage({
     "@context": "https://schema.org",
     "@graph": [
       {
-        "@type": "Article",
+        "@type": "BlogPosting",
+        "@id": `${postUrl}#article`,
         headline: post.title,
         description: post.description,
+        url: postUrl,
+        image: `https://www.dbdiagramr.space/og/blog/${post.slug}.png`,
         datePublished: post.date,
         dateModified: post.updated ?? post.date,
-        author: {
-          "@type": "Person",
-          name: "dbdiagramr",
-          url: "https://github.com/VarunKvK/dbdiagramr",
-        },
-        publisher: {
-          "@type": "Organization",
-          name: "dbdiagramr",
-          url: "https://www.dbdiagramr.space",
-          logo: {
-            "@type": "ImageObject",
-            url: "https://www.dbdiagramr.space/favicon.svg",
-          },
-        },
+        author: personNode(),
+        publisher: organizationNode(),
         mainEntityOfPage: postUrl,
         keywords: post.keywords.join(", "),
       },
@@ -124,32 +119,24 @@ export default function BlogPostPage({
         </Link>
 
         <div className="mb-8">
-          <div className="flex flex-wrap items-center gap-2 text-xs text-muted">
-            <time dateTime={post.date}>{post.date}</time>
-            {post.updated ? (
-              <>
-                <span>·</span>
-                <span>
-                  Updated <time dateTime={post.updated}>{post.updated}</time>
-                </span>
-              </>
-            ) : null}
-            <span>·</span>
-            <span>{post.readingMinutes} min read</span>
-            <div className="ml-2 flex gap-1.5">
-              {post.tags.map((tag) => (
-                <span
-                  key={tag}
-                  className="rounded-[20px] border border-accent bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent"
-                >
-                  #{tag}
-                </span>
-              ))}
-            </div>
-          </div>
-          <h1 className="mt-4 text-3xl font-medium leading-tight text-ink md:text-4xl">
+          <h1 className="text-3xl font-medium leading-tight text-ink md:text-4xl">
             {post.title}
           </h1>
+          <AuthorByline
+            published={post.date}
+            updated={post.updated}
+            readingMinutes={post.readingMinutes}
+          />
+          <div className="mt-3 flex flex-wrap gap-1.5">
+            {post.tags.map((tag) => (
+              <span
+                key={tag}
+                className="rounded-[20px] border border-accent bg-accent-soft px-2 py-0.5 text-xs font-medium text-accent"
+              >
+                #{tag}
+              </span>
+            ))}
+          </div>
           <p className="mt-4 text-lg leading-relaxed text-muted">
             {post.description}
           </p>

@@ -5,6 +5,7 @@ import Footer from "@/app/sections/Footer";
 import RlsDemo from "@/components/RlsDemo";
 import TrackedLink from "@/components/TrackedLink";
 import { RLS_META } from "@/lib/rls";
+import { breadcrumbNode, webApplicationNode } from "@/lib/structuredData";
 import FaqAccordion from "@/app/sections/FaqAccordion";
 
 const URL = "https://www.dbdiagramr.space/supabase-rls-check";
@@ -66,14 +67,29 @@ const faqs = [
   },
 ];
 
-const faqJsonLd = {
+const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "FAQPage",
-  mainEntity: faqs.map((faq) => ({
-    "@type": "Question",
-    name: faq.q,
-    acceptedAnswer: { "@type": "Answer", text: faq.a },
-  })),
+  "@graph": [
+    webApplicationNode({
+      name: "Supabase RLS Check",
+      description: DESCRIPTION,
+      url: URL,
+    }),
+    breadcrumbNode([
+      { name: "Home", url: "https://www.dbdiagramr.space" },
+      { name: "Tools", url: "https://www.dbdiagramr.space/tools" },
+      { name: "Supabase RLS Check", url: URL },
+    ]),
+    {
+      "@type": "FAQPage",
+      "@id": `${URL}#faq`,
+      mainEntity: faqs.map((faq) => ({
+        "@type": "Question",
+        name: faq.q,
+        acceptedAnswer: { "@type": "Answer", text: faq.a },
+      })),
+    },
+  ],
 };
 
 const legend = [
@@ -108,7 +124,7 @@ export default function SupabaseRlsCheckPage() {
     <main className="min-h-screen bg-cream pt-14">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
       <section className="mx-auto max-w-6xl px-6 pb-10 pt-16 lg:px-8 md:pt-24">

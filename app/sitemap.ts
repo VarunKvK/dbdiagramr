@@ -34,6 +34,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
     "/prisma-erd-generator": "2026-10-23",
     "/github-schema-action": "2026-10-21",
     "/pricing": "2026-10-21",
+    "/about": "2026-10-24",
+    "/changelog": "2026-10-24",
   };
 
   const schemaUrls = getAllSchemaEntries().map((entry) => ({
@@ -194,6 +196,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: staticLastmod["/pricing"],
       changeFrequency: "monthly",
       priority: 0.6,
+    },
+    {
+      url: `${base}/about`,
+      lastModified: staticLastmod["/about"],
+      changeFrequency: "yearly",
+      priority: 0.5,
+    },
+    {
+      url: `${base}/changelog`,
+      lastModified: staticLastmod["/changelog"],
+      changeFrequency: "weekly",
+      priority: 0.5,
     },
     ...schemaUrls,
     ...blogPostUrls,

@@ -29,7 +29,12 @@ export const metadata: Metadata = {
     "Paste a PostgreSQL connection string and generate an interactive ER diagram in under 10 seconds. No signup, no setup, no diagram limit.",
   keywords:
     "postgresql er diagram, postgresql schema diagram, er diagram generator, database schema visualization, postgresql schema visualization, db diagram, supabase schema, er diagram tool",
-  authors: [{ name: "dbdiagramr" }],
+  authors: [
+    {
+      name: "Varun Krishnan",
+      url: "https://www.dbdiagramr.space/about",
+    },
+  ],
   robots: {
     index: true,
     follow: true,

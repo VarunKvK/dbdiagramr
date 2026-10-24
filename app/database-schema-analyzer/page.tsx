@@ -4,6 +4,7 @@ import Footer from "@/app/sections/Footer";
 import RelatedTools from "@/app/sections/RelatedTools";
 import SchemaAnalyzer from "@/components/SchemaAnalyzer";
 import FaqAccordion from "@/app/sections/FaqAccordion";
+import { webApplicationNode } from "@/lib/structuredData";
 
 export const metadata: Metadata = {
   title: "Free Database Schema Analyzer | Grade Your PostgreSQL Schema",
@@ -59,30 +60,12 @@ const faqs = [
 const jsonLd = {
   "@context": "https://schema.org",
   "@graph": [
-    {
-      "@type": "Article",
-      "@id": "https://www.dbdiagramr.space/database-schema-analyzer#article",
-      headline: "Free Database Schema Analyzer | Grade Your PostgreSQL Schema",
+    webApplicationNode({
+      name: "Database Schema Analyzer",
       description:
         "Paste your SQL and get a graded PostgreSQL schema health report: missing primary keys, unindexed foreign keys, naming drift.",
-      datePublished: "2026-09-25",
-      dateModified: "2026-09-25",
-      mainEntityOfPage: "https://www.dbdiagramr.space/database-schema-analyzer",
-      author: {
-        "@type": "Person",
-        name: "Varun Krishnan",
-        url: "https://github.com/VarunKvK",
-      },
-      publisher: {
-        "@type": "Organization",
-        name: "dbdiagramr",
-        url: "https://www.dbdiagramr.space",
-        logo: {
-          "@type": "ImageObject",
-          url: "https://www.dbdiagramr.space/favicon.svg",
-        },
-      },
-    },
+      url: "https://www.dbdiagramr.space/database-schema-analyzer",
+    }),
     {
       "@type": "FAQPage",
       "@id": "https://www.dbdiagramr.space/database-schema-analyzer#faq",

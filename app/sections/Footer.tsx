@@ -33,12 +33,7 @@ export default function Footer() {
               <ul className="space-y-3 text-lg font-medium text-white/70">
                 <li><a href="/#features" className="transition-colors hover:text-white">Features</a></li>
                 <li>
-                  <a
-                    href="https://github.com/VarunKvK/dbdiagramr/releases"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition-colors hover:text-white"
-                  >
+                  <a href="/changelog" className="transition-colors hover:text-white">
                     Changelog
                   </a>
                 </li>
@@ -65,6 +60,9 @@ export default function Footer() {
                 </li>
                 <li>
                   <a href="/blog" className="transition-colors hover:text-white">Blog</a>
+                </li>
+                <li>
+                  <a href="/about" className="transition-colors hover:text-white">About</a>
                 </li>
                 <li>
                   <a

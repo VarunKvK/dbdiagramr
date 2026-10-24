@@ -3,6 +3,8 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import { getAllSchemaEntries, getSchemaEntry } from "@/data/schemas/registry";
 import Footer from "@/app/sections/Footer";
+import AuthorByline from "@/components/AuthorByline";
+import { AUTHOR } from "@/data/authors";
 import LazySchemaDiagram from "@/components/LazySchemaDiagram";
 import SchemaCopyButtons from "@/components/SchemaCopyButtons";
 import SchemaColumnsTable from "@/components/schema/SchemaColumnsTable";
@@ -12,6 +14,7 @@ import CommonQueries from "@/components/schema/CommonQueries";
 import { getRelatedSchemas } from "@/lib/schemaRelations";
 import { schemaToMermaid, schemaToSql } from "@/lib/schemaExport";
 import { schemaDiagramSize } from "@/lib/schemaImage";
+import { organizationNode, personNode, PERSON_URL } from "@/lib/structuredData";
 import FaqAccordion from "@/app/sections/FaqAccordion";
 
 export function generateStaticParams() {
@@ -38,6 +41,7 @@ export function generateMetadata({ params }: { params: { slug: string } }): Meta
     title: entry.title,
     description: entry.description,
     keywords: entry.keywords.join(", "),
+    authors: [{ name: AUTHOR.name, url: PERSON_URL }],
     alternates: { canonical: url },
     openGraph: {
       title: entry.title,
@@ -138,23 +142,12 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
         "@id": `${url}#article`,
         headline: entry.title,
         description: entry.description,
+        datePublished: entry.published,
         dateModified: entry.lastUpdated,
         image: `https://www.dbdiagramr.space${schemaOgPath(entry.slug)}`,
         mainEntityOfPage: url,
-        author: {
-          "@type": "Person",
-          name: "Varun Krishnan",
-          url: "https://github.com/VarunKvK",
-        },
-        publisher: {
-          "@type": "Organization",
-          name: "dbdiagramr",
-          url: "https://www.dbdiagramr.space",
-          logo: {
-            "@type": "ImageObject",
-            url: "https://www.dbdiagramr.space/favicon.svg",
-          },
-        },
+        author: personNode(),
+        publisher: organizationNode(),
       },
       {
         "@type": "FAQPage",
@@ -218,9 +211,11 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
           <p className="mx-auto mt-4 max-w-3xl text-lg leading-relaxed text-muted">
             {entry.intro}
           </p>
-          <p className="mt-3 text-sm text-muted">
-            Last updated: {entry.lastUpdated}
-          </p>
+          <AuthorByline
+            published={entry.published}
+            updated={entry.lastUpdated}
+            verb="Written by"
+          />
           {entry.source && (
             <p className="mt-1 text-sm text-muted">
               Source:{" "}

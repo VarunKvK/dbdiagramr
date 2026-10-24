@@ -8,6 +8,7 @@ import CtaBand from "@/app/sections/CtaBand";
 import BlogTeaser from "@/app/sections/BlogTeaser";
 import PostgresGuide, { postgresFaqs, postgresHowToSteps } from "@/app/sections/PostgresGuide";
 import Footer from "@/app/sections/Footer";
+import { organizationNode, personNode, SITE_URL } from "@/lib/structuredData";
 
 export const metadata: Metadata = {
   alternates: {
@@ -17,12 +18,16 @@ export const metadata: Metadata = {
 
 const softwareJsonLd = {
   "@type": "SoftwareApplication",
+  "@id": `${SITE_URL}/#software`,
   name: "dbdiagramr",
   applicationCategory: "DeveloperApplication",
   operatingSystem: "Web",
   url: "https://www.dbdiagramr.space",
+  image: `${SITE_URL}/DbDiagramr-OG.png`,
   description:
     "Free, open-source web tool that generates interactive ER diagrams from a PostgreSQL connection string or SQL.",
+  author: personNode(),
+  publisher: organizationNode(),
   offers: {
     "@type": "Offer",
     price: "0",

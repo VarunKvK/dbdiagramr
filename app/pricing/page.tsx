@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Check } from "lucide-react";
 import Footer from "@/app/sections/Footer";
 import { plans } from "@/lib/plans";
+import { breadcrumbNode } from "@/lib/structuredData";
 
 const URL = "https://www.dbdiagramr.space/pricing";
 const TITLE = "Pricing";
@@ -26,9 +27,23 @@ export const metadata: Metadata = {
   },
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@graph": [
+    breadcrumbNode([
+      { name: "Home", url: "https://www.dbdiagramr.space" },
+      { name: "Pricing", url: URL },
+    ]),
+  ],
+};
+
 export default function PricingPage() {
   return (
     <main className="min-h-screen bg-cream pt-14">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-5xl px-6 py-20 lg:px-8">
         <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted">
           Pricing

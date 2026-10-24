@@ -100,7 +100,9 @@ export default function RootLayout({
       "url": "https://www.dbdiagramr.space",
       "logo": {
         "@type": "ImageObject",
-        "url": "https://www.dbdiagramr.space/favicon.svg"
+        "url": "https://www.dbdiagramr.space/logo-512.png",
+        "width": 512,
+        "height": 512
       },
       "description": "Free, open-source web tool for generating interactive entity-relationship diagrams from PostgreSQL databases.",
       "sameAs": [

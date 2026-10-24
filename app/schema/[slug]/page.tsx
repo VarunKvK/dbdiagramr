@@ -14,7 +14,8 @@ import CommonQueries from "@/components/schema/CommonQueries";
 import { getRelatedSchemas } from "@/lib/schemaRelations";
 import { schemaToMermaid, schemaToSql } from "@/lib/schemaExport";
 import { schemaDiagramSize } from "@/lib/schemaImage";
-import { organizationNode, personNode, PERSON_URL } from "@/lib/structuredData";
+import { toIsoDateTime } from "@/lib/dates";
+import { organizationRef, personNode, PERSON_URL } from "@/lib/structuredData";
 import FaqAccordion from "@/app/sections/FaqAccordion";
 
 export function generateStaticParams() {
@@ -142,12 +143,12 @@ export default function SchemaPage({ params }: { params: { slug: string } }) {
         "@id": `${url}#article`,
         headline: entry.title,
         description: entry.description,
-        datePublished: entry.published,
-        dateModified: entry.lastUpdated,
+        datePublished: toIsoDateTime(entry.published),
+        dateModified: toIsoDateTime(entry.lastUpdated),
         image: `https://www.dbdiagramr.space${schemaOgPath(entry.slug)}`,
         mainEntityOfPage: url,
         author: personNode(),
-        publisher: organizationNode(),
+        publisher: organizationRef(),
       },
       {
         "@type": "FAQPage",

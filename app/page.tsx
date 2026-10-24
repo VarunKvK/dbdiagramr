@@ -8,7 +8,7 @@ import CtaBand from "@/app/sections/CtaBand";
 import BlogTeaser from "@/app/sections/BlogTeaser";
 import PostgresGuide, { postgresFaqs, postgresHowToSteps } from "@/app/sections/PostgresGuide";
 import Footer from "@/app/sections/Footer";
-import { organizationNode, personNode, SITE_URL } from "@/lib/structuredData";
+import { organizationRef, personNode, SITE_URL } from "@/lib/structuredData";
 
 export const metadata: Metadata = {
   alternates: {
@@ -27,7 +27,7 @@ const softwareJsonLd = {
   description:
     "Free, open-source web tool that generates interactive ER diagrams from a PostgreSQL connection string or SQL.",
   author: personNode(),
-  publisher: organizationNode(),
+  publisher: organizationRef(),
   offers: {
     "@type": "Offer",
     price: "0",

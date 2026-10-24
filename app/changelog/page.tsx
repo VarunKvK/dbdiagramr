@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import Footer from "@/app/sections/Footer";
 import { changelogEntries } from "@/data/changelog";
-import { formatDate, formatMonth, monthKey } from "@/lib/dates";
+import { formatDate, formatMonth, monthKey, toIsoDateTime } from "@/lib/dates";
 import { breadcrumbNode, SITE_URL } from "@/lib/structuredData";
 
 const URL = `${SITE_URL}/changelog`;
@@ -38,7 +38,7 @@ const jsonLd = {
       url: URL,
       name: TITLE,
       description: DESCRIPTION,
-      dateModified: changelogEntries[0]?.date,
+      dateModified: toIsoDateTime(changelogEntries[0]?.date),
       mainEntity: {
         "@type": "ItemList",
         itemListElement: changelogEntries.map((entry, index) => ({

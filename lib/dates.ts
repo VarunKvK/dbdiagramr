@@ -27,3 +27,8 @@ export function formatMonth(iso: string): string {
 export function monthKey(iso: string): string {
   return iso.slice(0, 7);
 }
+
+export function toIsoDateTime(iso: string | undefined): string | undefined {
+  if (!iso) return undefined;
+  return /^\d{4}-\d{2}-\d{2}$/.test(iso) ? `${iso}T00:00:00+00:00` : iso;
+}

@@ -6,7 +6,8 @@ import AuthorByline from "@/components/AuthorByline";
 import { AUTHOR } from "@/data/authors";
 import { getAllPosts, getPost } from "@/data/blog/posts";
 import { blogBodies } from "@/data/blog/content";
-import { organizationNode, personNode, PERSON_URL } from "@/lib/structuredData";
+import { toIsoDateTime } from "@/lib/dates";
+import { organizationRef, personNode, PERSON_URL } from "@/lib/structuredData";
 
 export function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));
@@ -71,10 +72,10 @@ export default function BlogPostPage({
         description: post.description,
         url: postUrl,
         image: `https://www.dbdiagramr.space/og/blog/${post.slug}.png`,
-        datePublished: post.date,
-        dateModified: post.updated ?? post.date,
+        datePublished: toIsoDateTime(post.date),
+        dateModified: toIsoDateTime(post.updated ?? post.date),
         author: personNode(),
-        publisher: organizationNode(),
+        publisher: organizationRef(),
         mainEntityOfPage: postUrl,
         keywords: post.keywords.join(", "),
       },

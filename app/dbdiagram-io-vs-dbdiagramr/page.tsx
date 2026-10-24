@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Footer from "@/app/sections/Footer";
 import FaqAccordion from "@/app/sections/FaqAccordion";
+import { toIsoDateTime } from "@/lib/dates";
+import { organizationRef } from "@/lib/structuredData";
 
 export const metadata: Metadata = {
   title: { absolute: "dbdiagram.io vs dbdiagramr (2026): Which Is Better?" },
@@ -107,23 +109,15 @@ const jsonLd = {
       headline: "dbdiagram.io vs dbdiagramr - Which ER Diagram Tool?",
       description:
         "dbdiagram.io vs dbdiagramr compared: DBML code-first diagram design vs instant visualization from a live PostgreSQL connection string.",
-      datePublished: "2026-08-04",
-      dateModified: "2026-08-04",
+      datePublished: toIsoDateTime("2026-08-04"),
+      dateModified: toIsoDateTime("2026-08-04"),
       mainEntityOfPage: "https://www.dbdiagramr.space/dbdiagram-io-vs-dbdiagramr",
       author: {
         "@type": "Person",
         name: "Varun Krishnan",
         url: "https://github.com/VarunKvK",
       },
-      publisher: {
-        "@type": "Organization",
-        name: "dbdiagramr",
-        url: "https://www.dbdiagramr.space",
-        logo: {
-          "@type": "ImageObject",
-          url: "https://www.dbdiagramr.space/favicon.svg",
-        },
-      },
+      publisher: organizationRef(),
     },
     {
       "@type": "FAQPage",

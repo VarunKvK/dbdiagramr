@@ -6,6 +6,8 @@ import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
 import { SUPABASE_SQL } from "@/lib/sql/pgDumpSamples";
 import FaqAccordion from "@/app/sections/FaqAccordion";
+import { toIsoDateTime } from "@/lib/dates";
+import { organizationRef } from "@/lib/structuredData";
 
 const schema = parseSqlToSchema(SUPABASE_SQL).schema;
 
@@ -69,23 +71,15 @@ const jsonLd = {
       headline: "Supabase Schema Diagram | ERD From Your Live Database",
       description:
         "Connect a Supabase Postgres database and render public, auth, and storage tables as an interactive ER diagram in seconds.",
-      datePublished: "2026-10-20",
-      dateModified: "2026-10-20",
+      datePublished: toIsoDateTime("2026-10-20"),
+      dateModified: toIsoDateTime("2026-10-20"),
       mainEntityOfPage: "https://www.dbdiagramr.space/supabase-er-diagram",
       author: {
         "@type": "Person",
         name: "Varun Krishnan",
         url: "https://github.com/VarunKvK",
       },
-      publisher: {
-        "@type": "Organization",
-        name: "dbdiagramr",
-        url: "https://www.dbdiagramr.space",
-        logo: {
-          "@type": "ImageObject",
-          url: "https://www.dbdiagramr.space/favicon.svg",
-        },
-      },
+      publisher: organizationRef(),
     },
     {
       "@type": "HowTo",

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Footer from "@/app/sections/Footer";
 import FaqAccordion from "@/app/sections/FaqAccordion";
+import { toIsoDateTime } from "@/lib/dates";
+import { organizationRef } from "@/lib/structuredData";
 
 export const metadata: Metadata = {
   title: "ChartDB Alternative | Live PostgreSQL ER Diagrams (2026)",
@@ -116,23 +118,15 @@ const jsonLd = {
       headline: "ChartDB Alternative - Live PostgreSQL ER Diagrams",
       description:
         "ChartDB vs dbdiagramr compared: query-and-paste schema import vs a direct PostgreSQL connection that renders the live schema in seconds.",
-      datePublished: "2026-10-20",
-      dateModified: "2026-10-20",
+      datePublished: toIsoDateTime("2026-10-20"),
+      dateModified: toIsoDateTime("2026-10-20"),
       mainEntityOfPage: "https://www.dbdiagramr.space/chartdb-alternative",
       author: {
         "@type": "Person",
         name: "Varun Krishnan",
         url: "https://github.com/VarunKvK",
       },
-      publisher: {
-        "@type": "Organization",
-        name: "dbdiagramr",
-        url: "https://www.dbdiagramr.space",
-        logo: {
-          "@type": "ImageObject",
-          url: "https://www.dbdiagramr.space/favicon.svg",
-        },
-      },
+      publisher: organizationRef(),
     },
     {
       "@type": "FAQPage",

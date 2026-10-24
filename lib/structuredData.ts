@@ -17,23 +17,8 @@ export function personNode() {
   };
 }
 
-export function organizationNode() {
-  return {
-    "@type": "Organization",
-    "@id": ORGANIZATION_ID,
-    name: "dbdiagramr",
-    url: SITE_URL,
-    description:
-      "Free, open-source web tool for generating interactive entity-relationship diagrams from PostgreSQL databases.",
-    logo: {
-      "@type": "ImageObject",
-      url: `${SITE_URL}/favicon.svg`,
-    },
-    sameAs: [
-      "https://github.com/VarunKvK/dbdiagramr",
-      "https://x.com/im_daedalus",
-    ],
-  };
+export function organizationRef() {
+  return { "@id": ORGANIZATION_ID };
 }
 
 export function breadcrumbNode(items: { name: string; url: string }[]) {
@@ -72,6 +57,6 @@ export function webApplicationNode({
     isAccessibleForFree: true,
     offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
     author: personNode(),
-    publisher: organizationNode(),
+    publisher: organizationRef(),
   };
 }

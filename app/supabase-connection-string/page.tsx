@@ -3,6 +3,7 @@ import Link from "next/link";
 import Footer from "@/app/sections/Footer";
 import FaqAccordion from "@/app/sections/FaqAccordion";
 import AuthorByline from "@/components/AuthorByline";
+import { GreenButton, MetaPill, OutlineButton } from "@/components/ui/pills";
 import { toIsoDateTime } from "@/lib/dates";
 import {
   breadcrumbNode,
@@ -103,7 +104,7 @@ const jsonLd = {
 };
 
 const prose =
-  "max-w-none leading-relaxed text-muted [&_h2]:mt-12 [&_h2]:scroll-mt-24 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-ink [&_h3]:mt-7 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-ink [&_p]:mt-4 [&_p]:leading-relaxed [&_p]:text-muted [&_a]:text-accent [&_a]:underline [&_a]:decoration-accent/40 hover:[&_a]:text-accent-hover [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mt-2 [&_strong]:font-semibold [&_strong]:text-ink [&_table]:mt-6 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm [&_th]:border [&_th]:border-border [&_th]:bg-surface [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:align-top [&_th]:font-medium [&_th]:text-ink [&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2 [&_td]:align-top [&_td]:text-muted [&_pre]:mt-5 [&_pre]:overflow-x-auto [&_pre]:rounded-[10px] [&_pre]:bg-ink [&_pre]:p-4 [&_pre]:text-sm [&_pre]:text-white/85 [&_code]:break-words [&_code]:rounded [&_code]:bg-black/5 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[0.9em] [&_code]:text-ink [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-white/85";
+  "max-w-none leading-relaxed text-muted [&_h2]:mt-16 [&_h2]:scroll-mt-24 [&_h2]:text-2xl [&_h2]:font-semibold [&_h2]:tracking-tight [&_h2]:text-ink [&_h3]:mt-7 [&_h3]:text-lg [&_h3]:font-semibold [&_h3]:text-ink [&_p]:mt-4 [&_p]:leading-relaxed [&_p]:text-muted [&_a]:text-accent [&_a]:underline [&_a]:decoration-accent/40 hover:[&_a]:text-accent-hover [&_ul]:mt-4 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:mt-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mt-2 [&_strong]:font-semibold [&_strong]:text-ink [&_table]:mt-6 [&_table]:w-full [&_table]:border-collapse [&_table]:text-sm [&_th]:border [&_th]:border-border [&_th]:bg-surface [&_th]:px-3 [&_th]:py-2 [&_th]:text-left [&_th]:align-top [&_th]:font-medium [&_th]:text-ink [&_td]:border [&_td]:border-border [&_td]:px-3 [&_td]:py-2 [&_td]:align-top [&_td]:text-muted [&_pre]:mt-5 [&_pre]:overflow-x-auto [&_pre]:rounded-[10px] [&_pre]:bg-ink [&_pre]:p-4 [&_pre]:text-sm [&_pre]:text-white/85 [&_code]:break-words [&_code]:rounded [&_code]:bg-ink/5 [&_code]:px-1 [&_code]:py-0.5 [&_code]:text-[0.9em] [&_code]:text-ink [&_pre_code]:bg-transparent [&_pre_code]:p-0 [&_pre_code]:text-white/85";
 
 export default function SupabaseConnectionStringPage() {
   return (
@@ -113,7 +114,7 @@ export default function SupabaseConnectionStringPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
 
-      <div className="mx-auto max-w-3xl px-4 pb-16 pt-24">
+      <div className="mx-auto max-w-7xl px-6 pb-16 pt-24 lg:px-8">
         <nav aria-label="Breadcrumb" className="mb-8 text-sm text-muted">
           <Link href="/" className="font-medium text-accent hover:text-accent-hover">
             Home
@@ -126,7 +127,7 @@ export default function SupabaseConnectionStringPage() {
           <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted">
             Supabase guide
           </p>
-          <h1 className="mt-3 text-3xl font-semibold leading-tight tracking-tight text-ink md:text-5xl">
+          <h1 className="mt-3 max-w-4xl text-3xl font-semibold leading-tight tracking-tight text-ink md:text-5xl">
             Supabase connection string: every mode, port and setting
           </h1>
           <AuthorByline
@@ -134,11 +135,14 @@ export default function SupabaseConnectionStringPage() {
             readingMinutes={10}
             verb="Written by"
           />
-          <p className="mt-4 text-sm text-muted">
-            Last verified{" "}
-            <time dateTime="2026-10-25">October 25, 2026</time>. Pooler test run{" "}
-            <time dateTime="2026-10-23">October 23, 2026</time>.
-          </p>
+          <div className="mt-4 flex flex-wrap gap-2">
+            <MetaPill>
+              <time dateTime="2026-10-25">Verified Oct 25, 2026</time>
+            </MetaPill>
+            <MetaPill>
+              <time dateTime="2026-10-23">Pooler tested Oct 23, 2026</time>
+            </MetaPill>
+          </div>
           <p className="mt-5 text-lg leading-relaxed text-muted">
             Supabase gives one database four connection modes: direct, shared
             session, shared transaction, and dedicated. The host, port, and
@@ -147,24 +151,18 @@ export default function SupabaseConnectionStringPage() {
             error actually means.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
-            <Link
-              href="/postgres-connection-string"
-              className="rounded-[10px] bg-ink px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-accent-hover"
-            >
+            <GreenButton href="/postgres-connection-string">
               Check your connection string →
-            </Link>
-            <Link
-              href="/supabase-er-diagram"
-              className="rounded-[10px] border border-border bg-white px-5 py-2.5 text-sm font-medium text-ink shadow-sm transition-colors hover:bg-accent-soft"
-            >
+            </GreenButton>
+            <OutlineButton href="/supabase-er-diagram">
               Visualize a Supabase schema
-            </Link>
+            </OutlineButton>
           </div>
         </header>
 
         <nav
           aria-label="On this page"
-          className="mt-10 rounded-[20px] border border-border bg-white p-5 shadow-sm"
+          className="mt-10 rounded-[20px] border border-border bg-surface p-5"
         >
           <p className="font-mono text-xs font-medium uppercase tracking-widest text-muted">
             On this page
@@ -226,7 +224,7 @@ export default function SupabaseConnectionStringPage() {
             </p>
           </section>
 
-          <section id="modes">
+          <section id="modes" className="scroll-mt-24">
             <h2>All four Supabase connection modes</h2>
             <div className="mt-6 overflow-x-auto">
               <table>
@@ -295,7 +293,7 @@ export default function SupabaseConnectionStringPage() {
             </p>
           </section>
 
-          <section id="choose">
+          <section id="choose" className="scroll-mt-24">
             <h2>Which mode should you use?</h2>
             <p>
               Match the mode to the lifetime of the connection, not to the
@@ -333,7 +331,7 @@ export default function SupabaseConnectionStringPage() {
             </p>
           </section>
 
-          <section id="copy-the-string">
+          <section id="copy-the-string" className="scroll-mt-24">
             <h2>Copy the string from Supabase</h2>
             <ol>
               <li>Open the Supabase Dashboard for the project.</li>
@@ -360,7 +358,7 @@ export default function SupabaseConnectionStringPage() {
             </p>
           </section>
 
-          <section id="usernames">
+          <section id="usernames" className="scroll-mt-24">
             <h2>Usernames are the second-most-common break</h2>
             <div className="mt-6 overflow-x-auto">
               <table>
@@ -410,7 +408,7 @@ export default function SupabaseConnectionStringPage() {
             </p>
           </section>
 
-          <section id="password">
+          <section id="password" className="scroll-mt-24">
             <h2>Passwords and URL encoding</h2>
             <p>
               A connection string is a URL. A raw <code>@</code> changes where
@@ -443,7 +441,7 @@ encoded:  p%40ss%20word`}</code></pre>
             </p>
           </section>
 
-          <section id="ssl">
+          <section id="ssl" className="scroll-mt-24">
             <h2>SSL: require encrypts, verify-full verifies</h2>
             <p>
               Supabase accepts unencrypted connections unless you enable SSL
@@ -472,7 +470,7 @@ encoded:  p%40ss%20word`}</code></pre>
             </p>
           </section>
 
-          <section id="prisma">
+          <section id="prisma" className="scroll-mt-24">
             <h2>Driver settings for transaction mode</h2>
             <p>
               Transaction pooling hands a server connection back after each
@@ -551,7 +549,7 @@ const sql = postgres(process.env.DATABASE_URL!, { prepare: false });`}</code></p
 conn = psycopg.connect(conninfo, prepare_threshold=None)`}</code></pre>
           </section>
 
-          <section id="errors">
+          <section id="errors" className="scroll-mt-24">
             <h2>Supabase connection errors and what they mean</h2>
             <div className="mt-6 overflow-x-auto">
               <table>
@@ -604,7 +602,7 @@ conn = psycopg.connect(conninfo, prepare_threshold=None)`}</code></pre>
             </p>
           </section>
 
-          <section id="tested">
+          <section id="tested" className="scroll-mt-24">
             <h2>What was tested</h2>
             <p>
               On October 23, 2026, both shared pooler modes connected to a
@@ -621,14 +619,14 @@ conn = psycopg.connect(conninfo, prepare_threshold=None)`}</code></pre>
             </p>
           </section>
 
-          <section id="faq">
-            <h2>FAQ</h2>
-            <div className="mt-5">
+          <section id="faq" className="scroll-mt-24">
+            <h2>Frequently asked questions</h2>
+            <div className="mt-6 [&_h3]:mt-0 [&_p]:mt-0">
               <FaqAccordion items={faqs} variant="card" columns={1} />
             </div>
           </section>
 
-          <section id="sources">
+          <section id="sources" className="scroll-mt-24">
             <h2>Sources</h2>
             <ul>
               <li>
@@ -698,30 +696,13 @@ conn = psycopg.connect(conninfo, prepare_threshold=None)`}</code></pre>
               </li>
             </ul>
           </section>
-
-          <section>
-            <div className="rounded-[20px] bg-ink px-8 py-10 text-center">
-              <h2 className="mt-0 text-2xl font-semibold text-white">
-                Check your Supabase string
-              </h2>
-              <p className="mx-auto mt-3 max-w-xl text-white/70">
-                Paste a connection string into the free checker. It runs in your
-                browser, flags the mode, port, username, SSL, and Prisma
-                settings, and never sends the password anywhere.
-              </p>
-              <Link
-                href="/postgres-connection-string"
-                className="mt-6 inline-block rounded-[10px] bg-accent px-8 py-3 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
-              >
-                Open the checker →
-              </Link>
-            </div>
-          </section>
         </article>
 
-        <section className="mt-12">
-          <h2 className="mb-4 text-xl font-semibold text-ink">Keep going</h2>
-          <div className="grid gap-4 md:grid-cols-2">
+        <section className="mt-16">
+          <h2 className="mb-6 text-2xl font-semibold tracking-tight text-ink">
+            Keep going
+          </h2>
+          <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
             {[
               {
                 href: "/postgres-connection-string",
@@ -747,14 +728,31 @@ conn = psycopg.connect(conninfo, prepare_threshold=None)`}</code></pre>
               <Link
                 key={link.href}
                 href={link.href}
-                className="block rounded-[20px] border border-border bg-white p-5 shadow-sm transition-colors hover:shadow-md"
+                className="block rounded-[20px] border border-border bg-surface p-5 transition-colors hover:border-accent/60"
               >
-                <div className="font-medium text-ink">
-                  {link.title} <span className="text-accent">→</span>
+                <div className="flex items-start justify-between gap-2 font-medium text-ink">
+                  <span>{link.title}</span>
+                  <span className="shrink-0 text-accent">→</span>
                 </div>
                 <div className="mt-1 text-sm text-muted">{link.body}</div>
               </Link>
             ))}
+          </div>
+        </section>
+
+        <section className="mt-16">
+          <div className="rounded-[20px] bg-ink px-8 py-12 text-center">
+            <h2 className="text-2xl font-semibold text-white">
+              Check your Supabase string
+            </h2>
+            <p className="mx-auto mt-3 max-w-xl text-white/70">
+              Paste a connection string into the free checker. It runs in your
+              browser, flags the mode, port, username, SSL, and Prisma
+              settings, and never sends the password anywhere.
+            </p>
+            <GreenButton href="/postgres-connection-string" className="mt-6">
+              Open the checker →
+            </GreenButton>
           </div>
         </section>
       </div>

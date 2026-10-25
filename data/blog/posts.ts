@@ -7,6 +7,7 @@ export type BlogPost = {
   updated?: string; // YYYY-MM-DD, when the body changed after publication
   readingMinutes: number;
   tags: string[];
+  byline?: "By" | "Written by";
   // Canonical: where the primary version lives (dev.to initially, self later)
   canonical?: string;
   // Dev.to URL once published
@@ -15,6 +16,38 @@ export type BlogPost = {
 };
 
 export const blogPosts: BlogPost[] = [
+  {
+    slug: "supabase-tenant-or-user-not-found",
+    title: "Tenant or user not found: Supabase fix",
+    description:
+      'Fix "Tenant or user not found" in Supabase: copy the pooler host and postgres.<ref> username from one Connect string, then verify each step.',
+    keywords: [
+      "supabase tenant or user not found",
+      "supabase pooler username",
+      "supabase shared pooler error",
+      "postgres.<ref> username",
+    ],
+    date: "2026-10-25",
+    readingMinutes: 6,
+    tags: ["supabase", "postgres", "troubleshooting"],
+    byline: "Written by",
+  },
+  {
+    slug: "prisma-prepared-statement-already-exists-supabase",
+    title: 'prepared statement "s0" already exists: Supabase fix',
+    description:
+      "Fix prepared statement \"s0\" already exists with Prisma on Supabase's Supavisor pooler: add pgbouncer=true, use a direct URL for migrations, and verify.",
+    keywords: [
+      'prepared statement "s0" already exists',
+      "prisma supavisor prepared statement",
+      "supabase transaction pooler prisma",
+      "prisma prepared statement error",
+    ],
+    date: "2026-10-25",
+    readingMinutes: 8,
+    tags: ["supabase", "postgres", "prisma", "troubleshooting"],
+    byline: "Written by",
+  },
   {
     slug: "what-is-an-er-diagram",
     title: "What Is an ER Diagram and How to Read One",

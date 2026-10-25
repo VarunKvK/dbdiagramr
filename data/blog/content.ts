@@ -2,6 +2,172 @@
 // Keep each body self-contained: headings, tables, code blocks, FAQ.
 
 export const blogBodies: Record<string, string> = {
+  "supabase-tenant-or-user-not-found": `
+    <h2>The short answer</h2>
+    <p><strong>Tenant or user not found</strong> means Supabase&rsquo;s shared pooler could not match the host and username to one project. It is normally a connection-string mismatch, not a wrong password. On the shared pooler, the username must include the project ref: <code>postgres.&lt;ref&gt;</code>, or <code>&lt;role&gt;.&lt;ref&gt;</code> for a custom role.</p>
+    <p>The fix is to open the Supabase <strong>Connect</strong> dialog, choose Session pooler or Transaction pooler, and copy the whole string. Replace only the password placeholder. For the full host and username table, see the <a href="https://www.dbdiagramr.space/supabase-connection-string#usernames">Supabase connection string guide</a>.</p>
+
+    <h2>What the error means</h2>
+    <p><a href="https://supabase.com/docs/guides/troubleshooting/tenant-or-user-not-found">Supabase&rsquo;s tenant troubleshooting guide</a> describes this as the shared pooler failing to match the host and username to a project. Some drivers report it as:</p>
+    <pre><code>FATAL: (ENOTFOUND) tenant/user postgres.&lt;project-ref&gt; not found</code></pre>
+    <p>The wording changes by pooler and driver. The underlying problem is the same: the pooler needs enough information to find your project before it can authenticate the role. That is why resetting the database password does not fix a missing project ref. Supabase&rsquo;s guide makes the same point: the error sends people to reset a password that was never wrong.</p>
+
+    <h2>Cause 1: the username is missing the project ref</h2>
+    <p>Shared pooler connections use <code>postgres.&lt;project-ref&gt;</code>, not plain <code>postgres</code>. Direct connections and the paid dedicated pooler use plain <code>postgres</code>. Custom roles follow the same rule as the shared pooler: <code>&lt;role&gt;.&lt;project-ref&gt;</code>.</p>
+    <table>
+      <thead><tr><th>Connection</th><th>Username</th><th>What happens without the ref</th></tr></thead>
+      <tbody>
+        <tr><td>Direct</td><td><code>postgres</code></td><td>Adding <code>.&lt;ref&gt;</code> causes an authentication failure.</td></tr>
+        <tr><td>Dedicated pooler</td><td><code>postgres</code></td><td>Same as direct: plain role, no project suffix.</td></tr>
+        <tr><td>Shared session</td><td><code>postgres.&lt;ref&gt;</code></td><td><code>Tenant or user not found</code>.</td></tr>
+        <tr><td>Shared transaction</td><td><code>postgres.&lt;ref&gt;</code></td><td>The same tenant error.</td></tr>
+      </tbody>
+    </table>
+    <p>This is the most common cause because the shared pooler username looks almost identical to the direct username. The project ref is the part that identifies the tenant.</p>
+
+    <h2>Cause 2: the host was typed, not copied</h2>
+    <p>Shared pooler hosts look like <code>aws-1-us-east-2.pooler.supabase.com</code>. The number is a pooler cluster index, not part of the region name. A region can have more than one, and <code>aws-0</code> is not a safe default. You cannot derive the host from the region.</p>
+    <p>If the host and username come from different screens, different projects, or different connection modes, the pooler can receive a valid host with the wrong tenant or a valid tenant with the wrong host. Copy both values from the same Connect string.</p>
+
+    <h2>Cause 3: the mode, host, username, and port do not match</h2>
+    <p>Supabase has four connection paths, and each has a matching host, port, and username. The shared pooler is IPv4 and uses <code>postgres.&lt;ref&gt;</code>. Port <code>5432</code> is session mode; port <code>6543</code> is transaction mode. The paid dedicated pooler also uses port <code>6543</code>, but it uses plain <code>postgres</code> and the <code>db.&lt;ref&gt;.supabase.co</code> host.</p>
+    <p>Do not mix a direct host with a pooled username. Do not mix a session host with a transaction username. The error appears before password authentication, so the password is not the useful thing to change first.</p>
+
+    <h2>How to fix it, with a check after each step</h2>
+    <ol>
+      <li><strong>Open Connect and choose the mode.</strong> Use Session pooler for a persistent backend on IPv4, or Transaction pooler for serverless. Check: the string says <code>pooler.supabase.com</code>, not <code>db.&lt;ref&gt;.supabase.co</code>, unless you chose the dedicated pooler.</li>
+      <li><strong>Check the username.</strong> Shared session and shared transaction must use <code>postgres.&lt;ref&gt;</code> or <code>&lt;role&gt;.&lt;ref&gt;</code>. Direct and dedicated use <code>postgres</code>. Check: the username contains the project ref exactly where the Connect dialog shows it.</li>
+      <li><strong>Check the port.</strong> Shared session is <code>5432</code>; shared transaction is <code>6543</code>. Check: the port matches the mode you selected, not just the port you remember.</li>
+      <li><strong>Connect and run <code>select 1</code>.</strong> Check: the query returns. If it still returns the exact tenant error with a copied host, username, and port, stop changing the password.</li>
+      <li><strong>Contact Supabase support.</strong> Include the project ref, exact error, pooler host, username, port, and the time of the attempt. The tenant guide documents host and username causes; it does not provide a self-service resync when both are already correct. <a href="https://supabase.com/dashboard/support/new">Open a support ticket</a>.</li>
+    </ol>
+
+    <h2>Why resetting the password is the wrong first move</h2>
+    <p>The pooler has to identify the project before it can check a password for a role in that project. A missing project ref means there is no tenant to authenticate against. Reset the password only after the host, username, and port match a single Connect string and you get a different error, such as <code>password authentication failed</code>.</p>
+
+    <h2>Tested on</h2>
+    <p>Owner reproduction, 2026-10-25. The shared session pooler was addressed as <code>postgres</code> instead of <code>postgres.&lt;ref&gt;</code>:</p>
+    <pre><code>postgresql://postgres:YOUR_PASSWORD@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres</code></pre>
+    <p>The connection returned:</p>
+    <pre><code>(ENOIDENTIFIER) no tenant identifier provided (external_id or sni_hostname required)</code></pre>
+    <p>That is the same failure class as <code>Tenant or user not found</code>: the pooler cannot identify the tenant because the username has no project ref. The password in the test string was a placeholder, so this reproduction tests the tenant lookup, not password authentication.</p>
+
+    <h2>Sources</h2>
+    <ul>
+      <li><a href="https://supabase.com/docs/guides/troubleshooting/tenant-or-user-not-found">Supabase: Tenant or user not found when connecting through the shared pooler</a></li>
+      <li><a href="https://supabase.com/docs/guides/database/connecting-to-postgres">Supabase: Connect to your database</a></li>
+      <li><a href="https://supabase.com/dashboard/support/new">Supabase: New support ticket</a></li>
+    </ul>
+    <p>Not sure which mode your string uses? Paste it into the <a href="https://www.dbdiagramr.space/postgres-connection-string">PostgreSQL connection string checker</a> to see the host, port, and username before you connect.</p>
+  `,
+
+  "prisma-prepared-statement-already-exists-supabase": `
+    <h2>The short answer</h2>
+    <p>Supabase&rsquo;s shared transaction pooler on port <code>6543</code> is <strong>Supavisor</strong>, not PgBouncer. Supavisor in transaction mode does not support prepared statements, but Prisma tries to create them. Add <code>?pgbouncer=true</code> to the pooled URL, and move migrations to a direct or session URL.</p>
+    <p>That flag name is confusing on Supabase: it is the switch Prisma uses to stop creating named prepared statements. It does not mean the shared pooler is PgBouncer.</p>
+    <p>For the surrounding connection setup, see the <a href="https://www.dbdiagramr.space/supabase-connection-string#prisma">Supabase connection string guide&rsquo;s Prisma section</a>.</p>
+
+    <h2>What the error means</h2>
+    <p>Prepared statements belong to a database session. PostgreSQL keeps them for the life of that session, and a statement cannot be used by multiple simultaneous clients. The <a href="https://www.postgresql.org/docs/16/sql-prepare.html">PostgreSQL PREPARE documentation</a> is explicit on both points.</p>
+    <p>Transaction pooling gives a client a server connection for one transaction, then returns it to the pool. The next transaction can land on a different backend. A named statement created on one backend may still exist there, or may be missing on the next one. Prisma uses named prepared statements, so it can hit either side of that mismatch.</p>
+    <p>Supabase&rsquo;s <a href="https://supabase.com/docs/guides/database/prisma/prisma-troubleshooting">Prisma troubleshooting guide</a> names the cause directly: Supavisor in transaction mode on port <code>6543</code> does not support prepared statements, which Prisma tries to create in the background. The fix it gives is <code>pgbouncer=true</code> on the connection string.</p>
+
+    <h2>Cause 1: the runtime uses the transaction pooler without the flag</h2>
+    <p>This is the common production case. <code>DATABASE_URL</code> points at port <code>6543</code>, the app is deployed to a serverless or autoscaling runtime, and the URL has no <code>pgbouncer=true</code>. The first query after a new client or deploy can succeed, then a later query reuses a backend that already has <code>s0</code>, and the next prepare fails.</p>
+    <p>Serverless makes it easier to see because instances start and stop, but the cause is the pooling mode, not the number of instances by itself.</p>
+
+    <h2>Cause 2: Prisma Migrate or <code>db push</code> uses the pooled URL</h2>
+    <p>Prisma&rsquo;s schema engine expects a single connection. <a href="https://www.prisma.io/docs/orm/v7/prisma-client/setup-and-configuration/databases-connections/pgbouncer">Prisma&rsquo;s pooling guide</a> shows this exact error when Migrate runs through a transaction pooler. The fix is not to add the flag to the migration path. Give Prisma CLI a direct or session URL.</p>
+
+    <h2>Cause 3: there is no direct URL in the config</h2>
+    <p>If <code>DATABASE_URL</code> is the only URL, the app and the CLI share it. Prisma has no way to send Migrate somewhere safer. Prisma 6 uses <code>directUrl</code> in the datasource block; Prisma 7 puts the direct URL in <code>prisma.config.ts</code>.</p>
+
+    <h2>The related <code>s0</code> &ldquo;does not exist&rdquo; error</h2>
+    <p><code>prepared statement &quot;s0&quot; does not exist</code> is the other half of the same problem. The client prepared <code>s0</code> on one backend, then the transaction moved to a different backend that never saw it. The fix is the same: stop using named prepared statements through transaction pooling, or use a connection mode that preserves the session.</p>
+
+    <h2>Fix for Prisma 6</h2>
+    <p>Use the pooled URL at runtime with <code>pgbouncer=true</code>, and give Prisma CLI a direct or session URL through <code>directUrl</code>.</p>
+    <pre><code># .env
+DATABASE_URL="postgresql://postgres.[ref]:[password]@[pooler-host]:6543/postgres?sslmode=require&amp;pgbouncer=true"
+DIRECT_URL="postgresql://postgres.[ref]:[password]@[pooler-host]:5432/postgres?sslmode=require"</code></pre>
+    <pre><code>// prisma/schema.prisma
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}</code></pre>
+    <p>Check: the runtime URL ends in <code>pgbouncer=true</code>, the direct URL has no flag, and both use the username format that matches their mode. In the shared pooler that is <code>postgres.&lt;ref&gt;</code> or <code>&lt;role&gt;.&lt;ref&gt;</code>; a direct connection uses plain <code>postgres</code>.</p>
+
+    <h2>Fix for Prisma 7</h2>
+    <p>Prisma 7 moves the CLI connection into <code>prisma.config.ts</code> and uses a driver adapter for the runtime. Keep the pooled URL for the adapter and the direct or session URL for the CLI.</p>
+    <pre><code># .env
+DATABASE_URL="postgresql://postgres.[ref]:[password]@[pooler-host]:6543/postgres?sslmode=require&amp;pgbouncer=true"
+DIRECT_URL="postgresql://postgres.[ref]:[password]@[pooler-host]:5432/postgres?sslmode=require"</code></pre>
+    <pre><code>// prisma.config.ts
+import "dotenv/config";
+import { defineConfig, env } from "prisma/config";
+
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  datasource: {
+    url: env("DIRECT_URL"),
+  },
+});</code></pre>
+    <pre><code>// src/db/client.ts
+import { PrismaClient } from "../prisma/generated/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+});
+
+export const prisma = new PrismaClient({ adapter });</code></pre>
+    <p>Check: <code>prisma migrate status</code> and <code>prisma migrate dev</code> use the direct or session URL, while application queries use the pooled URL with the flag.</p>
+
+    <h2>The PgBouncer 1.21 nuance</h2>
+    <p><a href="https://www.prisma.io/docs/orm/v7/prisma-client/setup-and-configuration/databases-connections/pgbouncer">Prisma&rsquo;s pooling guide</a> recommends omitting <code>pgbouncer=true</code> on PgBouncer 1.21 and newer. If you use Supabase&rsquo;s paid dedicated pooler, which is PgBouncer, follow that version guidance for that pooler.</p>
+    <p>Do not apply that note to the shared transaction pooler. That pooler is Supavisor, and Supabase&rsquo;s <a href="https://supabase.com/docs/guides/troubleshooting/disabling-prepared-statements-qL8lEL">prepared statement guide</a> still tells Prisma users to add <code>pgbouncer=true</code> in transaction mode. Follow the provider that terminates the connection.</p>
+
+    <h2>Other drivers</h2>
+    <p><strong>Drizzle with postgres.js:</strong> disable prepared statements in the client.</p>
+    <pre><code>import postgres from "postgres";
+
+const sql = postgres(process.env.DATABASE_URL!, { prepare: false });</code></pre>
+    <p><strong>node-postgres:</strong> omit <code>name</code>. Supplying a name creates a prepared statement; an unnamed query does not.</p>
+    <pre><code>await client.query({ text: "select 1" });</code></pre>
+    <p><strong>Alternative:</strong> use the direct connection or shared session mode, both of which support prepared statements. That is usually the right choice for a persistent backend and for migrations.</p>
+
+    <h2>How to verify the fix</h2>
+    <ol>
+      <li>Run the same query twice from two fresh processes or after a redeploy. Check: both runs succeed, not just the first one.</li>
+      <li>Run <code>prisma migrate status</code>. Check: it connects through the direct or session URL, not port <code>6543</code>.</li>
+      <li>Inspect both URLs. Check: the pooled URL has <code>pgbouncer=true</code>, the direct URL does not, and the usernames match their respective modes.</li>
+      <li>If the error remains, confirm you edited the deployed environment, not only the local <code>.env</code>.</li>
+    </ol>
+
+    <h2>Tested on</h2>
+    <p><strong>Reproduced locally with PgBouncer in transaction mode (max_prepared_statements=0) to show the mechanism. Supabase&rsquo;s shared transaction pooler is Supavisor, which also does not support prepared statements in transaction mode (<a href="https://supabase.com/docs/guides/database/prisma/prisma-troubleshooting">Supabase Prisma troubleshooting</a>).</strong></p>
+    <p>Environment: PostgreSQL 16.15, PgBouncer 1.26.1, Prisma 6.19.3, Node.js 22.23.3, Docker 29.1.3. The PgBouncer test used <code>pool_mode=transaction</code>, <code>default_pool_size=1</code>, and <code>max_prepared_statements=0</code>.</p>
+    <p>Without <code>pgbouncer=true</code>, the first Prisma process succeeded and the second process returned:</p>
+    <pre><code>Error occurred during query execution:
+ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(PostgresError { code: "42P05", message: "prepared statement \\"s0\\" already exists", severity: "ERROR", detail: None, column: None, hint: None }), transient: false })</code></pre>
+    <p>With <code>pgbouncer=true</code> on both runs, the same two-process test returned <code>query ok: 1 row(s)</code> both times. A Prisma 7.10.1 config plus <code>@prisma/adapter-pg</code> smoke test against the same transaction pooler also returned <code>query ok: 1 row(s)</code>.</p>
+    <p>The local test uses PgBouncer only to make the mechanism reproducible. The production fix for the shared Supabase pooler comes from Supabase&rsquo;s Supavisor documentation, not from the local PgBouncer version.</p>
+
+    <h2>Sources</h2>
+    <ul>
+      <li><a href="https://supabase.com/docs/guides/database/prisma/prisma-troubleshooting">Supabase: Troubleshooting Prisma errors</a></li>
+      <li><a href="https://supabase.com/docs/guides/troubleshooting/disabling-prepared-statements-qL8lEL">Supabase: Disabling prepared statements</a></li>
+      <li><a href="https://supabase.com/docs/guides/database/connecting-to-postgres">Supabase: Connect to your database</a></li>
+      <li><a href="https://supabase.com/docs/guides/database/prisma">Supabase: Prisma quickstart</a></li>
+      <li><a href="https://www.prisma.io/docs/orm/v7/prisma-client/setup-and-configuration/databases-connections/pgbouncer">Prisma: Configure Prisma Client with PgBouncer</a></li>
+      <li><a href="https://www.prisma.io/docs/orm/reference/prisma-config-reference">Prisma: Config reference</a></li>
+      <li><a href="https://www.prisma.io/docs/orm/v6/reference/prisma-schema-reference">Prisma v6: Schema reference</a></li>
+      <li><a href="https://www.postgresql.org/docs/16/sql-prepare.html">PostgreSQL: PREPARE</a></li>
+    </ul>
+    <p>Need to check the host, port, and username before changing code? Use the <a href="https://www.dbdiagramr.space/postgres-connection-string">PostgreSQL connection string checker</a>.</p>
+  `,
+
   "what-is-an-er-diagram": `
     <h2>The short version</h2>
     <p>An <strong>entity-relationship (ER) diagram</strong> is a picture of your database structure. Each <strong>entity</strong> (table) is a box, each <strong>attribute</strong> (column) is a row inside it, and each <strong>relationship</strong> (foreign key) is a line between boxes. Cardinality markers tell you whether one row relates to one or many. If you can read those three elements, you can read any ER diagram.</p>

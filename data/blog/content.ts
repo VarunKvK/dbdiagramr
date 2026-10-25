@@ -8,9 +8,13 @@ export const blogBodies: Record<string, string> = {
     <p>The fix is to open the Supabase <strong>Connect</strong> dialog, choose Session pooler or Transaction pooler, and copy the whole string. Replace only the password placeholder. For the full host and username table, see the <a href="https://www.dbdiagramr.space/supabase-connection-string#usernames">Supabase connection string guide</a>.</p>
 
     <h2>What the error means</h2>
-    <p><a href="https://supabase.com/docs/guides/troubleshooting/tenant-or-user-not-found">Supabase&rsquo;s tenant troubleshooting guide</a> describes this as the shared pooler failing to match the host and username to a project. Some drivers report it as:</p>
-    <pre><code>FATAL: (ENOTFOUND) tenant/user postgres.&lt;project-ref&gt; not found</code></pre>
-    <p>The wording changes by pooler and driver. The underlying problem is the same: the pooler needs enough information to find your project before it can authenticate the role. That is why resetting the database password does not fix a missing project ref. Supabase&rsquo;s guide makes the same point: the error sends people to reset a password that was never wrong.</p>
+    <p><a href="https://supabase.com/docs/guides/troubleshooting/tenant-or-user-not-found">Supabase&rsquo;s tenant troubleshooting guide</a> describes this as the shared pooler failing to match the host and username to a project. The wording changes by pooler and driver: the same lookup can return <code>Tenant or user not found</code>, an <code>ENOTFOUND</code> variant with the username, or <code>ENOIDENTIFIER</code> when the username has no project ref at all.</p>
+    <p>All of these fail before password authentication. The pooler needs enough information to find your project before it can authenticate the role. That is why resetting the database password does not fix a missing project ref. Supabase&rsquo;s guide makes the same point: the error sends people to reset a password that was never wrong.</p>
+
+    <h2>If the message says <code>ENOIDENTIFIER</code></h2>
+    <p>The exact message is:</p>
+    <pre><code>(ENOIDENTIFIER) no tenant identifier provided (external_id or sni_hostname required)</code></pre>
+    <p>This means the username had no project ref at all. On the shared pooler, plain <code>postgres</code> gives the pooler nothing to look up. It is not the same string as <code>Tenant or user not found</code>, but it is the same tenant-identification failure, and the fix is the same: copy the shared pooler username in the form <code>postgres.&lt;ref&gt;</code> or <code>&lt;role&gt;.&lt;ref&gt;</code>.</p>
 
     <h2>Cause 1: the username is missing the project ref</h2>
     <p>Shared pooler connections use <code>postgres.&lt;project-ref&gt;</code>, not plain <code>postgres</code>. Direct connections and the paid dedicated pooler use plain <code>postgres</code>. Custom roles follow the same rule as the shared pooler: <code>&lt;role&gt;.&lt;project-ref&gt;</code>.</p>
@@ -46,11 +50,19 @@ export const blogBodies: Record<string, string> = {
     <p>The pooler has to identify the project before it can check a password for a role in that project. A missing project ref means there is no tenant to authenticate against. Reset the password only after the host, username, and port match a single Connect string and you get a different error, such as <code>password authentication failed</code>.</p>
 
     <h2>Tested on</h2>
-    <p>Owner reproduction, 2026-10-25. The shared session pooler was addressed as <code>postgres</code> instead of <code>postgres.&lt;ref&gt;</code>:</p>
-    <pre><code>postgresql://postgres:YOUR_PASSWORD@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres</code></pre>
-    <p>The connection returned:</p>
-    <pre><code>(ENOIDENTIFIER) no tenant identifier provided (external_id or sni_hostname required)</code></pre>
-    <p>That is the same failure class as <code>Tenant or user not found</code>: the pooler cannot identify the tenant because the username has no project ref. The password in the test string was a placeholder, so this reproduction tests the tenant lookup, not password authentication.</p>
+    <p><strong>Reproduced 2026-10-25 against Supabase&rsquo;s shared pooler (aws-0-ap-northeast-1, port 5432).</strong> Both attempts used a placeholder password, so they test tenant identification, not password authentication.</p>
+    <ul>
+      <li>
+        <p><strong>Username <code>postgres</code> (no project ref):</strong></p>
+        <pre><code>(ENOIDENTIFIER) no tenant identifier provided (external_id or sni_hostname required)</code></pre>
+        <p>The connection string was <code>postgresql://postgres:YOUR_PASSWORD@aws-0-ap-northeast-1.pooler.supabase.com:5432/postgres</code>.</p>
+      </li>
+      <li>
+        <p><strong>Username <code>postgres.aaaaaaaaaaaaaaaaaaaa</code> (non-existent 20-character ref):</strong></p>
+        <pre><code>(ENOTFOUND) tenant/user postgres.aaaaaaaaaaaaaaaaaaaa not found</code></pre>
+        <p>This attempt used the same host, port, database, and placeholder password.</p>
+      </li>
+    </ul>
 
     <h2>Sources</h2>
     <ul>
@@ -124,6 +136,19 @@ const adapter = new PrismaPg({
 export const prisma = new PrismaClient({ adapter });</code></pre>
     <p>Check: <code>prisma migrate status</code> and <code>prisma migrate dev</code> use the direct or session URL, while application queries use the pooled URL with the flag.</p>
 
+    <h2>Run migrations in CI</h2>
+    <p>Point the migration step at the direct connection or shared session pooler. Do not run <code>prisma migrate deploy</code> against <code>6543</code>.</p>
+    <p><strong>Prisma 6:</strong> keep <code>directUrl = env("DIRECT_URL")</code> in the datasource block. Prisma CLI uses it for migrations and introspection while the app uses the pooled URL.</p>
+    <pre><code>export DATABASE_URL="postgresql://postgres.[ref]:[password]@[pooler-host]:6543/postgres?sslmode=require&amp;pgbouncer=true"
+export DIRECT_URL="postgresql://postgres.[ref]:[password]@[pooler-host]:5432/postgres?sslmode=require"
+
+npx prisma migrate deploy</code></pre>
+    <p><strong>Prisma 7:</strong> keep <code>datasource.url = env("DIRECT_URL")</code> in <code>prisma.config.ts</code>. The CLI uses that URL for migrations.</p>
+    <pre><code>export DIRECT_URL="postgresql://postgres.[ref]:[password]@[pooler-host]:5432/postgres?sslmode=require"
+
+npx prisma migrate deploy</code></pre>
+    <p>Check: the migration command connects to port <code>5432</code>, not <code>6543</code>. In Prisma 6, confirm <code>directUrl</code> is present; in Prisma 7, confirm the config&rsquo;s <code>datasource.url</code> reads the direct URL.</p>
+
     <h2>The PgBouncer 1.21 nuance</h2>
     <p><a href="https://www.prisma.io/docs/orm/v7/prisma-client/setup-and-configuration/databases-connections/pgbouncer">Prisma&rsquo;s pooling guide</a> recommends omitting <code>pgbouncer=true</code> on PgBouncer 1.21 and newer. If you use Supabase&rsquo;s paid dedicated pooler, which is PgBouncer, follow that version guidance for that pooler.</p>
     <p>Do not apply that note to the shared transaction pooler. That pooler is Supavisor, and Supabase&rsquo;s <a href="https://supabase.com/docs/guides/troubleshooting/disabling-prepared-statements-qL8lEL">prepared statement guide</a> still tells Prisma users to add <code>pgbouncer=true</code> in transaction mode. Follow the provider that terminates the connection.</p>
@@ -162,6 +187,8 @@ ConnectorError(ConnectorError { user_facing_error: None, kind: QueryError(Postgr
       <li><a href="https://supabase.com/docs/guides/database/prisma">Supabase: Prisma quickstart</a></li>
       <li><a href="https://www.prisma.io/docs/orm/v7/prisma-client/setup-and-configuration/databases-connections/pgbouncer">Prisma: Configure Prisma Client with PgBouncer</a></li>
       <li><a href="https://www.prisma.io/docs/orm/reference/prisma-config-reference">Prisma: Config reference</a></li>
+      <li><a href="https://www.prisma.io/docs/orm/prisma-migrate/workflows/development-and-production">Prisma: Applying a migration</a></li>
+      <li><a href="https://www.prisma.io/docs/guides/upgrade-prisma-orm/v7">Prisma: Upgrade to Prisma ORM 7</a></li>
       <li><a href="https://www.prisma.io/docs/orm/v6/reference/prisma-schema-reference">Prisma v6: Schema reference</a></li>
       <li><a href="https://www.postgresql.org/docs/16/sql-prepare.html">PostgreSQL: PREPARE</a></li>
     </ul>
@@ -377,6 +404,7 @@ with psycopg.connect(DATABASE_URL, prepare_threshold=None) as conn:
     <p><strong><code>Tenant or user not found</code></strong><br/>The shared pooler could not match your host and username to a project. Copy the host from Dashboard -&gt; Connect, and make sure the username is <code>postgres.[PROJECT-REF]</code>, not <code>postgres</code>.</p>
     <p><strong><code>prepared statement "s0" already exists</code></strong><br/>You are using transaction mode with prepared statements on. Add <code>?pgbouncer=true</code> for Prisma, <code>prepare: false</code> for postgres.js/Drizzle, or <code>prepare_threshold=None</code> for psycopg.</p>
     <p><strong><code>ENETUNREACH</code> or <code>ETIMEDOUT</code></strong><br/>The name resolved, but the IPv6 path is missing or blocked. Use the shared session pooler on <code>5432</code>.</p>
+    <p><strong>Full fixes:</strong> <a href="https://www.dbdiagramr.space/blog/supabase-tenant-or-user-not-found">Tenant or user not found</a> and <a href="https://www.dbdiagramr.space/blog/prisma-prepared-statement-already-exists-supabase">prepared statement &quot;s0&quot; already exists</a>.</p>
 
     <h2>Verify the fix</h2>
     <p>Check DNS first. On Linux use <code>getent ahosts &lt;host&gt;</code>; on macOS, Windows, or Linux, <code>nslookup &lt;host&gt;</code> is a cross-platform alternative.</p>

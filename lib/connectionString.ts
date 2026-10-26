@@ -51,10 +51,10 @@ export const ENDPOINT_LABELS: Record<ConnectionEndpoint, string> = {
 };
 
 const SUPABASE_PORT_HREF = "/supabase-connection-string#modes";
-const SUPABASE_USER_HREF = "/supabase-connection-string#usernames";
+const SUPABASE_TENANT_HREF = "/blog/supabase-tenant-or-user-not-found";
 const PASSWORD_HREF = "/supabase-connection-string#password";
 const SSL_HREF = "/supabase-connection-string#ssl";
-const PRISMA_HREF = "/supabase-connection-string#prisma";
+const PRISMA_PREPARED_HREF = "/blog/prisma-prepared-statement-already-exists-supabase";
 
 function decodePart(value: string, label: string): string {
   try {
@@ -274,7 +274,7 @@ export function analyzeConnectionString(
       severity: "error",
       message: "A shared Supabase pooler username includes the project ref.",
       fix: "Use postgres.<PROJECT-REF>, copied from Dashboard -> Connect.",
-      href: SUPABASE_USER_HREF,
+      href: SUPABASE_TENANT_HREF,
     });
   }
 
@@ -284,7 +284,7 @@ export function analyzeConnectionString(
       severity: "error",
       message: "Direct and dedicated Supabase connections use the plain postgres user.",
       fix: "Use postgres without the project ref, or switch to a shared pooler string.",
-      href: SUPABASE_USER_HREF,
+      href: SUPABASE_TENANT_HREF,
     });
   }
 
@@ -332,7 +332,7 @@ export function analyzeConnectionString(
         ? "This is a transaction pooler. Prisma needs prepared statements disabled unless the pooler supports them."
         : "Prisma on the shared transaction pooler needs prepared statements disabled.",
       fix: "Append pgbouncer=true to the query string for Prisma.",
-      href: PRISMA_HREF,
+      href: PRISMA_PREPARED_HREF,
     });
   }
 

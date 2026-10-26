@@ -569,12 +569,23 @@ conn = psycopg.connect(conninfo, prepare_threshold=None)`}</code></pre>
                   <tr>
                     <td><code>FATAL: (ENOTFOUND) tenant/user postgres.[ref] not found</code></td>
                     <td>Pooler host and username are from different modes or projects.</td>
-                    <td>Copy host and username from the same Connect string.</td>
+                    <td>
+                      Copy host and username from the same Connect string.{" "}
+                      <Link href="/blog/supabase-tenant-or-user-not-found">
+                        Full fix →
+                      </Link>
+                    </td>
                   </tr>
                   <tr>
                     <td><code>prepared statement &quot;s0&quot; already exists</code></td>
                     <td>Named prepared statements through transaction pooling.</td>
-                    <td>Disable them in the driver, or use direct or shared session.</td>
+                    <td>
+                      Disable them in the driver, or use direct or shared
+                      session.{" "}
+                      <Link href="/blog/prisma-prepared-statement-already-exists-supabase">
+                        Full fix →
+                      </Link>
+                    </td>
                   </tr>
                   <tr>
                     <td><code>FATAL: password authentication failed</code></td>

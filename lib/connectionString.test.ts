@@ -106,6 +106,12 @@ test("checks shared and direct Supabase usernames", () => {
     codes("postgresql://postgres:pw@db.abcdefgh.supabase.co:6543/postgres?sslmode=require"),
     []
   );
+  assert.equal(
+    analyzeConnectionString(
+      "postgresql://postgres:pw@aws-1-us-east-2.pooler.supabase.com:5432/postgres?sslmode=require"
+    ).flags[0]?.href,
+    "/blog/supabase-tenant-or-user-not-found"
+  );
 });
 
 test("warns on missing SSL and errors on unsafe SSL", () => {
@@ -133,6 +139,10 @@ test("flags Prisma on transaction pooling unless pgbouncer=true", () => {
     "postgresql://postgres:pw@db.abcdefgh.supabase.co:6543/postgres?sslmode=require";
 
   assert.deepEqual(codes(shared, true), ["prisma-pgbouncer"]);
+  assert.equal(
+    analyzeConnectionString(shared, { prisma: true }).flags[0]?.href,
+    "/blog/prisma-prepared-statement-already-exists-supabase"
+  );
   assert.equal(
     analyzeConnectionString(shared, { prisma: true }).flags[0]?.severity,
     "error"

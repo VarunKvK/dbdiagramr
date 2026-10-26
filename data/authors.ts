@@ -6,7 +6,6 @@ export const AUTHOR = {
   bio: "Varun Krishnan builds dbdiagramr, a free and open-source tool for turning PostgreSQL schemas into interactive ER diagrams.",
   sameAs: [
     "https://github.com/VarunKvK",
-    "https://x.com/im_daedalus",
     "https://dev.to/not_varunkv",
   ],
 } as const;

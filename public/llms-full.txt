@@ -94,5 +94,5 @@ Supports: Supabase (direct / session pooler / transaction pooler), Neon (pooled 
 - GitHub: https://github.com/VarunKvK/dbdiagramr
 - License: MIT
 - Stack: Next.js 14, TypeScript, Tailwind CSS, PostgreSQL (pg), @xyflow/react + dagre
-- Contact / X: https://x.com/im_daedalus
+- Maintainer: https://github.com/VarunKvK
 - Last updated: 2026-10-23

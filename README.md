@@ -102,4 +102,4 @@ MIT — see [LICENSE](LICENSE).
 
 ---
 
-Built by [@im_daedalus](https://x.com/im_daedalus) · [Live Demo](https://www.dbdiagramr.space) · [Schema Library](https://www.dbdiagramr.space/schema) · [Report a Bug](https://github.com/VarunKvK/dbdiagramr/issues)
+Built by [VarunKvK](https://github.com/VarunKvK) · [Live Demo](https://www.dbdiagramr.space) · [Schema Library](https://www.dbdiagramr.space/schema) · [Report a Bug](https://github.com/VarunKvK/dbdiagramr/issues)

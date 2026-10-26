@@ -114,15 +114,6 @@ export default function Footer() {
               Github
             </a>
             <a
-              href="https://x.com/im_daedalus"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="transition-colors hover:text-punch"
-              aria-label="dbdiagramr on X"
-            >
-              X
-            </a>
-            <a
               href="/blog"
               className="transition-colors hover:text-punch"
             >

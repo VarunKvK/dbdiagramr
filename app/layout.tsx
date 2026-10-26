@@ -106,8 +106,7 @@ export default function RootLayout({
       },
       "description": "Free, open-source web tool for generating interactive entity-relationship diagrams from PostgreSQL databases.",
       "sameAs": [
-        "https://github.com/VarunKvK/dbdiagramr",
-        "https://x.com/im_daedalus"
+        "https://github.com/VarunKvK/dbdiagramr"
       ]
     }
   ]

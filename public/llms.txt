@@ -34,7 +34,7 @@
 ## About
 
 - [Source code](https://github.com/VarunKvK/dbdiagramr): Open source under the MIT licence.
-- [Contact and updates](https://x.com/im_daedalus): Follow dbdiagramr on X.
+- [Maintainer](https://github.com/VarunKvK): GitHub profile.
 - [Full context](https://www.dbdiagramr.space/llms-full.txt): Free with no diagram limit and no account; interactive ER diagrams from live PostgreSQL schemas; pan, zoom, and hover-to-trace relationships; SVG and PNG export; per-table RLS status on live connections; support for Supabase, Neon, Railway, the Session pooler (5432), and the Transaction pooler (6543); paste-SQL parsing in the browser; live connection strings sent to the backend for one request and then discarded; no stored connection strings or schemas; built with Next.js, PostgreSQL, and Tailwind CSS.
 
 Last updated: 2026-10-23

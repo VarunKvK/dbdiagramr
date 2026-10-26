@@ -46,7 +46,6 @@ const softwareJsonLd = {
   ],
   sameAs: [
     "https://github.com/VarunKvK/dbdiagramr",
-    "https://x.com/im_daedalus",
   ],
 };
 

@@ -80,11 +80,6 @@ const contactLinks = [
     detail: "Code and projects",
   },
   {
-    label: "X",
-    href: "https://x.com/im_daedalus",
-    detail: "Short updates",
-  },
-  {
     label: "dev.to",
     href: "https://dev.to/not_varunkv",
     detail: "Longer write-ups",
@@ -142,14 +137,6 @@ export default function AboutPage() {
                 className="rounded-[10px] bg-accent px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-accent-hover"
               >
                 GitHub
-              </a>
-              <a
-                href="https://x.com/im_daedalus"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="rounded-[10px] border border-white/30 px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-white/10"
-              >
-                X
               </a>
               <a
                 href="https://dev.to/not_varunkv"

@@ -8,7 +8,8 @@ export const blogBodies: Record<string, string> = {
     <p>The fix is to open the Supabase <strong>Connect</strong> dialog, choose Session pooler or Transaction pooler, and copy the whole string. Replace only the password placeholder. For the full host and username table, see the <a href="https://www.dbdiagramr.space/supabase-connection-string#usernames">Supabase connection string guide</a>.</p>
 
     <h2>What the error means</h2>
-    <p><a href="https://supabase.com/docs/guides/troubleshooting/tenant-or-user-not-found">Supabase&rsquo;s tenant troubleshooting guide</a> describes this as the shared pooler failing to match the host and username to a project. The wording changes by pooler and driver: the same lookup can return <code>Tenant or user not found</code>, an <code>ENOTFOUND</code> variant with the username, or <code>ENOIDENTIFIER</code> when the username has no project ref at all.</p>
+    <p><a href="https://supabase.com/docs/guides/troubleshooting/tenant-or-user-not-found">Supabase&rsquo;s tenant troubleshooting guide</a> describes this as the shared pooler failing to match the host and username to a project. The message depends on the client. Supabase&rsquo;s guide says some drivers report it as <code>FATAL: (ENOTFOUND) tenant/user postgres.&lt;project-ref&gt; not found</code>. In our test, node-postgres returned <code>(ENOTFOUND) tenant/user postgres.aaaaaaaaaaaaaaaaaaaa not found</code> with severity <code>FATAL</code>. The same lookup can also return <code>Tenant or user not found</code>, or <code>ENOIDENTIFIER</code> when the username has no project ref at all.</p>
+    <p>That <code>(ENOTFOUND) tenant/user ... not found</code> text is a pooler lookup error. It is unrelated to the DNS error <code>getaddrinfo ENOTFOUND db.&lt;ref&gt;.supabase.co</code>; for that failure, see the <a href="https://www.dbdiagramr.space/blog/supabase-connection-string-ipv6-enotfound">Supabase getaddrinfo ENOTFOUND fix</a>.</p>
     <p>All of these fail before password authentication. The pooler needs enough information to find your project before it can authenticate the role. That is why resetting the database password does not fix a missing project ref. Supabase&rsquo;s guide makes the same point: the error sends people to reset a password that was never wrong.</p>
 
     <h2>If the message says <code>ENOIDENTIFIER</code></h2>
@@ -143,7 +144,14 @@ export const prisma = new PrismaClient({ adapter });</code></pre>
 export DIRECT_URL="postgresql://postgres.[ref]:[password]@[pooler-host]:5432/postgres?sslmode=require"
 
 npx prisma migrate deploy</code></pre>
-    <p><strong>Prisma 7:</strong> keep <code>datasource.url = env("DIRECT_URL")</code> in <code>prisma.config.ts</code>. The CLI uses that URL for migrations.</p>
+    <p><strong>Prisma 7:</strong> set <code>datasource.url</code> to the direct URL in <code>prisma.config.ts</code>. The CLI uses that URL for migrations.</p>
+    <pre><code>// prisma.config.ts
+import { defineConfig, env } from "prisma/config";
+
+export default defineConfig({
+  schema: "prisma/schema.prisma",
+  datasource: { url: env("DIRECT_URL") },
+});</code></pre>
     <pre><code>export DIRECT_URL="postgresql://postgres.[ref]:[password]@[pooler-host]:5432/postgres?sslmode=require"
 
 npx prisma migrate deploy</code></pre>
@@ -323,6 +331,7 @@ git diff --exit-code docs/schema.svg SCHEMA.md</code></pre>
     <h2>What the error means</h2>
     <pre><code>Error: getaddrinfo ENOTFOUND db.xxxxxxxxx.supabase.co</code></pre>
     <p><code>ENOTFOUND</code> means the resolver returned no address your client could use. <code>ENETUNREACH</code> means an IPv6 address was returned but your network has no route to it. <code>ETIMEDOUT</code> means packets were sent but no reply came back, often because a firewall or network path is blocking IPv6.</p>
+    <p>The pooler error <code>(ENOTFOUND) tenant/user ... not found</code> is a tenant lookup failure, not this DNS failure. See <a href="https://www.dbdiagramr.space/blog/supabase-tenant-or-user-not-found">Tenant or user not found</a> for that message.</p>
 
     <h2>Why the direct host fails on IPv4</h2>
     <p>The direct connection string is <code>postgresql://postgres:[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres</code>. That host uses IPv6 by default. IPv4 requires Supabase's paid IPv4 add-on. <a href="https://supabase.com/docs/guides/database/connecting-to-postgres">Supabase's docs</a> describe the add-on as not dual-stack: &ldquo;enabling it swaps the project's IPv6 (AAAA) DNS record for an IPv4 (A) record, so the project endpoint becomes reachable only over IPv4.&rdquo;</p>

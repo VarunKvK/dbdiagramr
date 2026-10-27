@@ -684,10 +684,11 @@ await client.end();</code></pre>
     <p><code>rejectUnauthorized: false</code>, <code>NODE_TLS_REJECT_UNAUTHORIZED=0</code>, and <code>uselibpqcompat=true&amp;sslmode=require</code> all accept the certificate without proving it belongs to Supabase. They are not fixes for a production connection.</p>
 
     <h2>Fix for Prisma 6</h2>
-    <p>Prisma 6&rsquo;s PostgreSQL connector supports only <code>sslmode=prefer</code>, <code>disable</code>, or <code>require</code>. It does <strong>not</strong> support <code>sslmode=verify-full</code>. For a root CA, use the documented <code>sslrootcert</code> parameter and set <code>sslaccept=strict</code>:</p>
-    <pre><code>DATABASE_URL="postgresql://postgres.[ref]:[password]@aws-[n]-[region].pooler.supabase.com:5432/postgres?sslmode=require&amp;sslrootcert=../prod-ca-2021.crt&amp;sslaccept=strict"</code></pre>
+    <p>Prisma 6&rsquo;s built-in PostgreSQL engine supports only <code>sslmode=prefer</code>, <code>disable</code>, or <code>require</code>. It does <strong>not</strong> support <code>sslmode=verify-full</code>. For a root CA, use <code>sslcert</code> and set <code>sslaccept=strict</code>:</p>
+    <pre><code>DATABASE_URL="postgresql://postgres.[ref]:[password]@aws-[n]-[region].pooler.supabase.com:5432/postgres?sslmode=require&amp;sslcert=../prod-ca-2021.crt&amp;sslaccept=strict"</code></pre>
     <p>Prisma resolves certificate paths relative to the <code>./prisma</code> directory. If the certificate sits in the project root, use <code>../prod-ca-2021.crt</code>. With a multi-file schema, paths resolve relative to <code>./prisma/schema</code> instead. The <a href="https://www.prisma.io/docs/orm/v6/prisma-schema/overview/data-sources#securing-database-connections">Prisma 6 data source docs</a> give both rules.</p>
-    <p>The Prisma 6 connector table lists <code>sslrootcert</code> as the root certificate path. Some examples use <code>sslcert</code> for a server certificate; for Supabase&rsquo;s root CA, use <code>sslrootcert</code> as shown above. <code>sslaccept=strict</code> rejects a certificate that is missing a required value, such as the hostname. The default, <code>accept_invalid_certs</code>, bypasses that check.</p>
+    <p>Prisma 6&rsquo;s built-in engine reads the CA from <code>sslcert</code>; its URL parser does not read <code>sslrootcert</code>. <code>sslaccept=strict</code> rejects a certificate that is missing a required value, such as the hostname. The default, <code>accept_invalid_certs</code>, bypasses that check.</p>
+    <p><strong>Driver adapter note:</strong> this applies to Prisma 6&rsquo;s built-in engine; if you use Prisma 6 with <code>@prisma/adapter-pg</code>, SSL is handled by node-postgres, so follow the node-postgres section instead &mdash; there, <code>sslcert</code> means a client certificate and the CA goes in <code>ssl.ca</code> or <code>sslrootcert</code> (<a href="https://github.com/brianc/node-postgres/blob/b617619f9fb6fbd231731823e2732a2927ded4be/packages/pg-connection-string/index.js">pg-connection-string source</a>).</p>
 
     <h2>Fix for Prisma 7</h2>
     <p>Prisma 7 uses the <code>pg</code> driver adapter. Its documented fix is to add Supabase&rsquo;s CA to Node&rsquo;s trust store before the process starts:</p>
@@ -752,6 +753,7 @@ export const prisma = new PrismaClient({ adapter });</code></pre>
       <li><a href="https://nodejs.org/api/cli.html#node_extra_ca_certsfile">Node.js: <code>NODE_EXTRA_CA_CERTS</code></a></li>
       <li><a href="https://docs.openssl.org/3.5/man1/openssl-verification-options/">OpenSSL: verification options</a></li>
       <li><a href="https://www.prisma.io/docs/orm/v6/overview/databases/postgresql#configuring-an-ssl-connection">Prisma 6: PostgreSQL SSL parameters</a></li>
+      <li><a href="https://github.com/prisma/prisma-engines/blob/6.19.0/quaint/src/connector/postgres/url.rs">Prisma 6.19.0: PostgreSQL URL parser</a></li>
       <li><a href="https://www.prisma.io/docs/orm/v6/prisma-schema/overview/data-sources#securing-database-connections">Prisma 6: certificate path resolution</a></li>
       <li><a href="https://www.prisma.io/docs/guides/upgrade-prisma-orm/v7#ssl-certificate-validation-changes">Prisma 7: SSL certificate validation changes</a></li>
       <li><a href="https://github.com/prisma/orm/blob/7.8.0/packages/adapter-pg/src/pg.ts">Prisma 7 adapter-pg source</a></li>

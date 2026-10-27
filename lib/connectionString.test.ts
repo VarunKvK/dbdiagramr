@@ -132,6 +132,33 @@ test("warns on missing SSL and errors on unsafe SSL", () => {
   );
 });
 
+test("points Supabase SSL warnings at the node-postgres CA fix", () => {
+  const missing = analyzeConnectionString(
+    "postgresql://postgres:pw@db.abcdefgh.supabase.co:5432/postgres"
+  );
+  assert.equal(
+    missing.flags[0]?.href,
+    "/blog/supabase-self-signed-certificate-in-certificate-chain"
+  );
+  assert.match(missing.flags[0]?.fix ?? "", /node-postgres/);
+  assert.match(missing.flags[0]?.fix ?? "", /CA/);
+
+  const prefer = analyzeConnectionString(
+    "postgresql://postgres:pw@db.abcdefgh.supabase.co:5432/postgres?sslmode=prefer"
+  );
+  assert.equal(
+    prefer.flags[0]?.href,
+    "/blog/supabase-self-signed-certificate-in-certificate-chain"
+  );
+  assert.match(prefer.flags[0]?.fix ?? "", /node-postgres/);
+  assert.match(prefer.flags[0]?.fix ?? "", /CA/);
+
+  const neon = analyzeConnectionString(
+    "postgresql://user:pw@ep-cool-darkness-123456.us-east-2.aws.neon.tech/neondb"
+  );
+  assert.equal(neon.flags[0]?.href, "/supabase-connection-string#ssl");
+});
+
 test("flags Prisma on transaction pooling unless pgbouncer=true", () => {
   const shared =
     "postgresql://postgres.abcdefgh:pw@aws-1-us-east-2.pooler.supabase.com:6543/postgres?sslmode=require";

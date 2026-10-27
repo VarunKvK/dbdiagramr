@@ -135,6 +135,7 @@ const adapter = new PrismaPg({
 });
 
 export const prisma = new PrismaClient({ adapter });</code></pre>
+    <p><strong>Prisma 7 CA note:</strong> with <code>pg-connection-string</code> 2.14, <code>sslmode=require</code> in <code>DATABASE_URL</code> is treated as <code>verify-full</code>. If Supabase&rsquo;s CA is not installed, set <code>NODE_EXTRA_CA_CERTS</code> or pass <code>ssl: { ca, rejectUnauthorized: true }</code> to the adapter. See <a href="https://www.dbdiagramr.space/blog/supabase-self-signed-certificate-in-certificate-chain">the full SSL fix</a>.</p>
     <p>Check: <code>prisma migrate status</code> and <code>prisma migrate dev</code> use the direct or session URL, while application queries use the pooled URL with the flag.</p>
 
     <h2>Run migrations in CI</h2>
@@ -378,7 +379,8 @@ const pool = new pg.Pool({
 
 // Do not pass a name value here in transaction mode.
 await pool.query("select 1");</code></pre>
-    <p>Download the CA certificate from Supabase Database settings and point the path at your copy. Supabase recommends TLS: <code>sslmode=require</code> encrypts but does not verify the server; for verification, use the downloaded CA (or <code>sslmode=verify-full</code> with <code>sslrootcert</code>). See <a href="https://supabase.com/docs/guides/database/connecting-to-postgres#connecting-with-ssl">Supabase: connecting with SSL</a>.</p>
+    <p>Download the CA certificate from Supabase Database settings and point the path at your copy. For libpq and psql, <code>sslmode=require</code> encrypts but does not verify the server; use the downloaded CA, or <code>sslmode=verify-full</code> with <code>sslrootcert</code>. See <a href="https://supabase.com/docs/guides/database/connecting-to-postgres#connecting-with-ssl">Supabase: connecting with SSL</a>.</p>
+    <p><strong>node-postgres 8.22:</strong> <code>sslmode=require</code> is treated as <code>verify-full</code>, so keep the CA in the <code>ssl</code> object and remove <code>sslmode</code> from the URI. See <a href="https://www.dbdiagramr.space/blog/supabase-self-signed-certificate-in-certificate-chain">the full SSL fix</a>.</p>
     <p><a href="https://supabase.com/docs/guides/database/connecting-to-postgres#application-side-pool-size">Supabase's serverless guidance</a>: &ldquo;Set the pool to 1 connection. The client is shared by every invocation on that warm instance, so this caps the instance, not the request.&rdquo;</p>
 
     <h3>Prisma</h3>
@@ -636,5 +638,125 @@ LIMIT
     <p><strong>Does formatting change what my query does?</strong><br/>No. A formatter only changes whitespace and keyword casing. Same semantics, better manners.</p>
     <p><strong>Can I format SELECT queries or only DDL?</strong><br/>Both: SELECTs, CTEs, JOINs, migrations, anything valid PostgreSQL.</p>
     <p><strong>Is my SQL sent to a server?</strong><br/>Not with dbdiagramr's formatter. It runs entirely in your browser.</p>
+  `,
+
+  "supabase-self-signed-certificate-in-certificate-chain": `
+    <h2>The short answer</h2>
+    <p><strong>Self-signed certificate in certificate chain</strong> means the client reached Supabase over TLS, but it could not build a trusted chain to Supabase&rsquo;s private root certificate. The fix is to supply <code>prod-ca-2021.crt</code>, downloaded from Supabase&rsquo;s Database settings, and keep certificate verification on.</p>
+    <p>In node-postgres, pass the CA and leave <code>rejectUnauthorized</code> at <code>true</code>. Do not remove verification with <code>rejectUnauthorized: false</code>, <code>NODE_TLS_REJECT_UNAUTHORIZED=0</code>, or <code>uselibpqcompat=true</code>. Those make the error disappear by trusting any certificate.</p>
+    <p>If you also need the host, port, and username rules, see the <a href="https://www.dbdiagramr.space/supabase-connection-string#ssl">Supabase connection string guide&rsquo;s SSL section</a>. To inspect a URI before connecting, use the <a href="https://www.dbdiagramr.space/postgres-connection-string">connection string checker</a>.</p>
+
+    <h2>What the error means</h2>
+    <p>OpenSSL reports <code>self-signed certificate in certificate chain</code> when it cannot find a trusted path from the server certificate to a root in its trust store. The leaf certificate is not necessarily self-signed. In this case, the chain ends at <strong>Supabase Root 2021 CA</strong>, a private root that Node does not ship.</p>
+    <p>The server did present a certificate and the TLS handshake started. The client refused the certificate before any SQL ran. This is different from <code>password authentication failed</code>, <code>Tenant or user not found</code>, or a DNS <code>ENOTFOUND</code>.</p>
+    <p>Node&rsquo;s error code is usually <code>SELF_SIGNED_CERT_IN_CHAIN</code>. The message and code come from the TLS layer, not from PostgreSQL.</p>
+
+    <h2>Why Supabase triggers it</h2>
+    <p>Supabase signs database certificates with its own root. The certificate is not in the public CA bundle used by Node, browsers, or your operating system. Supabase&rsquo;s <a href="https://supabase.com/docs/guides/database/connecting-to-postgres#connecting-with-ssl">connection docs</a> tell you to download the server root certificate from <strong>Database settings</strong> and point your driver at it.</p>
+    <p>Supabase also describes <code>sslmode=require</code> as encryption without server verification. That is the libpq behavior. It is not what node-postgres 8.22 does.</p>
+    <p>With <code>pg@8.22.0</code> and <code>pg-connection-string@2.14.0</code>, the parser treats <code>prefer</code>, <code>require</code>, and <code>verify-ca</code> as aliases for <code>verify-full</code> unless you set <code>uselibpqcompat=true</code>. It prints this warning:</p>
+    <pre><code>SECURITY WARNING: The SSL modes 'prefer', 'require', and 'verify-ca' are treated as aliases for 'verify-full'.</code></pre>
+    <p>So adding <code>?sslmode=require</code> does not make the Supabase error go away in node-postgres 8.22. It actually turns certificate verification on. Without Supabase&rsquo;s CA, the result is <code>self-signed certificate in certificate chain</code>.</p>
+
+    <h2>Fix for node-postgres</h2>
+    <p>Download <code>prod-ca-2021.crt</code> from Supabase <strong>Database settings</strong>, keep it outside source control if your deployment policy requires that, and load it into the client:</p>
+    <pre><code>import fs from "node:fs";
+import { Client } from "pg";
+
+const client = new Client({
+  connectionString:
+    "postgresql://postgres.[ref]:[password]@aws-[n]-[region].pooler.supabase.com:5432/postgres",
+  ssl: {
+    ca: fs.readFileSync("./prod-ca-2021.crt", "utf8"),
+    rejectUnauthorized: true,
+  },
+});
+
+await client.connect();
+await client.query("select 1");
+await client.end();</code></pre>
+    <p>Keep <code>sslmode</code> and <code>sslrootcert</code> out of that <code>connectionString</code>. If either appears in the URI, node-postgres replaces the separate <code>ssl</code> object and your <code>ca</code> is lost. The <a href="https://node-postgres.com/features/ssl#usage-with-connectionstring">node-postgres SSL docs</a> state this directly.</p>
+    <p>If you prefer to keep everything in the URI, use:</p>
+    <pre><code>postgresql://postgres.[ref]:[password]@aws-[n]-[region].pooler.supabase.com:5432/postgres?sslmode=verify-full&amp;sslrootcert=./prod-ca-2021.crt</code></pre>
+    <p><code>verify-full</code> checks both the certificate chain and the hostname. <code>pg-connection-string</code> reads <code>sslrootcert</code> into <code>ssl.ca</code>.</p>
+
+    <h3>Do not disable verification</h3>
+    <p><code>rejectUnauthorized: false</code>, <code>NODE_TLS_REJECT_UNAUTHORIZED=0</code>, and <code>uselibpqcompat=true&amp;sslmode=require</code> all accept the certificate without proving it belongs to Supabase. They are not fixes for a production connection.</p>
+
+    <h2>Fix for Prisma 6</h2>
+    <p>Prisma 6&rsquo;s PostgreSQL connector supports only <code>sslmode=prefer</code>, <code>disable</code>, or <code>require</code>. It does <strong>not</strong> support <code>sslmode=verify-full</code>. For a root CA, use the documented <code>sslrootcert</code> parameter and set <code>sslaccept=strict</code>:</p>
+    <pre><code>DATABASE_URL="postgresql://postgres.[ref]:[password]@aws-[n]-[region].pooler.supabase.com:5432/postgres?sslmode=require&amp;sslrootcert=../prod-ca-2021.crt&amp;sslaccept=strict"</code></pre>
+    <p>Prisma resolves certificate paths relative to the <code>./prisma</code> directory. If the certificate sits in the project root, use <code>../prod-ca-2021.crt</code>. With a multi-file schema, paths resolve relative to <code>./prisma/schema</code> instead. The <a href="https://www.prisma.io/docs/orm/v6/prisma-schema/overview/data-sources#securing-database-connections">Prisma 6 data source docs</a> give both rules.</p>
+    <p>The Prisma 6 connector table lists <code>sslrootcert</code> as the root certificate path. Some examples use <code>sslcert</code> for a server certificate; for Supabase&rsquo;s root CA, use <code>sslrootcert</code> as shown above. <code>sslaccept=strict</code> rejects a certificate that is missing a required value, such as the hostname. The default, <code>accept_invalid_certs</code>, bypasses that check.</p>
+
+    <h2>Fix for Prisma 7</h2>
+    <p>Prisma 7 uses the <code>pg</code> driver adapter. Its documented fix is to add Supabase&rsquo;s CA to Node&rsquo;s trust store before the process starts:</p>
+    <pre><code>NODE_EXTRA_CA_CERTS=./prod-ca-2021.crt node server.js</code></pre>
+    <p>The <a href="https://www.prisma.io/docs/guides/upgrade-prisma-orm/v7#ssl-certificate-validation-changes">Prisma 7 upgrade guide</a> documents <code>NODE_EXTRA_CA_CERTS</code> for this exact certificate-validation change. Set the variable in the runtime environment, not after the process has started.</p>
+    <p>The adapter also passes its options to <code>pg.Pool</code>, so the node-postgres form works too:</p>
+    <pre><code>import fs from "node:fs";
+import { PrismaClient } from "../prisma/generated/client";
+import { PrismaPg } from "@prisma/adapter-pg";
+
+const adapter = new PrismaPg({
+  connectionString: process.env.DATABASE_URL,
+  ssl: {
+    ca: fs.readFileSync("./prod-ca-2021.crt", "utf8"),
+    rejectUnauthorized: true,
+  },
+});
+
+export const prisma = new PrismaClient({ adapter });</code></pre>
+    <p>Again, keep <code>sslmode</code> and <code>sslrootcert</code> out of <code>DATABASE_URL</code> when passing this <code>ssl</code> object. Prisma&rsquo;s guide shows <code>rejectUnauthorized: false</code> as a compatibility escape hatch. Do not use it for a Supabase production connection.</p>
+
+    <h2>Fix for psql</h2>
+    <pre><code>psql "postgresql://postgres.[ref]:[password]@aws-[n]-[region].pooler.supabase.com:5432/postgres?sslmode=verify-full&amp;sslrootcert=./prod-ca-2021.crt" -c "select 1"</code></pre>
+    <p>libpq&rsquo;s <code>verify-full</code> checks the chain and hostname. <code>require</code> only encrypts, so it is not enough when you want to prove the server is Supabase.</p>
+
+    <h2>Verify the fix</h2>
+    <ol>
+      <li><strong>Check the certificate fingerprint.</strong> Run <code>openssl x509 -in prod-ca-2021.crt -noout -fingerprint -sha256</code>. The Supabase root used in this test has SHA-256 fingerprint <code>80:70:25:AD:50:D4:ED:21:9D:2C:9C:7D:29:9C:00:4F:82:4E:B0:0C:F7:F6:5A:FE:F6:07:D0:7B:72:E6:CA:FA</code>.</li>
+      <li><strong>Remove SSL parameters from the URI</strong> if you are passing a separate <code>ssl</code> object. Check: the string contains no <code>sslmode</code>, <code>sslrootcert</code>, <code>sslcert</code>, or <code>sslkey</code>.</li>
+      <li><strong>Connect and run <code>select 1</code>.</strong> Check: the query returns. If the connection now fails with <code>Tenant or user not found</code>, TLS succeeded and the remaining problem is the host or username.</li>
+      <li><strong>Confirm verification is still on.</strong> Check: no <code>rejectUnauthorized: false</code>, no <code>NODE_TLS_REJECT_UNAUTHORIZED=0</code>, and no <code>uselibpqcompat=true</code>.</li>
+    </ol>
+
+    <h2>If it still fails</h2>
+    <ul>
+      <li><strong>Your <code>ssl</code> object was replaced.</strong> A URI containing <code>sslmode</code> or <code>sslrootcert</code> overrides it. Remove those parameters or use the URI form.</li>
+      <li><strong>Prisma cannot find the file.</strong> Paths resolve from <code>./prisma</code>, or <code>./prisma/schema</code> for multi-file schemas. Move the path one level if needed.</li>
+      <li><strong><code>NODE_EXTRA_CA_CERTS</code> was set too late.</strong> Node reads it at startup. Set it in the service definition or before the <code>node</code> command.</li>
+      <li><strong>The hostname does not match.</strong> Use the hostname from the same Supabase Connect string, including the correct pooler cluster index.</li>
+      <li><strong>A different client rejects the chain.</strong> Some strict X.509 clients reject the shared pooler&rsquo;s intermediate CA for missing Key Usage. That is <a href="https://github.com/supabase/supabase/issues/50862">a known Supabase chain issue</a>, separate from the root CA path.</li>
+    </ul>
+
+    <h2>Tested on</h2>
+    <p><strong>Reproduced 2026-10-26 against Supabase&rsquo;s shared session pooler at <code>aws-0-ap-northeast-1.pooler.supabase.com:5432</code>.</strong> The project ref was the fake 20-character value <code>aaaaaaaaaaaaaaaaaaaa</code>, and the password was a placeholder, so the test did not depend on a real project or credentials.</p>
+    <ul>
+      <li>
+        <p><strong>Attempt 1, no CA:</strong> <code>ssl: { rejectUnauthorized: true }</code> with no SSL parameters in the URI returned <code>self-signed certificate in certificate chain</code> with code <code>SELF_SIGNED_CERT_IN_CHAIN</code>.</p>
+      </li>
+      <li>
+        <p><strong>Attempt 2, Supabase CA:</strong> the same connection plus <code>ca: fs.readFileSync("prod-ca-2021.crt", "utf8")</code> completed TLS, then the pooler returned <code>(ENOTFOUND) tenant/user postgres.aaaaaaaaaaaaaaaaaaaa not found</code> with severity <code>FATAL</code>. That is the expected fake-ref result and confirms the certificate chain was accepted.</p>
+      </li>
+    </ul>
+    <p>Runtime: Node <code>v22.23.3</code>, OpenSSL <code>3.5.8</code>, <code>pg@8.22.0</code>, <code>pg-connection-string@2.14.0</code>. The direct host, transaction pooler, Prisma runtime, psql runtime, Windows, and macOS were not tested. Those fixes come from the documentation linked below.</p>
+
+    <h2>Sources</h2>
+    <ul>
+      <li><a href="https://supabase.com/docs/guides/database/connecting-to-postgres#connecting-with-ssl">Supabase: Connect to your database, SSL</a></li>
+      <li><a href="https://supabase.com/docs/guides/platform/ssl-enforcement">Supabase: Postgres SSL enforcement</a></li>
+      <li><a href="https://node-postgres.com/features/ssl">node-postgres: SSL</a></li>
+      <li><a href="https://github.com/brianc/node-postgres/blob/b617619f9fb6fbd231731823e2732a2927ded4be/packages/pg-connection-string/index.js">pg-connection-string 2.14.0 source</a></li>
+      <li><a href="https://nodejs.org/api/tls.html">Node.js: TLS options</a></li>
+      <li><a href="https://nodejs.org/api/cli.html#node_extra_ca_certsfile">Node.js: <code>NODE_EXTRA_CA_CERTS</code></a></li>
+      <li><a href="https://docs.openssl.org/3.5/man1/openssl-verification-options/">OpenSSL: verification options</a></li>
+      <li><a href="https://www.prisma.io/docs/orm/v6/overview/databases/postgresql#configuring-an-ssl-connection">Prisma 6: PostgreSQL SSL parameters</a></li>
+      <li><a href="https://www.prisma.io/docs/orm/v6/prisma-schema/overview/data-sources#securing-database-connections">Prisma 6: certificate path resolution</a></li>
+      <li><a href="https://www.prisma.io/docs/guides/upgrade-prisma-orm/v7#ssl-certificate-validation-changes">Prisma 7: SSL certificate validation changes</a></li>
+      <li><a href="https://github.com/prisma/orm/blob/7.8.0/packages/adapter-pg/src/pg.ts">Prisma 7 adapter-pg source</a></li>
+      <li><a href="https://www.postgresql.org/docs/current/libpq-connect.html#LIBPQ-CONNECT-SSLMODE">PostgreSQL: libpq SSL options</a></li>
+      <li><a href="https://github.com/supabase/supabase/issues/50862">Supabase issue 50862: shared pooler strict TLS chain</a></li>
+    </ul>
   `,
 };

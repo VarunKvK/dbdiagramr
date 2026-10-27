@@ -17,6 +17,7 @@ const TITLE = "Supabase Connection String: Every Mode, Port and Setting";
 const DESCRIPTION =
   "Supabase connection strings explained: direct, session and transaction poolers, ports 5432 and 6543, usernames, SSL, and official driver settings.";
 const PUBLISHED = "2026-10-25";
+const UPDATED = "2026-10-26";
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -37,7 +38,7 @@ export const metadata: Metadata = {
     type: "article",
     url: URL,
     publishedTime: toIsoDateTime(PUBLISHED),
-    modifiedTime: toIsoDateTime(PUBLISHED),
+    modifiedTime: toIsoDateTime(UPDATED),
     images: [{ url: "/DbDiagramr-OG.png", width: 1200, height: 630 }],
   },
   twitter: {
@@ -71,7 +72,7 @@ const faqs = [
   },
   {
     q: "Does sslmode=require verify the Supabase certificate?",
-    a: "No. require encrypts the connection but does not verify the server identity. Use verify-full with Supabase's prod-ca-2021.crt root certificate when you need verification.",
+    a: "It depends on the driver. libpq and psql treat require as encryption only. node-postgres 8.22 with pg-connection-string 2.14 treats require as verify-full unless uselibpqcompat=true, so it also needs Supabase's CA. Prisma 6 uses sslaccept separately. Use verify-full with prod-ca-2021.crt when you need explicit verification.",
   },
 ];
 
@@ -86,7 +87,7 @@ const jsonLd = {
       url: URL,
       image: "https://www.dbdiagramr.space/DbDiagramr-OG.png",
       datePublished: toIsoDateTime(PUBLISHED),
-      dateModified: toIsoDateTime(PUBLISHED),
+      dateModified: toIsoDateTime(UPDATED),
       inLanguage: "en-US",
       author: personNode(),
       publisher: organizationRef(),
@@ -132,12 +133,13 @@ export default function SupabaseConnectionStringPage() {
           </h1>
           <AuthorByline
             published={PUBLISHED}
+            updated={UPDATED}
             readingMinutes={10}
             verb="Written by"
           />
           <div className="mt-4 flex flex-wrap gap-2">
             <MetaPill>
-              <time dateTime="2026-10-25">Verified Oct 25, 2026</time>
+              <time dateTime="2026-10-26">Verified Oct 26, 2026</time>
             </MetaPill>
             <MetaPill>
               <time dateTime="2026-10-23">Pooler tested Oct 23, 2026</time>
@@ -445,9 +447,25 @@ encoded:  p%40ss%20word`}</code></pre>
             <h2>SSL: require encrypts, verify-full verifies</h2>
             <p>
               Supabase accepts unencrypted connections unless you enable SSL
-              enforcement. Set <code>sslmode=require</code> at minimum. It
-              encrypts traffic, but it does not verify that the server is really
-              Supabase.
+              enforcement. For libpq-based clients, set{" "}
+              <code>sslmode=require</code> at minimum. It encrypts traffic, but
+              it does not verify that the server is really Supabase.
+            </p>
+            <p>
+              <strong>Driver note:</strong> libpq and psql treat{" "}
+              <code>sslmode=require</code> as encryption only. node-postgres
+              with <code>pg-connection-string</code> 2.14 treats{" "}
+              <code>require</code> as <code>verify-full</code> unless{" "}
+              <code>uselibpqcompat=true</code>. That can produce{" "}
+              <code>self-signed certificate in certificate chain</code> even
+              after you add <code>sslmode=require</code>. Supply Supabase&rsquo;s
+              CA as shown in the{" "}
+              <Link href="/blog/supabase-self-signed-certificate-in-certificate-chain">
+                full node-postgres fix
+              </Link>
+              . Prisma 6 uses its own <code>sslaccept</code> setting; Prisma 7
+              uses the <code>pg</code> adapter and has the same node-postgres
+              behavior.
             </p>
             <p>
               To verify the server identity, download the Supabase root
@@ -458,15 +476,16 @@ encoded:  p%40ss%20word`}</code></pre>
             <p>
               The certificate filename is <code>prod-ca-2021.crt</code>. Keep it
               out of source control if your deployment policy treats
-              certificates as configuration. For most applications,{" "}
-              <code>sslmode=require</code> is the practical default;{" "}
-              <code>verify-full</code> is the stronger choice when you can ship
-              and rotate the CA.
+              certificates as configuration. <code>require</code> is the
+              minimum for clients that treat it as encryption only. For explicit
+              verification, use <code>verify-full</code> with the CA when you
+              can ship and rotate it.
             </p>
             <p>
-              Do not use <code>sslmode=prefer</code> for Supabase. It allows a
-              silent fallback to an unencrypted connection. Do not use{" "}
-              <code>sslmode=disable</code> outside a local test.
+              Do not use <code>sslmode=prefer</code> for Supabase. libpq-based
+              clients allow a silent fallback to an unencrypted connection;
+              node-postgres 8.22 treats it as <code>verify-full</code> instead.
+              Do not use <code>sslmode=disable</code> outside a local test.
             </p>
           </section>
 
@@ -588,6 +607,21 @@ conn = psycopg.connect(conninfo, prepare_threshold=None)`}</code></pre>
                     </td>
                   </tr>
                   <tr>
+                    <td><code>self-signed certificate in certificate chain</code></td>
+                    <td>
+                      node-postgres does not trust Supabase&rsquo;s private
+                      root; version 8.22 also treats{" "}
+                      <code>sslmode=require</code> as <code>verify-full</code>.
+                    </td>
+                    <td>
+                      Supply <code>prod-ca-2021.crt</code> and keep
+                      verification on.{" "}
+                      <Link href="/blog/supabase-self-signed-certificate-in-certificate-chain">
+                        Full fix →
+                      </Link>
+                    </td>
+                  </tr>
+                  <tr>
                     <td><code>FATAL: password authentication failed</code></td>
                     <td>Wrong role or password, or the password is not URL-encoded.</td>
                     <td>Check the username, encode reserved characters, then reset if needed.</td>
@@ -658,6 +692,26 @@ conn = psycopg.connect(conninfo, prepare_threshold=None)`}</code></pre>
               <li>
                 <a href="https://supabase.com/docs/guides/platform/ssl-enforcement">
                   Supabase: Postgres SSL enforcement
+                </a>
+              </li>
+              <li>
+                <a href="https://supabase.com/docs/guides/database/connecting-to-postgres#connecting-with-ssl">
+                  Supabase: Connecting with SSL
+                </a>
+              </li>
+              <li>
+                <a href="https://node-postgres.com/features/ssl">
+                  node-postgres: SSL
+                </a>
+              </li>
+              <li>
+                <a href="https://github.com/brianc/node-postgres/blob/b617619f9fb6fbd231731823e2732a2927ded4be/packages/pg-connection-string/index.js">
+                  pg-connection-string 2.14.0 source
+                </a>
+              </li>
+              <li>
+                <a href="https://www.prisma.io/docs/orm/v6/overview/databases/postgresql#configuring-an-ssl-connection">
+                  Prisma 6: PostgreSQL SSL parameters
                 </a>
               </li>
               <li>

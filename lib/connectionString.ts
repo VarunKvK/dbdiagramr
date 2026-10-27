@@ -54,6 +54,8 @@ const SUPABASE_PORT_HREF = "/supabase-connection-string#modes";
 const SUPABASE_TENANT_HREF = "/blog/supabase-tenant-or-user-not-found";
 const PASSWORD_HREF = "/supabase-connection-string#password";
 const SSL_HREF = "/supabase-connection-string#ssl";
+const SUPABASE_SSL_HREF =
+  "/blog/supabase-self-signed-certificate-in-certificate-chain";
 const PRISMA_PREPARED_HREF = "/blog/prisma-prepared-statement-already-exists-supabase";
 
 function decodePart(value: string, label: string): string {
@@ -290,15 +292,19 @@ export function analyzeConnectionString(
 
   if (endpoint !== "other") {
     const mode = sslMode(parsed.params);
-    const provider = endpoint.startsWith("supabase") ? "Supabase" : "Neon";
+    const isSupabase = endpoint.startsWith("supabase");
+    const provider = isSupabase ? "Supabase" : "Neon";
+    const sslHref = isSupabase ? SUPABASE_SSL_HREF : SSL_HREF;
 
     if (!mode) {
       flags.push({
         code: "sslmode-missing",
         severity: "warning",
         message: `${provider} connections should set sslmode explicitly.`,
-        fix: "Add ?sslmode=require to encrypt the connection.",
-        href: SSL_HREF,
+        fix: isSupabase
+          ? "Add ?sslmode=require and supply Supabase's CA: node-postgres treats require as verify-full."
+          : "Add ?sslmode=require; node-postgres also verifies the provider certificate.",
+        href: sslHref,
       });
     } else if (mode === "disable" || mode === "allow") {
       flags.push({
@@ -312,9 +318,11 @@ export function analyzeConnectionString(
       flags.push({
         code: "sslmode-prefer",
         severity: "warning",
-        message: "sslmode=prefer silently falls back to an unencrypted connection.",
-        fix: "Use sslmode=require, or verify-full with the provider CA.",
-        href: SSL_HREF,
+        message: "sslmode=prefer lets many drivers fall back to an unencrypted connection.",
+        fix: isSupabase
+          ? "Use sslmode=require with Supabase's CA; node-postgres treats require as verify-full."
+          : "Use sslmode=require, or verify-full with the provider CA.",
+        href: sslHref,
       });
     }
   }

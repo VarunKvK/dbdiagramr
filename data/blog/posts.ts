@@ -17,6 +17,23 @@ export type BlogPost = {
 
 export const blogPosts: BlogPost[] = [
   {
+    slug: "supabase-self-signed-certificate-in-certificate-chain",
+    title: "self-signed certificate in certificate chain: Supabase fix",
+    description:
+      "Fix self-signed certificate in certificate chain on Supabase: trust the Supabase CA, keep hostname verification on, and verify with node-postgres.",
+    keywords: [
+      "self-signed certificate in certificate chain",
+      "supabase ssl certificate",
+      "node-postgres supabase ssl",
+      "prisma supabase ssl",
+      "supabase prod-ca-2021.crt",
+    ],
+    date: "2026-10-26",
+    readingMinutes: 8,
+    tags: ["supabase", "postgres", "prisma", "troubleshooting"],
+    byline: "Written by",
+  },
+  {
     slug: "supabase-tenant-or-user-not-found",
     title: "Tenant or user not found: Supabase fix",
     description:

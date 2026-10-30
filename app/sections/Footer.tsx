@@ -80,6 +80,12 @@ export default function Footer() {
               <h3 className="mb-4 text-xl font-semibold">Guides</h3>
               <ul className="space-y-3 text-lg font-medium text-white/70">
                 <li>
+                  <a href="/supabase-er-diagram" className="transition-colors hover:text-white">Supabase ER Diagram</a>
+                </li>
+                <li>
+                  <a href="/supabase-connection-string" className="transition-colors hover:text-white">Supabase Connection String</a>
+                </li>
+                <li>
                   <a href="/supabase-rls-check" className="transition-colors hover:text-white">Supabase RLS Check</a>
                 </li>
                 <li>

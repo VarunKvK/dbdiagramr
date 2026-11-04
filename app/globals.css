@@ -13,6 +13,40 @@
   .tnum {
     font-variant-numeric: tabular-nums;
   }
+  /* Hero badge ticker: three identical copies, slides one copy width rightward. */
+  .badge-marquee {
+    animation: badge-marquee 32s linear infinite;
+    will-change: transform;
+  }
+  .badge-marquee:hover,
+  .badge-marquee:focus-within {
+    animation-play-state: paused;
+  }
+  .badge-marquee-mask {
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+    mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .badge-marquee {
+      animation: none;
+      transform: none;
+      width: 100%;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+    .badge-marquee > [data-badge-dup] {
+      display: none;
+    }
+    .badge-marquee > [data-badge-copy] {
+      flex-wrap: wrap;
+      justify-content: center;
+      padding-right: 0;
+    }
+    .badge-marquee-mask {
+      -webkit-mask-image: none;
+      mask-image: none;
+    }
+  }
   /* Passive embedded previews (hero): never trap page scroll, incl. touch. */
   .heropreview .react-flow__pane {
     touch-action: pan-y !important;
@@ -122,5 +156,13 @@
       transition-duration: 0.01ms !important;
       scroll-behavior: auto !important;
     }
+  }
+}
+@keyframes badge-marquee {
+  from {
+    transform: translateX(calc(-100% / 3));
+  }
+  to {
+    transform: translateX(0);
   }
 }

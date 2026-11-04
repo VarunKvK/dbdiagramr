@@ -1,7 +1,6 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import SchemaDiagram from "@/components/SchemaDiagram";
 import { parseSqlToSchema } from "@/lib/sql/parsePostgres";
@@ -13,59 +12,6 @@ const files: { id: ActiveFile; label: string }[] = [
   { id: "ecommerce", label: "ecommerce.sql" },
   { id: "sample", label: "sample.sql" },
 ];
-
-const badges = [
-  {
-    href: "https://www.codehype.ai/product/dbdiagramr?utm_source=codehype_badge",
-    src: "https://www.codehype.ai/badges/dbdiagramr.svg?variant=find-us&v=20",
-    alt: "Featured on CodeHype",
-    width: 180,
-    height: 65,
-    rel: "noopener noreferrer",
-  },
-  {
-    href: "https://noonlaunch.com/product/dbdiagramr",
-    src: "https://noonlaunch.com/badges/dbdiagramr.svg",
-    alt: "Featured on Noonlaunch",
-    width: 220,
-    height: 60,
-    rel: "noopener noreferrer dofollow",
-  },
-  {
-    href: "https://braginpublic.com/?utm_source=badge&utm_medium=referral",
-    src: "https://braginpublic.com/badge?theme=light",
-    alt: "Featured on Brag in Public",
-    width: 208,
-    height: 54,
-    rel: "noopener noreferrer",
-  },
-  {
-    href: "https://scrappystartups.com/startup/dbdiagramr",
-    src: "https://scrappystartups.com/badge.svg?theme=light",
-    alt: "Find us on Scrappy Startups",
-    width: 305,
-    height: 56,
-    rel: "noopener noreferrer",
-  },
-  {
-    href: "https://www.betterlaunch.co/product/dbdiagramr",
-    src: "https://www.betterlaunch.co/badge-launching-dark.svg",
-    alt: "Dbdiagramr on Better Launch",
-    width: 200,
-    height: 56,
-    rel: "noopener noreferrer",
-  },
-  {
-    href: "https://buildrship.xyz/products/dbdiagramrspace",
-    src: "https://buildrship.xyz/assets/featured-on-buildrship-v2.png",
-    alt: "Featured on Buildrship",
-    width: 163,
-    height: 65,
-    rel: "noopener",
-  },
-];
-
-const badgeCopies = [0, 1, 2];
 
 export default function Hero() {
   const router = useRouter();
@@ -112,42 +58,6 @@ export default function Hero() {
             >
               Watch 30s Demo
             </a>
-          </div>
-          <div className="badge-marquee-mask mt-6 overflow-hidden" role="group" aria-label="Featured on">
-            <div className="badge-marquee flex w-max items-center">
-              {badgeCopies.map((copy) => {
-                const isDuplicate = copy > 0;
-                return (
-                  <div
-                    key={copy}
-                    data-badge-copy
-                    data-badge-dup={isDuplicate ? "" : undefined}
-                    aria-hidden={isDuplicate || undefined}
-                    className="flex shrink-0 items-center gap-3 pr-3"
-                  >
-                    {badges.map((badge) => (
-                      <a
-                        key={badge.href}
-                        href={badge.href}
-                        target="_blank"
-                        rel={badge.rel}
-                        tabIndex={isDuplicate ? -1 : undefined}
-                        className="inline-flex opacity-90 mix-blend-multiply transition-opacity hover:opacity-100 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-accent"
-                      >
-                        <Image
-                          src={badge.src}
-                          alt={badge.alt}
-                          width={badge.width}
-                          height={badge.height}
-                          unoptimized
-                          className="block h-9 w-auto"
-                        />
-                      </a>
-                    ))}
-                  </div>
-                );
-              })}
-            </div>
           </div>
         </div>
 

@@ -55,6 +55,14 @@ const badges = [
     height: 56,
     rel: "noopener noreferrer",
   },
+  {
+    href: "https://buildrship.xyz/products/dbdiagramrspace",
+    src: "https://buildrship.xyz/assets/featured-on-buildrship-v2.png",
+    alt: "Featured on Buildrship",
+    width: 163,
+    height: 65,
+    rel: "noopener",
+  },
 ];
 
 const badgeCopies = [0, 1, 2];

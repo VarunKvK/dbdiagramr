@@ -47,6 +47,14 @@ const badges = [
     height: 56,
     rel: "noopener noreferrer",
   },
+  {
+    href: "https://www.betterlaunch.co/product/dbdiagramr",
+    src: "https://www.betterlaunch.co/badge-launching-dark.svg",
+    alt: "Dbdiagramr on Better Launch",
+    width: 200,
+    height: 56,
+    rel: "noopener noreferrer",
+  },
 ];
 
 const badgeCopies = [0, 1, 2];
@@ -124,7 +132,7 @@ export default function Hero() {
                           width={badge.width}
                           height={badge.height}
                           unoptimized
-                          className="block h-[50px] w-auto"
+                          className="block h-9 w-auto"
                         />
                       </a>
                     ))}

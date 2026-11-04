@@ -38,6 +38,7 @@
       display: none;
     }
     .badge-marquee > [data-badge-copy] {
+      flex: 1 1 100%;
       flex-wrap: wrap;
       justify-content: center;
       padding-right: 0;

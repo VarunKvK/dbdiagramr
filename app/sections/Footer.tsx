@@ -50,6 +50,14 @@ const badges = [
     height: 65,
     rel: "noopener",
   },
+  {
+    href: "https://startupfa.st",
+    src: "https://startupfa.st/images/badges/powered-by-light.svg",
+    alt: "Powered by Startup Fast",
+    width: 150,
+    height: 44,
+    rel: "noopener noreferrer",
+  },
 ];
 
 const badgeCopies = [0, 1, 2];
